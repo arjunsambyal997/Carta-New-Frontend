@@ -196,6 +196,10 @@ const dict = {
     jurDIFC: "DIFC",
     jurKSA: "Saudi Arabia",
     advancedConnect: "Developer: paste a token instead",
+    navCertificates: "Certificates",
+    downloadPdf: "Download PDF",
+    noCertificates: "No certificates issued yet.",
+    statusLabel: "Status",
   },
   ar: {
     appName: "إكوي جي سي سي",
@@ -388,6 +392,10 @@ const dict = {
     jurDIFC: "مركز دبي المالي",
     jurKSA: "السعودية",
     advancedConnect: "للمطورين: لصق رمز يدويًا",
+    navCertificates: "الشهادات",
+    downloadPdf: "تنزيل PDF",
+    noCertificates: "لم تصدر أي شهادات بعد.",
+    statusLabel: "الحالة",
   },
 } as const;
 

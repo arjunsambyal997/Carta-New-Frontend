@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react";
 import { useState, type FormEvent } from "react";
+import { DownloadButton } from "@/components/DownloadButton";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -74,9 +75,12 @@ export default function IssueCertificatePage() {
             <p className="mt-2 text-xs text-slate-500">{t("verifyQr")}</p>
           </div>
         </div>
-        <button className="btn-ghost" onClick={() => { setIssued(null); setQuantity(""); }}>
-          {t("issueAnother")}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <DownloadButton className="btn" label={t("downloadPdf")} run={() => api.certificatePdf(state.orgId!, issued.certificateNo)} />
+          <button className="btn-ghost" onClick={() => { setIssued(null); setQuantity(""); }}>
+            {t("issueAnother")}
+          </button>
+        </div>
       </div>
     );
   }

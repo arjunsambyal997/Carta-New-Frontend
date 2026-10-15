@@ -12,7 +12,7 @@ const NAV: { href: string; key: Key }[] = [
   { href: "/ownership", key: "navOwnership" },
   { href: "/waterfall", key: "navWaterfall" },
   { href: "/resolutions", key: "navResolutions" },
-  { href: "/certificates/new", key: "navIssue" },
+  { href: "/certificates", key: "navCertificates" },
   { href: "/audit", key: "navAudit" },
   { href: "/setup", key: "navSetup" },
   { href: "/members", key: "navMembers" },

@@ -78,6 +78,24 @@ async function request<T>(path: string, init: RequestInit = {}, auth = true): Pr
   return res.json() as Promise<T>;
 }
 
+/** Fetches an authenticated binary response and hands it to the browser as a file download. */
+export async function downloadFile(path: string, fallbackName: string): Promise<void> {
+  const s = getSession();
+  if (!s) throw new ApiError(401, "Not connected");
+  const res = await fetch(path, { headers: { Authorization: `Bearer ${s.token}` } });
+  if (!res.ok) throw new ApiError(res.status, res.statusText);
+  const cd = res.headers.get("Content-Disposition") ?? "";
+  const filename = /filename="([^"]+)"/.exec(cd)?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
 const org = (orgId: string) => `/api/v1/organizations/${orgId}`;
 
 export const api = {
@@ -118,6 +136,9 @@ export const api = {
   invite: (orgId: string, body: { email: string; displayName: string; role: string; shareholderId?: string }) =>
     request<InviteResult>(`${org(orgId)}/members`, { method: "POST", body: JSON.stringify(body) }),
   audit: (orgId: string) => request<AuditTrail>(`${org(orgId)}/audit`),
+  certificates: (orgId: string) => request<Certificate[]>(`${org(orgId)}/certificates`),
+  certificatePdf: (orgId: string, certNo: string) =>
+    downloadFile(`${org(orgId)}/certificates/${encodeURIComponent(certNo)}/pdf`, `${certNo}.pdf`),
   issueCertificate: (orgId: string, body: IssueCertificateRequest) =>
     request<Certificate>(`${org(orgId)}/certificates`, { method: "POST", body: JSON.stringify(body) }),
   verifyCertificate: (certNo: string, hash?: string) =>

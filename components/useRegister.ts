@@ -11,8 +11,8 @@ export interface Loaded<T> {
   orgId: string | null;
 }
 
-/** Runs `load(orgId)` once the browser session (token + org) is available. */
-export function useRegister<T>(load: (orgId: string) => Promise<T>): Loaded<T> {
+/** Runs `load(orgId)` once the browser session (token + org) is available, and again when `refreshKey` changes. */
+export function useRegister<T>(load: (orgId: string) => Promise<T>, refreshKey = 0): Loaded<T> {
   const [state, setState] = useState<Loaded<T>>({ data: null, error: null, loading: true, connected: true, orgId: null });
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function useRegister<T>(load: (orgId: string) => Promise<T>): Loaded<T> {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshKey]);
 
   return state;
 }

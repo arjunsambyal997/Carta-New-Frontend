@@ -20,12 +20,15 @@ It talks to [Carta-New-Backend](https://github.com/arjunsambyal997/Carta-New-Bac
 | `/ubo` | Look-through beneficial owners, owners editor for corporate holders, CSV and PDF export; `/ownership` also shows each company's recorded owners |
 | `/succession` | Define, preview, execute and cancel share-class conversion rules |
 | `/vault` | Upload and download AoA, notary receipts and agreements; shows each file's SHA-256 |
+| `/forgot-password`, `/reset-password`, `/password` | Request a reset link, set a new password from the emailed link, change your password while signed in |
 | `/settings` | Developer fallback: paste a JWT and organization ID (stored in `localStorage`) |
 
 The EN / العربية toggle switches `lang` and `dir` on `<html>`. Layout uses logical Tailwind classes
 (`text-start`, `text-end`) so tables and the tree flip correctly. Numbers stay in Latin digits in both languages.
 
 ## Run
+
+For the full stack (database, backend and UI in Docker, or step by step) and a walk through every screen, see the [backend README](https://github.com/arjunsambyal997/Carta-New-Backend#run-locally-full-flow). Frontend only:
 
 ```bash
 npm install
@@ -39,4 +42,4 @@ Sign up at `/signup`, scan the QR with an authenticator app, and confirm a code.
 
 ## Not built yet
 
-Token refresh and server-side sign-out (access tokens last one hour and live in `localStorage`), password reset by email, e-signature, and the official UBO filing formats.
+Token refresh and server-side sign-out (access tokens last one hour and live in `localStorage`), e-signature, and the official UBO filing formats.

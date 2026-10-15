@@ -18,6 +18,8 @@ const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] 
       { href: "/ownership", key: "navOwnership", icon: "ownership" },
       { href: "/waterfall", key: "navWaterfall", icon: "waterfall" },
       { href: "/transfers", key: "navTransfers", icon: "transfer" },
+      { href: "/options", key: "navOptions", icon: "options" },
+      { href: "/rounds", key: "navRounds", icon: "rounds" },
     ],
   },
   {

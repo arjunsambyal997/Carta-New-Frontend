@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
+import { clearSession } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
+import { useSession } from "./useSession";
 
 const NAV: { href: string; key: Key }[] = [
   { href: "/", key: "navCapTable" },
@@ -12,12 +14,15 @@ const NAV: { href: string; key: Key }[] = [
   { href: "/resolutions", key: "navResolutions" },
   { href: "/certificates/new", key: "navIssue" },
   { href: "/audit", key: "navAudit" },
-  { href: "/settings", key: "navConnect" },
+  { href: "/setup", key: "navSetup" },
+  { href: "/members", key: "navMembers" },
+  { href: "/security", key: "navSecurity" },
 ];
 
 export function Shell({ children }: { children: ReactNode }) {
   const { t, toggle } = useI18n();
   const path = usePathname();
+  const session = useSession();
 
   return (
     <div className="min-h-screen">
@@ -38,6 +43,13 @@ export function Shell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
+          {session ? (
+            <button type="button" className="btn-ghost" onClick={() => { clearSession(); window.location.assign("/login"); }}>
+              {t("signOut")}
+            </button>
+          ) : (
+            session === null && <Link href="/login" className="btn-ghost">{t("signIn")}</Link>
+          )}
           <button type="button" onClick={toggle} className="btn-ghost" aria-label="Toggle language">
             {t("switchLang")}
           </button>

@@ -12,7 +12,7 @@ export function Status({ state }: { state: Loaded<unknown> }) {
     return (
       <div className="card">
         <p className="mb-3">{t("notConnected")}</p>
-        <Link href="/settings" className="btn">
+        <Link href="/login" className="btn">
           {t("goConnect")}
         </Link>
       </div>

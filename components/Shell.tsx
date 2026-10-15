@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { api, clearSession, getSession } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { Icon, type IconName } from "./Icon";
+import { SearchPalette } from "./SearchPalette";
 import { useSession } from "./useSession";
 
 const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
@@ -16,6 +17,7 @@ const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] 
       { href: "/cap-table", key: "navCapTable", icon: "captable" },
       { href: "/ownership", key: "navOwnership", icon: "ownership" },
       { href: "/waterfall", key: "navWaterfall", icon: "waterfall" },
+      { href: "/transfers", key: "navTransfers", icon: "transfer" },
     ],
   },
   {
@@ -38,6 +40,7 @@ const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] 
     label: "groupAdmin",
     items: [
       { href: "/setup", key: "navSetup", icon: "setup" },
+      { href: "/import", key: "navImport", icon: "import" },
       { href: "/members", key: "navMembers", icon: "members" },
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
@@ -185,6 +188,7 @@ export function Shell({ children }: { children: ReactNode }) {
             <Icon name="menu" />
           </button>
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
+          {session && <SearchPalette />}
           <Toggles />
           {session ? (
             <button type="button" className="btn-ghost h-9" onClick={() => { clearSession(); window.location.assign("/login"); }}>

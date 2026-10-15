@@ -28,6 +28,10 @@ import type {
   Conversion,
   VaultDocument,
   VaultCategory,
+  ImportResult,
+  SearchHit,
+  TransferRequest,
+  BuyBackRequest,
 } from "./types";
 
 const TOKEN_KEY = "equigcc.token";
@@ -181,6 +185,21 @@ export const api = {
     downloadFile(`${org(orgId)}/vault/${doc.id}/content`, doc.fileName),
   audit: (orgId: string) => request<AuditTrail>(`${org(orgId)}/audit`),
   certificates: (orgId: string) => request<Certificate[]>(`${org(orgId)}/certificates`),
+  search: (orgId: string, q: string) =>
+    request<{ query: string; hits: SearchHit[] }>(`${org(orgId)}/search?q=${encodeURIComponent(q)}`).then((r) => r.hits),
+  capTableExport: (orgId: string, format: "csv" | "pdf") =>
+    downloadFile(`${org(orgId)}/cap-table/export?format=${format}`, `cap-table.${format}`),
+  importTemplate: (orgId: string, kind: "holders" | "issuances") =>
+    downloadFile(`${org(orgId)}/import/templates/${kind}`, `${kind}-template.csv`),
+  importCsv: (orgId: string, kind: "shareholders" | "issuances", file: File, dryRun: boolean) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<ImportResult>(`${org(orgId)}/import/${kind}?dryRun=${dryRun}`, { method: "POST", body: form });
+  },
+  transfer: (orgId: string, body: TransferRequest) =>
+    request<unknown>(`${org(orgId)}/transfers`, { method: "POST", body: JSON.stringify(body) }),
+  buyBack: (orgId: string, body: BuyBackRequest) =>
+    request<unknown>(`${org(orgId)}/buybacks`, { method: "POST", body: JSON.stringify(body) }),
   certificatePdf: (orgId: string, certNo: string) =>
     downloadFile(`${org(orgId)}/certificates/${encodeURIComponent(certNo)}/pdf`, `${certNo}.pdf`),
   issueCertificate: (orgId: string, body: IssueCertificateRequest) =>

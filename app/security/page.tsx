@@ -26,7 +26,7 @@ export default function SecurityPage() {
     setError(null);
     try {
       const r = await api.mfaConfirm(code.trim());
-      saveSession(r.accessToken!, r.organizationId ?? getSession()!.orgId);
+      saveSession(r.accessToken!, r.organizationId ?? getSession()!.orgId, r.refreshToken);
       setDone(true);
     } catch (err) {
       setError((err as Error).message);

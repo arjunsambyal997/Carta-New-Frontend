@@ -3,11 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { api, clearSession, getSession } from "@/lib/api";
+import { api, getSession, signOut } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { Icon, type IconName } from "./Icon";
 import { SearchPalette } from "./SearchPalette";
 import { useSession } from "./useSession";
+
+/** What a shareholder account sees: their own portal, votes, and account security. */
+const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
+  { label: "groupOverview", items: [{ href: "/portal", key: "navPortal", icon: "portal" }, { href: "/resolutions", key: "navResolutions", icon: "resolutions" }] },
+  { label: "groupAdmin", items: [{ href: "/security", key: "navSecurity", icon: "security" }, { href: "/password", key: "navPassword", icon: "password" }] },
+];
 
 const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
   {
@@ -130,9 +136,10 @@ export function Shell({ children }: { children: ReactNode }) {
     );
   }
 
+  const isHolder = who?.role === "SHAREHOLDER";
   const nav = (
     <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4" aria-label="Main">
-      {GROUPS.map((g) => (
+      {(isHolder ? HOLDER_GROUPS : GROUPS).map((g) => (
         <div key={g.label}>
           <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{t(g.label)}</p>
           <ul className="space-y-0.5">
@@ -190,10 +197,10 @@ export function Shell({ children }: { children: ReactNode }) {
             <Icon name="menu" />
           </button>
           <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
-          {session && <SearchPalette />}
+          {session && !isHolder && <SearchPalette />}
           <Toggles />
           {session ? (
-            <button type="button" className="btn-ghost h-9" onClick={() => { clearSession(); window.location.assign("/login"); }}>
+            <button type="button" className="btn-ghost h-9" onClick={async () => { await signOut(); window.location.assign("/login"); }}>
               <Icon name="logout" size={16} />
               <span className="hidden sm:inline">{t("signOut")}</span>
             </button>

@@ -33,7 +33,7 @@ export default function SignupPage() {
           commercialLicenseNo: f.commercialLicenseNo, baseCurrency: f.baseCurrency, certificatePrefix: f.certificatePrefix,
         },
       });
-      saveSession(r.accessToken!, r.organizationId!);
+      saveSession(r.accessToken!, r.organizationId!, r.refreshToken);
       router.push("/security");
     } catch (err) {
       setError((err as Error).message);

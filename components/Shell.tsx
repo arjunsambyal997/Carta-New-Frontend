@@ -20,6 +20,7 @@ const NAV: { href: string; key: Key }[] = [
   { href: "/setup", key: "navSetup" },
   { href: "/members", key: "navMembers" },
   { href: "/security", key: "navSecurity" },
+  { href: "/password", key: "navPassword" },
 ];
 
 export function Shell({ children }: { children: ReactNode }) {

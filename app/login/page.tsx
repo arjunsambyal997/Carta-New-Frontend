@@ -83,6 +83,7 @@ export default function LoginPage() {
         </div>
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         <button className="btn w-full" disabled={busy}>{busy ? t("signingIn") : t("signIn")}</button>
+        <p className="text-sm"><Link href="/forgot-password" className="text-emerald-700 underline">{t("forgotLink")}</Link></p>
       </form>
       <p className="text-sm text-slate-600">
         {t("noAccount")} <Link href="/signup" className="text-emerald-700 underline">{t("createOne")}</Link>

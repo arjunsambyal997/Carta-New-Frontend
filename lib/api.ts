@@ -82,6 +82,7 @@ async function request<T>(path: string, init: RequestInit = {}, auth = true): Pr
     if (res.status === 403) detail = detail && detail !== "Forbidden" ? detail : "Forbidden: check role, organization and MFA";
     throw new ApiError(res.status, detail);
   }
+  if (res.status === 202 || res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
@@ -131,6 +132,15 @@ export const api = {
     request<AuthResult>("/api/v1/auth/login", { method: "POST", body: JSON.stringify({ email, password, organizationId }) }, false),
   verifyMfa: (mfaToken: string, code: string) =>
     request<AuthResult>("/api/v1/auth/mfa/verify", { method: "POST", body: JSON.stringify({ mfaToken, code }) }, false),
+  forgotPassword: async (email: string) => {
+    await request<void>("/api/v1/auth/password/forgot", { method: "POST", body: JSON.stringify({ email }) }, false);
+  },
+  resetPassword: async (token: string, newPassword: string) => {
+    await request<void>("/api/v1/auth/password/reset", { method: "POST", body: JSON.stringify({ token, newPassword }) }, false);
+  },
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    await request<void>("/api/v1/auth/password/change", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) });
+  },
   me: () => request<Me>("/api/v1/auth/me"),
   mfaEnroll: () => request<Enrollment>("/api/v1/auth/mfa/enroll", { method: "POST" }),
   mfaConfirm: (code: string) =>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useI18n } from "@/lib/i18n";
-import type { CapTable, Organization } from "@/lib/types";
+import type { CapTable, Organization, OwnershipLink } from "@/lib/types";
 
 const W = 960;
 const ROOT_Y = 20;
@@ -14,7 +14,7 @@ const GAP = 12;
  * SVG ownership tree: the company at the top, one node per holder below, node width proportional to
  * fully diluted ownership. Mirrors horizontally in RTL so the largest holder sits on the reading-start side.
  */
-export function OwnershipTree({ table, org }: { table: CapTable; org: Organization }) {
+export function OwnershipTree({ table, org, links = [] }: { table: CapTable; org: Organization; links?: OwnershipLink[] }) {
   const { t, dir, num, name } = useI18n();
   const holders = table.holders;
   const rtl = dir === "rtl";
@@ -31,12 +31,17 @@ export function OwnershipTree({ table, org }: { table: CapTable; org: Organizati
   });
   const contentW = Math.max(W, cursor);
   const mx = (x: number, w = 0) => (rtl ? contentW - x - w : x);
+  const OWNER_Y = LEAF_Y + LEAF_H + 36;
+  const OWNER_H = 34;
+  const ownersOf = (id: string) => links.filter((l) => l.ownedId === id);
+  const maxOwners = Math.max(0, ...nodes.map(({ h }) => ownersOf(h.shareholderId).length));
+  const height = OWNER_Y + (maxOwners ? maxOwners * (OWNER_H + 8) : -16) + 20;
   const rootW = 300;
   const rootX = (contentW - rootW) / 2;
 
   return (
     <div className="card overflow-x-auto">
-      <svg viewBox={`0 0 ${contentW} ${LEAF_Y + LEAF_H + 20}`} className="w-full min-w-[640px]" role="img" aria-label={t("navOwnership")}>
+      <svg viewBox={`0 0 ${contentW} ${height}`} className="w-full min-w-[640px]" role="img" aria-label={t("navOwnership")}>
         <rect x={rootX} y={ROOT_Y} width={rootW} height={ROOT_H} rx={8} className="fill-emerald-800" />
         <text x={rootX + rootW / 2} y={ROOT_Y + 23} textAnchor="middle" className="fill-white text-[15px] font-semibold">
           {name(org.legalNameEn, org.legalNameAr)}
@@ -63,6 +68,21 @@ export function OwnershipTree({ table, org }: { table: CapTable; org: Organizati
               <text x={cx} y={LEAF_Y + 44} textAnchor="middle" className="fill-emerald-700 text-[13px] font-semibold">
                 {num(pct, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}%
               </text>
+              {ownersOf(h.shareholderId).map((l, i) => {
+                const y = OWNER_Y + i * (OWNER_H + 8);
+                return (
+                  <g key={l.ownerId}>
+                    <path d={`M ${cx} ${i === 0 ? LEAF_Y + LEAF_H : y - 8} L ${cx} ${y}`} className="fill-none stroke-slate-300" strokeWidth={1.5} />
+                    <rect x={nx} y={y} width={w} height={OWNER_H} rx={6} className="fill-slate-50 stroke-slate-300" />
+                    <text x={cx} y={y + 14} textAnchor="middle" className="fill-slate-700 text-[11px]">
+                      {truncate(name(l.ownerNameEn, l.ownerNameAr), Math.floor(w / 6.5))}
+                    </text>
+                    <text x={cx} y={y + 28} textAnchor="middle" className="fill-slate-500 text-[11px]">
+                      {num(l.economicPct, { maximumFractionDigits: 2 })}%
+                    </text>
+                  </g>
+                );
+              })}
             </g>
           );
         })}

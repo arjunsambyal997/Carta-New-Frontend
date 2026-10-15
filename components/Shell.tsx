@@ -10,6 +10,7 @@ import { useSession } from "./useSession";
 const NAV: { href: string; key: Key }[] = [
   { href: "/", key: "navCapTable" },
   { href: "/ownership", key: "navOwnership" },
+  { href: "/ubo", key: "navUbo" },
   { href: "/waterfall", key: "navWaterfall" },
   { href: "/resolutions", key: "navResolutions" },
   { href: "/certificates", key: "navCertificates" },

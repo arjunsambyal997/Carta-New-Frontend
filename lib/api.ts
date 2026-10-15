@@ -21,6 +21,8 @@ import type {
   ShareClassInput,
   ShareholderInput,
   InviteResult,
+  OwnershipLink,
+  UboReport,
 } from "./types";
 
 const TOKEN_KEY = "equigcc.token";
@@ -135,6 +137,12 @@ export const api = {
   members: (orgId: string) => request<Member[]>(`${org(orgId)}/members`),
   invite: (orgId: string, body: { email: string; displayName: string; role: string; shareholderId?: string }) =>
     request<InviteResult>(`${org(orgId)}/members`, { method: "POST", body: JSON.stringify(body) }),
+  ownershipLinks: (orgId: string) => request<OwnershipLink[]>(`${org(orgId)}/ownership-links`),
+  setOwners: (orgId: string, holderId: string, owners: { ownerId: string; economicPct: number; votingPct?: number }[]) =>
+    request<OwnershipLink[]>(`${org(orgId)}/shareholders/${holderId}/owners`, { method: "PUT", body: JSON.stringify({ owners }) }),
+  ubo: (orgId: string, threshold: number) => request<UboReport>(`${org(orgId)}/ubo?threshold=${encodeURIComponent(threshold)}`),
+  uboExport: (orgId: string, format: "csv" | "pdf", threshold: number) =>
+    downloadFile(`${org(orgId)}/ubo/export?format=${format}&threshold=${encodeURIComponent(threshold)}`, `ubo-register.${format}`),
   audit: (orgId: string) => request<AuditTrail>(`${org(orgId)}/audit`),
   certificates: (orgId: string) => request<Certificate[]>(`${org(orgId)}/certificates`),
   certificatePdf: (orgId: string, certNo: string) =>

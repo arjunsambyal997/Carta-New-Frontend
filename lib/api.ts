@@ -6,6 +6,7 @@ import type {
   Organization,
   ShareClass,
   Shareholder,
+  Waterfall,
 } from "./types";
 
 const TOKEN_KEY = "equigcc.token";
@@ -68,6 +69,8 @@ export const api = {
   shareClasses: (orgId: string) => request<ShareClass[]>(`${org(orgId)}/share-classes`),
   shareholders: (orgId: string) => request<Shareholder[]>(`${org(orgId)}/shareholders`),
   capTable: (orgId: string) => request<CapTable>(`${org(orgId)}/cap-table`),
+  waterfall: (orgId: string, exitValue: number) =>
+    request<Waterfall>(`${org(orgId)}/waterfall?exitValue=${encodeURIComponent(exitValue)}`),
   issueCertificate: (orgId: string, body: IssueCertificateRequest) =>
     request<Certificate>(`${org(orgId)}/certificates`, { method: "POST", body: JSON.stringify(body) }),
   verifyCertificate: (certNo: string, hash?: string) =>

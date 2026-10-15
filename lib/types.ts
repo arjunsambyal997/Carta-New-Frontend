@@ -102,3 +102,32 @@ export interface CertificateVerification {
   status: string;
   authentic: boolean;
 }
+
+export interface ClassPayout {
+  shareClassId: string;
+  name: string;
+  shares: number;
+  invested: number;
+  liquidationPreference: number;
+  preferencePaid: number;
+  converted: boolean;
+  residualPaid: number;
+  total: number;
+  pctOfExit: number;
+}
+
+export interface HolderPayout {
+  shareholderId: string;
+  nameEn: string;
+  nameAr: string | null;
+  total: number;
+  pctOfExit: number;
+}
+
+export interface Waterfall {
+  organizationId: string;
+  exitValue: number;
+  commonPricePerShare: number;
+  classes: ClassPayout[];
+  holders: HolderPayout[];
+}

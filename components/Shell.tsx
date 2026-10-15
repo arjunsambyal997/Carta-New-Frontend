@@ -8,6 +8,7 @@ import { useI18n, type Key } from "@/lib/i18n";
 const NAV: { href: string; key: Key }[] = [
   { href: "/", key: "navCapTable" },
   { href: "/ownership", key: "navOwnership" },
+  { href: "/waterfall", key: "navWaterfall" },
   { href: "/certificates/new", key: "navIssue" },
   { href: "/settings", key: "navConnect" },
 ];

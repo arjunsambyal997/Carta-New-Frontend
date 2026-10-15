@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { StatusBadge, TallyBar } from "@/components/ResolutionBits";
+import { SignaturesPanel } from "@/components/SignaturesPanel";
+import { useMe } from "@/components/useMe";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -24,6 +26,8 @@ export default function ResolutionPage() {
     const [detail, holders] = await Promise.all([api.resolution(orgId, id), api.shareholders(orgId).catch(() => [])]);
     return { ...detail, holders };
   }, version);
+  const me = useMe();
+  const officer = me?.role === "FOUNDER" || me?.role === "CORPORATE_SECRETARY";
   const [onBehalf, setOnBehalf] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,14 +87,14 @@ export default function ResolutionPage() {
 
           {error && <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
-          {r.status === "DRAFT" && (
+          {r.status === "DRAFT" && officer && (
             <button className="btn" disabled={busy} onClick={() => act(() => api.openResolution(orgId, r.id))}>{t("openVoting")}</button>
           )}
 
           {r.status === "ACTIVE" && (
             <div className="card space-y-3">
               <h2 className="text-sm font-semibold text-slate-700">{t("castVote")}</h2>
-              {state.data!.holders.length > 0 && (
+              {officer && state.data!.holders.length > 0 && (
                 <div>
                   <label className="label" htmlFor="behalf">{t("recordFor")}</label>
                   <select id="behalf" className="input max-w-sm" value={onBehalf} onChange={(e) => setOnBehalf(e.target.value)}>
@@ -109,9 +113,11 @@ export default function ResolutionPage() {
                 ))}
               </div>
               <p className="text-xs text-slate-500">{t("voteFinal")}</p>
-              <button className="btn-ghost" disabled={busy} onClick={() => act(() => api.closeResolution(orgId, r.id))}>{t("closeVoting")}</button>
+              {officer && <button className="btn-ghost" disabled={busy} onClick={() => act(() => api.closeResolution(orgId, r.id))}>{t("closeVoting")}</button>}
             </div>
           )}
+
+          {me && me.role !== "LEGAL_AUDITOR" && <SignaturesPanel orgId={orgId} type="RESOLUTION" docRef={r.id} />}
 
           <section>
             <h2 className="mb-2 text-sm font-semibold text-slate-700">{t("votesCast")}</h2>

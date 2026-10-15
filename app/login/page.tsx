@@ -21,7 +21,7 @@ export default function LoginPage() {
   async function finish(r: AuthResult, orgId?: string) {
     if (r.status === "ORG_SELECTION_REQUIRED") return setOrgs(r.organizations);
     if (r.status === "MFA_REQUIRED") return setMfaToken(r.mfaToken);
-    saveSession(r.accessToken!, r.organizationId ?? orgId!);
+    saveSession(r.accessToken!, r.organizationId ?? orgId!, r.refreshToken);
     router.push(r.mfaEnrollmentRequired ? "/security" : "/");
   }
 

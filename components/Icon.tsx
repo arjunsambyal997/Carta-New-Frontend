@@ -27,6 +27,8 @@ const PATHS: Record<string, string> = {
   transfer: "M4 8h14l-3-3M20 16H6l3 3",
   rounds: "M3 20h18M6 20V12M11 20V6M16 20V9M21 20V3",
   options: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2",
+  portal: "M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6",
+  sign: "M4 20h16M6 16l9-9 3 3-9 9H6z",
   check: "M5 12l5 5 9-10",
 };
 

@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { Fragment, useState } from "react";
+import { SignaturesPanel } from "@/components/SignaturesPanel";
+import { useMe } from "@/components/useMe";
 import { DownloadButton } from "@/components/DownloadButton";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -10,6 +13,9 @@ import { useI18n } from "@/lib/i18n";
 export default function CertificatesPage() {
   const { t, num, name } = useI18n();
   const state = useRegister((o) => api.certificates(o));
+  const me = useMe();
+  const [signing, setSigning] = useState<string | null>(null);
+  const canSign = !!me && me.role !== "LEGAL_AUDITOR";
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -33,7 +39,8 @@ export default function CertificatesPage() {
             </thead>
             <tbody>
               {state.data.map((c) => (
-                <tr key={c.id} className="border-b border-slate-100 last:border-0">
+                <Fragment key={c.id}>
+                <tr className="border-b border-slate-100 last:border-0">
                   <td className="py-2 font-mono" dir="ltr">{c.certificateNo}</td>
                   <td>{name(c.shareholderNameEn, c.shareholderNameAr)}</td>
                   <td>{c.shareClassName}</td>
@@ -42,8 +49,17 @@ export default function CertificatesPage() {
                   <td>{c.status}</td>
                   <td className="text-end">
                     <DownloadButton label={t("downloadPdf")} run={() => api.certificatePdf(state.orgId!, c.certificateNo)} />
+                    {canSign && c.status === "ISSUED" && (
+                      <button className="btn-ghost ms-1" onClick={() => setSigning(signing === c.certificateNo ? null : c.certificateNo)}>{t("sigTitle")}</button>
+                    )}
                   </td>
                 </tr>
+                {signing === c.certificateNo && (
+                  <tr className="border-b border-slate-100">
+                    <td colSpan={7} className="py-3"><SignaturesPanel orgId={state.orgId!} type="CERTIFICATE" docRef={c.certificateNo} /></td>
+                  </tr>
+                )}
+                </Fragment>
               ))}
             </tbody>
           </table>

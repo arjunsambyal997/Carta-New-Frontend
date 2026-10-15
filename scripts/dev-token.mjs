@@ -15,6 +15,7 @@ const head = b64({ alg: "HS256" });
 const shareholder = process.argv.find((a) => a.startsWith("--shareholder="))?.split("=")[1];
 const body = b64({
   sub: "dev@equigcc.local",
+  typ: "access",
   roles: [role],
   org_ids: [orgId],
   ...(shareholder ? { shareholder_id: shareholder } : {}),

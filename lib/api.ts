@@ -23,6 +23,11 @@ import type {
   InviteResult,
   OwnershipLink,
   UboReport,
+  SuccessionRule,
+  SuccessionRuleInput,
+  Conversion,
+  VaultDocument,
+  VaultCategory,
 } from "./types";
 
 const TOKEN_KEY = "equigcc.token";
@@ -59,7 +64,7 @@ export function clearSession() {
 async function request<T>(path: string, init: RequestInit = {}, auth = true): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
-  if (init.body) headers.set("Content-Type", "application/json");
+  if (typeof init.body === "string") headers.set("Content-Type", "application/json");
   if (auth) {
     const s = getSession();
     if (!s) throw new ApiError(401, "Not connected");
@@ -143,6 +148,27 @@ export const api = {
   ubo: (orgId: string, threshold: number) => request<UboReport>(`${org(orgId)}/ubo?threshold=${encodeURIComponent(threshold)}`),
   uboExport: (orgId: string, format: "csv" | "pdf", threshold: number) =>
     downloadFile(`${org(orgId)}/ubo/export?format=${format}&threshold=${encodeURIComponent(threshold)}`, `ubo-register.${format}`),
+  successionRules: (orgId: string) => request<SuccessionRule[]>(`${org(orgId)}/succession-rules`),
+  createSuccessionRule: (orgId: string, body: SuccessionRuleInput) =>
+    request<SuccessionRule>(`${org(orgId)}/succession-rules`, { method: "POST", body: JSON.stringify(body) }),
+  previewSuccession: (orgId: string, id: string) => request<Conversion[]>(`${org(orgId)}/succession-rules/${id}/preview`),
+  executeSuccession: (orgId: string, id: string, resolutionId?: string) =>
+    request<Certificate[]>(`${org(orgId)}/succession-rules/${id}/execute`, {
+      method: "POST",
+      body: JSON.stringify({ resolutionId: resolutionId || undefined }),
+    }),
+  cancelSuccession: (orgId: string, id: string) =>
+    request<SuccessionRule>(`${org(orgId)}/succession-rules/${id}/cancel`, { method: "POST" }),
+  vault: (orgId: string) => request<VaultDocument[]>(`${org(orgId)}/vault`),
+  vaultUpload: (orgId: string, title: string, category: VaultCategory, file: File) => {
+    const form = new FormData();
+    form.set("title", title);
+    form.set("category", category);
+    form.set("file", file);
+    return request<VaultDocument>(`${org(orgId)}/vault`, { method: "POST", body: form });
+  },
+  vaultDownload: (orgId: string, doc: { id: string; fileName: string }) =>
+    downloadFile(`${org(orgId)}/vault/${doc.id}/content`, doc.fileName),
   audit: (orgId: string) => request<AuditTrail>(`${org(orgId)}/audit`),
   certificates: (orgId: string) => request<Certificate[]>(`${org(orgId)}/certificates`),
   certificatePdf: (orgId: string, certNo: string) =>

@@ -14,6 +14,8 @@ const NAV: { href: string; key: Key }[] = [
   { href: "/waterfall", key: "navWaterfall" },
   { href: "/resolutions", key: "navResolutions" },
   { href: "/certificates", key: "navCertificates" },
+  { href: "/succession", key: "navSuccession" },
+  { href: "/vault", key: "navVault" },
   { href: "/audit", key: "navAudit" },
   { href: "/setup", key: "navSetup" },
   { href: "/members", key: "navMembers" },

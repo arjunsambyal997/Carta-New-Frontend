@@ -11,9 +11,9 @@ import { useI18n, type Key } from "@/lib/i18n";
 import type { VoteChoice } from "@/lib/types";
 
 const CHOICES: { v: VoteChoice; key: Key; cls: string }[] = [
-  { v: "FOR", key: "voteFor", cls: "bg-emerald-700 hover:bg-emerald-800" },
-  { v: "AGAINST", key: "voteAgainst", cls: "bg-red-600 hover:bg-red-700" },
-  { v: "ABSTAIN", key: "voteAbstain", cls: "bg-slate-600 hover:bg-slate-700" },
+  { v: "FOR", key: "voteFor", cls: "bg-[rgb(var(--btn))] hover:bg-[rgb(var(--btn-hover))]" },
+  { v: "AGAINST", key: "voteAgainst", cls: "bg-[rgb(200_38_38)] hover:bg-[rgb(170_30_30)]" },
+  { v: "ABSTAIN", key: "voteAbstain", cls: "bg-[rgb(84_94_110)] hover:bg-[rgb(64_74_90)]" },
 ];
 
 export default function ResolutionPage() {

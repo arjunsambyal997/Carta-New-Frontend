@@ -2,64 +2,201 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
-import { clearSession } from "@/lib/api";
+import { useEffect, useState, type ReactNode } from "react";
+import { api, clearSession, getSession } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
+import { Icon, type IconName } from "./Icon";
 import { useSession } from "./useSession";
 
-const NAV: { href: string; key: Key }[] = [
-  { href: "/", key: "navCapTable" },
-  { href: "/ownership", key: "navOwnership" },
-  { href: "/ubo", key: "navUbo" },
-  { href: "/waterfall", key: "navWaterfall" },
-  { href: "/resolutions", key: "navResolutions" },
-  { href: "/certificates", key: "navCertificates" },
-  { href: "/succession", key: "navSuccession" },
-  { href: "/vault", key: "navVault" },
-  { href: "/audit", key: "navAudit" },
-  { href: "/setup", key: "navSetup" },
-  { href: "/members", key: "navMembers" },
-  { href: "/security", key: "navSecurity" },
-  { href: "/password", key: "navPassword" },
+const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
+  {
+    label: "groupOverview",
+    items: [
+      { href: "/", key: "navDashboard", icon: "dashboard" },
+      { href: "/cap-table", key: "navCapTable", icon: "captable" },
+      { href: "/ownership", key: "navOwnership", icon: "ownership" },
+      { href: "/waterfall", key: "navWaterfall", icon: "waterfall" },
+    ],
+  },
+  {
+    label: "groupGovernance",
+    items: [
+      { href: "/resolutions", key: "navResolutions", icon: "resolutions" },
+      { href: "/succession", key: "navSuccession", icon: "succession" },
+    ],
+  },
+  {
+    label: "groupCompliance",
+    items: [
+      { href: "/ubo", key: "navUbo", icon: "ubo" },
+      { href: "/certificates", key: "navCertificates", icon: "certificates" },
+      { href: "/vault", key: "navVault", icon: "vault" },
+      { href: "/audit", key: "navAudit", icon: "audit" },
+    ],
+  },
+  {
+    label: "groupAdmin",
+    items: [
+      { href: "/setup", key: "navSetup", icon: "setup" },
+      { href: "/members", key: "navMembers", icon: "members" },
+      { href: "/security", key: "navSecurity", icon: "security" },
+      { href: "/password", key: "navPassword", icon: "password" },
+    ],
+  },
 ];
 
+/** Pages that are reachable signed out get a bare, centred layout without the sidebar. */
+const BARE = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify"];
+
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+  }, []);
+  const toggle = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("equigcc.theme", next);
+    } catch {
+      /* storage unavailable */
+    }
+    setTheme(next);
+  };
+  return { theme, toggle };
+}
+
+function Brand() {
+  const { t } = useI18n();
+  return (
+    <Link href="/" className="flex items-center gap-2.5 font-semibold tracking-tight text-slate-900">
+      <span className="grid size-8 place-items-center rounded-lg text-sm font-bold text-white shadow-sm" style={{ background: "rgb(var(--btn))" }}>
+        E
+      </span>
+      <span className="text-[17px]">{t("appName")}</span>
+    </Link>
+  );
+}
+
+function Toggles() {
+  const { t, toggle: toggleLang } = useI18n();
+  const { theme, toggle } = useTheme();
+  return (
+    <>
+      <button type="button" onClick={toggle} className="btn-ghost size-9 !p-0" aria-label={t("themeToggle")} title={t("themeToggle")}>
+        <Icon name={theme === "dark" ? "sun" : "moon"} />
+      </button>
+      <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
+        <Icon name="globe" size={16} />
+        {t("switchLang")}
+      </button>
+    </>
+  );
+}
+
 export function Shell({ children }: { children: ReactNode }) {
-  const { t, toggle } = useI18n();
+  const { t, name } = useI18n();
   const path = usePathname();
   const session = useSession();
+  const [open, setOpen] = useState(false);
+  const [org, setOrg] = useState<string | null>(null);
+  const [who, setWho] = useState<{ email: string; role: string } | null>(null);
 
-  return (
-    <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-          <span className="text-lg font-semibold text-emerald-800">{t("appName")}</span>
-          <nav className="flex flex-1 flex-wrap gap-1 text-sm">
-            {NAV.map((n) => {
+  useEffect(() => setOpen(false), [path]);
+  useEffect(() => {
+    const s = getSession();
+    if (!s) return;
+    api.organization(s.orgId).then((o) => setOrg(name(o.legalNameEn, o.legalNameAr))).catch(() => undefined);
+    api.me().then((m) => setWho({ email: m.email, role: m.role })).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, t]);
+
+  if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
+    return (
+      <div className="flex min-h-screen flex-col" style={{ backgroundImage: "radial-gradient(60rem 28rem at 50% -8rem, rgb(var(--brand-100) / .65), transparent)" }}>
+        <header className="flex items-center justify-between px-4 py-4 sm:px-8">
+          <Brand />
+          <div className="flex items-center gap-2">
+            <Toggles />
+          </div>
+        </header>
+        <main className="page mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-16 pt-6 [&>*]:w-full [&>div:not([class*=max-w])]:max-w-md">{children}</main>
+      </div>
+    );
+  }
+
+  const nav = (
+    <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4" aria-label="Main">
+      {GROUPS.map((g) => (
+        <div key={g.label}>
+          <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{t(g.label)}</p>
+          <ul className="space-y-0.5">
+            {g.items.map((n) => {
               const active = n.href === "/" ? path === "/" : path.startsWith(n.href);
               return (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className={`rounded-md px-3 py-1.5 ${active ? "bg-emerald-50 font-medium text-emerald-800" : "text-slate-600 hover:bg-slate-100"}`}
-                >
-                  {t(n.key)}
-                </Link>
+                <li key={n.href}>
+                  <Link
+                    href={n.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active ? "bg-emerald-50 font-medium text-emerald-800" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon name={n.icon} className={active ? "text-emerald-700" : "text-slate-400"} />
+                    {t(n.key)}
+                  </Link>
+                </li>
               );
             })}
-          </nav>
-          {session ? (
-            <button type="button" className="btn-ghost" onClick={() => { clearSession(); window.location.assign("/login"); }}>
-              {t("signOut")}
-            </button>
-          ) : (
-            session === null && <Link href="/login" className="btn-ghost">{t("signIn")}</Link>
-          )}
-          <button type="button" onClick={toggle} className="btn-ghost" aria-label="Toggle language">
-            {t("switchLang")}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+
+  return (
+    <div className="min-h-screen lg:ps-64">
+      {/* sidebar: fixed on desktop, drawer on small screens */}
+      <aside
+        className={`fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e border-slate-200 bg-surface transition-transform duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
+        }`}
+      >
+        <div className="flex h-16 items-center justify-between px-5">
+          <Brand />
+          <button type="button" className="btn-ghost size-8 !p-0 lg:hidden" onClick={() => setOpen(false)} aria-label={t("menuClose")}>
+            <Icon name="close" size={16} />
           </button>
         </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
+        {nav}
+        {who && (
+          <div className="border-t border-slate-200 p-4">
+            <p className="text-[11px] uppercase tracking-wide text-slate-400">{t("signedInAs")}</p>
+            <p className="truncate text-sm font-medium text-slate-800" dir="ltr">{who.email}</p>
+            <p className="text-xs text-slate-500">{t(`role${who.role}` as Key)}</p>
+          </div>
+        )}
+      </aside>
+      {open && <button type="button" aria-label={t("menuClose")} className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-[1px] lg:hidden" onClick={() => setOpen(false)} />}
+
+      <div className="flex min-h-screen flex-col">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-surface/85 px-4 backdrop-blur sm:px-8">
+          <button type="button" className="btn-ghost size-9 !p-0 lg:hidden" onClick={() => setOpen(true)} aria-label={t("menuOpen")}>
+            <Icon name="menu" />
+          </button>
+          <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
+          <Toggles />
+          {session ? (
+            <button type="button" className="btn-ghost h-9" onClick={() => { clearSession(); window.location.assign("/login"); }}>
+              <Icon name="logout" size={16} />
+              <span className="hidden sm:inline">{t("signOut")}</span>
+            </button>
+          ) : (
+            session === null && <Link href="/login" className="btn h-9">{t("signIn")}</Link>
+          )}
+        </header>
+        <main className="page mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+      </div>
     </div>
   );
 }

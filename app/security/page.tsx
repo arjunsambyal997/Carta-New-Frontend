@@ -13,8 +13,10 @@ export default function SecurityPage() {
   const [code, setCode] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    setReady(true);
     if (!getSession()) return;
     api.mfaEnroll().then(setEnr).catch((e: Error) => setError(e.message));
   }, []);
@@ -31,6 +33,7 @@ export default function SecurityPage() {
     }
   }
 
+  if (!ready) return null;
   if (!getSession() && !enr)
     return <Link href="/login" className="btn">{t("signIn")}</Link>;
 

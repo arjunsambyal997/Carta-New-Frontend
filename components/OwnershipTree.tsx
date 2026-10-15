@@ -42,11 +42,11 @@ export function OwnershipTree({ table, org, links = [] }: { table: CapTable; org
   return (
     <div className="card overflow-x-auto">
       <svg viewBox={`0 0 ${contentW} ${height}`} className="w-full min-w-[640px]" role="img" aria-label={t("navOwnership")}>
-        <rect x={rootX} y={ROOT_Y} width={rootW} height={ROOT_H} rx={8} className="fill-emerald-800" />
+        <rect x={rootX} y={ROOT_Y} width={rootW} height={ROOT_H} rx={8} className="fill-[rgb(var(--btn))]" />
         <text x={rootX + rootW / 2} y={ROOT_Y + 23} textAnchor="middle" className="fill-white text-[15px] font-semibold">
           {name(org.legalNameEn, org.legalNameAr)}
         </text>
-        <text x={rootX + rootW / 2} y={ROOT_Y + 42} textAnchor="middle" className="fill-emerald-100 text-[11px]">
+        <text x={rootX + rootW / 2} y={ROOT_Y + 42} textAnchor="middle" className="fill-white/80 text-[11px]">
           {org.jurisdiction.replace("_", " ")} · {org.commercialLicenseNo}
         </text>
 
@@ -61,7 +61,7 @@ export function OwnershipTree({ table, org, links = [] }: { table: CapTable; org
                 className="fill-none stroke-slate-300"
                 strokeWidth={Math.max(1.5, pct / 12)}
               />
-              <rect x={nx} y={LEAF_Y} width={w} height={LEAF_H} rx={8} className="fill-white stroke-emerald-600" strokeWidth={1.5} />
+              <rect x={nx} y={LEAF_Y} width={w} height={LEAF_H} rx={8} className="fill-surface stroke-emerald-600" strokeWidth={1.5} />
               <text x={cx} y={LEAF_Y + 24} textAnchor="middle" className="fill-slate-800 text-[12px] font-medium">
                 {truncate(name(h.nameEn, h.nameAr), Math.floor(w / 7))}
               </text>

@@ -11,7 +11,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        <script
+          // Applies the saved (or OS) theme before first paint so there is no flash.
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("equigcc.theme");if(!t)t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       <body>
         <I18nProvider>
           <Shell>{children}</Shell>

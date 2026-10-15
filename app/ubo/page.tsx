@@ -95,7 +95,7 @@ function PeopleTable({ people, ubo = false }: { people: UboPerson[]; ubo?: boole
   if (people.length === 0) return <p className="card text-sm text-slate-500">{t("none")}</p>;
   return (
     <div className="card overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full min-w-[760px] text-sm">
         <thead>
           <tr className="border-b border-slate-200 text-xs uppercase text-slate-500">
             <th className="py-2 text-start">{t("fullNameEn")}</th>

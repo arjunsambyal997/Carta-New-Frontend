@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import type { Waterfall } from "@/lib/types";
 
-const COLORS = ["bg-emerald-700", "bg-sky-600", "bg-amber-500", "bg-violet-600", "bg-rose-500", "bg-slate-500"];
+const COLORS = ["bg-[rgb(var(--series-1))]", "bg-[rgb(var(--series-2))]", "bg-[rgb(var(--series-3))]", "bg-[rgb(var(--series-4))]", "bg-[rgb(var(--series-5))]", "bg-slate-500"];
 
 export default function WaterfallPage() {
   const { t, num, name } = useI18n();

@@ -13,7 +13,7 @@ const BADGE: Record<ResolutionStatus, string> = {
 export function StatusBadge({ status }: { status: ResolutionStatus }) {
   const { t } = useI18n();
   return (
-    <span className={`rounded px-2 py-0.5 text-xs font-medium ${BADGE[status]}`}>
+    <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${BADGE[status]}`}>
       {t(`status${status}` as Key)}
     </span>
   );

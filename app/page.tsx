@@ -9,13 +9,15 @@ import { useI18n } from "@/lib/i18n";
 export default function DashboardPage() {
   const { t, name } = useI18n();
   const state = useRegister(async (orgId) => {
-    const [org, table, resolutions, certificates] = await Promise.all([
+    const [org, table, resolutions, certificates, classes, holders] = await Promise.all([
       api.organization(orgId),
       api.capTable(orgId),
       api.resolutions(orgId).catch(() => null),
       api.certificates(orgId).catch(() => null),
+      api.shareClasses(orgId).catch(() => null),
+      api.shareholders(orgId).catch(() => null),
     ]);
-    return { org, table, resolutions, certificates };
+    return { org, table, resolutions, certificates, setup: { classes: classes?.length ?? 0, holders: holders?.length ?? 0 } };
   });
 
   return (
@@ -25,7 +27,7 @@ export default function DashboardPage() {
         <h1>{state.data ? name(state.data.org.legalNameEn, state.data.org.legalNameAr) : t("navDashboard")}</h1>
       </div>
       <Status state={state} />
-      {state.data && <Dashboard table={state.data.table} resolutions={state.data.resolutions} certificates={state.data.certificates} />}
+      {state.data && <Dashboard table={state.data.table} resolutions={state.data.resolutions} certificates={state.data.certificates} setup={state.data.setup} />}
     </div>
   );
 }

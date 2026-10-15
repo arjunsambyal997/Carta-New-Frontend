@@ -22,6 +22,10 @@ const PATHS: Record<string, string> = {
   globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18",
   logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
   arrow: "M5 12h14M13 6l6 6-6 6",
+  search: "M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-5-5",
+  import: "M12 3v12M7 10l5 5 5-5M4 19h16",
+  transfer: "M4 8h14l-3-3M20 16H6l3 3",
+  check: "M5 12l5 5 9-10",
 };
 
 export type IconName = keyof typeof PATHS;

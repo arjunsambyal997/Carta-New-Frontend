@@ -177,11 +177,51 @@ function Certificates({ list }: { list: Certificate[] | null }) {
   );
 }
 
-export function Dashboard({ table, resolutions, certificates }: { table: CapTable; resolutions: Resolution[] | null; certificates: Certificate[] | null }) {
+export interface Setup {
+  classes: number;
+  holders: number;
+}
+
+/** Guided first-run checklist; disappears once the register has classes, holders, certificates and a resolution. */
+function Onboarding({ setup, resolutions, certificates }: { setup: Setup; resolutions: Resolution[] | null; certificates: Certificate[] | null }) {
+  const { t } = useI18n();
+  const steps = [
+    { done: setup.classes > 0, href: "/setup", title: t("obClass"), hint: t("obClassHint") },
+    { done: setup.holders > 0, href: "/import", title: t("obHolders"), hint: t("obHoldersHint") },
+    { done: (certificates ?? []).length > 0, href: "/certificates/new", title: t("obCert"), hint: t("obCertHint") },
+    { done: (resolutions ?? []).length > 0, href: "/resolutions", title: t("obRes"), hint: t("obResHint") },
+    { done: false, href: "/ubo", title: t("obUbo"), hint: t("obUboHint"), optional: true },
+  ];
+  const required = steps.filter((x) => !x.optional);
+  if (required.every((x) => x.done)) return null;
+  const doneCount = required.filter((x) => x.done).length;
+  return (
+    <Panel title={t("obTitle")} hint={`${doneCount} / ${required.length}`}>
+      <ol className="space-y-2">
+        {steps.map((st) => (
+          <li key={st.href}>
+            <Link href={st.href} className="flex items-start gap-3 rounded-lg p-2 hover:bg-slate-50">
+              <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${st.done ? "border-emerald-600 bg-emerald-600 text-white" : "border-slate-300"}`}>
+                {st.done && <Icon name="check" size={12} />}
+              </span>
+              <span className="min-w-0">
+                <span className={`block text-sm font-medium ${st.done ? "text-slate-400 line-through" : ""}`}>{st.title}</span>
+                <span className="block text-xs text-slate-500">{st.hint}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  );
+}
+
+export function Dashboard({ table, resolutions, certificates, setup }: { table: CapTable; resolutions: Resolution[] | null; certificates: Certificate[] | null; setup: Setup }) {
   const { t, num } = useI18n();
   const open = (resolutions ?? []).filter((r) => r.status === "ACTIVE").length;
   return (
     <div className="space-y-5">
+      <Onboarding setup={setup} resolutions={resolutions} certificates={certificates} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi delay={0} label={t("issuedShares")} value={num(table.totalIssuedShares)} sub={`${t("kpiFdSub")} ${num(table.totalFullyDilutedShares)}`} />
         <Kpi delay={40} label={t("votingPower")} value={num(table.totalVotingPower)} sub={`${t("kpiTreasurySub")} ${num(table.treasuryShares)}`} />

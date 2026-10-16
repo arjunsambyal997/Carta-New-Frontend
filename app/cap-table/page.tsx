@@ -1,6 +1,7 @@
 "use client";
 
 import { CapTableGrid } from "@/components/CapTableGrid";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -12,7 +13,7 @@ export default function CapTablePage() {
 
   return (
     <div className="space-y-5">
-      <h1>{t("navCapTable")}</h1>
+      <PageHeader title={t("navCapTable")} subtitle={t("subCapTable")} />
       <Status state={state} />
       {state.data && <CapTableGrid table={state.data} />}
     </div>

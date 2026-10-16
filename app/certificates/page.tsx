@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { DownloadButton } from "@/components/DownloadButton";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -12,10 +13,7 @@ export default function CertificatesPage() {
   const state = useRegister((o) => api.certificates(o));
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t("navCertificates")}</h1>
-        <Link href="/certificates/new" className="btn">{t("navIssue")}</Link>
-      </div>
+      <PageHeader title={t("navCertificates")} subtitle={t("subCertificates")} action={<Link href="/certificates/new" className="btn">{t("navIssue")}</Link>} />
       <Status state={state} />
       {state.data && state.orgId && (
         <div className="card overflow-x-auto">

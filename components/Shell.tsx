@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { api, clearSession, getSession } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
+import { Avatar } from "./Avatar";
 import { Icon, type IconName } from "./Icon";
 import { useSession } from "./useSession";
 
@@ -170,10 +171,12 @@ export function Shell({ children }: { children: ReactNode }) {
         </div>
         {nav}
         {who && (
-          <div className="border-t border-slate-200 p-4">
-            <p className="text-[11px] uppercase tracking-wide text-slate-400">{t("signedInAs")}</p>
-            <p className="truncate text-sm font-medium text-slate-800" dir="ltr">{who.email}</p>
-            <p className="text-xs text-slate-500">{t(`role${who.role}` as Key)}</p>
+          <div className="flex items-center gap-3 border-t border-slate-200 p-4" title={`${t("signedInAs")} ${who.email}`}>
+            <Avatar name={who.email} size={36} />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-slate-800" dir="ltr">{who.email}</p>
+              <p className="text-xs text-slate-500">{t(`role${who.role}` as Key)}</p>
+            </div>
           </div>
         )}
       </aside>

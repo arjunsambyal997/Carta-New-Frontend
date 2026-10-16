@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { PageHeader } from "@/components/PageHeader";
 import { useI18n } from "@/lib/i18n";
 
 export default function ChangePasswordPage() {
@@ -28,7 +29,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="max-w-sm space-y-4">
-      <h1 className="text-2xl font-semibold">{t("changeTitle")}</h1>
+      <PageHeader title={t("changeTitle")} />
       <form className="card space-y-4" onSubmit={submit}>
         <div><label className="label" htmlFor="cp">{t("currentPassword")}</label><input id="cp" type="password" className="input" dir="ltr" required autoComplete="current-password" value={cur} onChange={(e) => setCur(e.target.value)} /></div>
         <div><label className="label" htmlFor="n1">{t("newPassword")}</label><input id="n1" type="password" minLength={12} className="input" dir="ltr" required autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} /><p className="mt-1 text-xs text-slate-500">{t("passwordHint")}</p></div>

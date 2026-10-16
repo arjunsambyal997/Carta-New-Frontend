@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type Key } from "@/lib/i18n";
 import type { CapTable, Certificate, Resolution } from "@/lib/types";
+import { Avatar } from "./Avatar";
 import { Icon } from "./Icon";
 import { StatusBadge } from "./ResolutionBits";
 
@@ -161,9 +162,12 @@ function Certificates({ list }: { list: Certificate[] | null }) {
         <ul className="divide-y divide-slate-100">
           {shown.map((c) => (
             <li key={c.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-              <span className="min-w-0">
-                <span className="block truncate font-medium">{name(c.shareholderNameEn, c.shareholderNameAr)}</span>
-                <span className="text-xs text-slate-500" dir="ltr">{c.certificateNo}</span>
+              <span className="flex min-w-0 items-center gap-3">
+                <Avatar name={c.shareholderNameEn} />
+                <span className="min-w-0">
+                  <span className="block truncate font-medium">{name(c.shareholderNameEn, c.shareholderNameAr)}</span>
+                  <span className="text-xs text-slate-500" dir="ltr">{c.certificateNo}</span>
+                </span>
               </span>
               <span className="shrink-0 text-end tabular-nums">
                 <span className="block">{num(c.quantity)}</span>
@@ -177,11 +181,62 @@ function Certificates({ list }: { list: Certificate[] | null }) {
   );
 }
 
-export function Dashboard({ table, resolutions, certificates }: { table: CapTable; resolutions: Resolution[] | null; certificates: Certificate[] | null }) {
+type Progress = { classes: number | null; holders: number | null; members: number | null };
+
+/** First-run checklist. Steps whose data the user cannot read are left out; the card disappears once every step is done. */
+function GettingStarted({ progress, certificates }: { progress: Progress; certificates: number | null }) {
+  const { t } = useI18n();
+  const steps = [
+    { n: progress.classes, done: (progress.classes ?? 0) > 0, key: "gsClass", hint: "gsClassHint", href: "/setup" },
+    { n: progress.holders, done: (progress.holders ?? 0) > 0, key: "gsHolder", hint: "gsHolderHint", href: "/setup" },
+    { n: certificates, done: (certificates ?? 0) > 0, key: "gsCert", hint: "gsCertHint", href: "/certificates/new" },
+    { n: progress.members, done: (progress.members ?? 0) > 1, key: "gsInvite", hint: "gsInviteHint", href: "/members" },
+  ].filter((s) => s.n !== null) as { done: boolean; key: Key; hint: Key; href: string }[];
+  const done = steps.filter((s) => s.done).length;
+  if (steps.length === 0 || done === steps.length) return null;
+  const next = steps.findIndex((s) => !s.done);
+  return (
+    <section className="card animate-rise overflow-hidden !p-0">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-5 pb-3 pt-5">
+        <div>
+          <h2 className="text-base font-semibold">{t("gsTitle")}</h2>
+          <p className="mt-0.5 text-sm text-slate-500">{t("gsHint")}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-medium tabular-nums text-slate-500">
+            {done}/{steps.length} {t("gsDone")}
+          </span>
+          <div className="h-1.5 w-28 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full bg-emerald-600 transition-[width] duration-500" style={{ width: `${(done / steps.length) * 100}%` }} />
+          </div>
+        </div>
+      </header>
+      {/* 1px gaps over a tinted background draw the dividers at every breakpoint */}
+      <ol className="grid gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map((s, i) => (
+          <li key={s.key} className="bg-surface">
+            <Link href={s.href} className={`group flex h-full items-start gap-3 p-4 transition-colors hover:bg-slate-50 ${i === next ? "bg-emerald-50/40" : ""}`}>
+              <span className={`grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${s.done ? "bg-emerald-600 text-white" : i === next ? "border-2 border-emerald-600 text-emerald-700" : "border border-slate-300 text-slate-400"}`}>
+                {s.done ? <Icon name="check" size={14} strokeWidth={2.6} /> : i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className={`block text-sm font-medium ${s.done ? "text-slate-400 line-through decoration-slate-300" : "text-slate-800 group-hover:text-emerald-700"}`}>{t(s.key)}</span>
+                <span className="mt-0.5 block text-xs text-slate-500">{t(s.hint)}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+export function Dashboard({ table, resolutions, certificates, progress }: { table: CapTable; resolutions: Resolution[] | null; certificates: Certificate[] | null; progress: Progress }) {
   const { t, num } = useI18n();
   const open = (resolutions ?? []).filter((r) => r.status === "ACTIVE").length;
   return (
     <div className="space-y-5">
+      <GettingStarted progress={progress} certificates={certificates?.length ?? null} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi delay={0} label={t("issuedShares")} value={num(table.totalIssuedShares)} sub={`${t("kpiFdSub")} ${num(table.totalFullyDilutedShares)}`} />
         <Kpi delay={40} label={t("votingPower")} value={num(table.totalVotingPower)} sub={`${t("kpiTreasurySub")} ${num(table.treasuryShares)}`} />

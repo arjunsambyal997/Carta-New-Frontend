@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Avatar, RoleChip } from "@/components/Avatar";
+import { useFeedback } from "@/components/Feedback";
+import { Icon } from "@/components/Icon";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -16,39 +20,68 @@ export default function MembersPage() {
   const [f, setF] = useState({ email: "", displayName: "", role: "BOARD_MEMBER" as Role, shareholderId: "" });
   const [temp, setTemp] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const { toast } = useFeedback();
+
+  async function copy(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(t("copied"));
+    } catch (e) {
+      toast((e as Error).message, "error");
+    }
+  }
 
   async function invite(e: React.FormEvent) {
     e.preventDefault();
     if (!state.orgId) return;
-    setError(null); setTemp(null);
+    setError(null); setTemp(null); setBusy(true);
     try {
       const r = await api.invite(state.orgId, { email: f.email, displayName: f.displayName, role: f.role, shareholderId: f.shareholderId || undefined });
       setTemp(r.temporaryPassword);
       setF({ ...f, email: "", displayName: "" });
       setRefresh((n) => n + 1);
+      toast(t("toastInvited"));
     } catch (err) {
       setError((err as Error).message);
+    } finally {
+      setBusy(false);
     }
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">{t("membersTitle")}</h1>
+      <PageHeader title={t("membersTitle")} subtitle={t("subMembers")} />
       <Status state={state} />
       {state.data && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="card self-start"><table className="w-full text-sm">
-            <tbody>
-              {state.data.members.map((m) => (
-                <tr key={m.email} className="border-b border-slate-100 last:border-0">
-                  <td className="py-2"><div>{m.displayName}</div><div className="text-xs text-slate-500" dir="ltr">{m.email}</div></td>
-                  <td className="py-2 text-end text-slate-600">{t(`role${m.role}` as never)}{m.shareholderName ? ` · ${m.shareholderName}` : ""}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table></div>
+          <section className="card self-start !p-0">
+            <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+              <h2 className="text-sm font-semibold">{t("navMembers")}</h2>
+              <span className="chip bg-slate-100 tabular-nums text-slate-600">{state.data.members.length}</span>
+            </header>
+            {state.data.members.length === 0 ? (
+              <p className="py-10 text-center text-sm text-slate-400">{t("noMembers")}</p>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {state.data.members.map((m) => (
+                  <li key={m.email} className="flex items-center gap-3 px-4 py-3">
+                    <Avatar name={m.displayName || m.email} size={36} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-slate-800">{m.displayName}</p>
+                      <p className="truncate text-xs text-slate-500" dir="ltr">{m.email}</p>
+                    </div>
+                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <RoleChip role={m.role} label={t(`role${m.role}` as never)} />
+                      {m.shareholderName && <span className="max-w-[10rem] truncate text-xs text-slate-500">{m.shareholderName}</span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
           <form className="card space-y-3" onSubmit={invite}>
-            <h2 className="font-medium">{t("inviteMember")}</h2>
+            <h2 className="text-sm font-semibold">{t("inviteMember")}</h2>
             <div><label className="label" htmlFor="ie">{t("email")}</label><input id="ie" type="email" className="input" dir="ltr" required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
             <div><label className="label" htmlFor="idn">{t("displayName")}</label><input id="idn" className="input" required value={f.displayName} onChange={(e) => setF({ ...f, displayName: e.target.value })} /></div>
             <div><label className="label" htmlFor="ir">{t("role")}</label>
@@ -61,8 +94,19 @@ export default function MembersPage() {
                 </select></div>
             )}
             {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-            {temp && <div className="rounded bg-amber-50 p-3 text-sm"><span className="label">{t("tempPassword")}</span><code dir="ltr" className="break-all">{temp}</code></div>}
-            <button className="btn w-full">{t("inviteMember")}</button>
+            {temp && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm">
+                <span className="label !text-amber-800">{t("tempPassword")}</span>
+                <div className="flex items-center gap-2">
+                  <code dir="ltr" className="min-w-0 flex-1 break-all font-mono text-slate-900">{temp}</code>
+                  <button type="button" className="btn-ghost h-8 shrink-0" onClick={() => copy(temp)}>
+                    <Icon name="copy" size={15} />
+                    {t("copy")}
+                  </button>
+                </div>
+              </div>
+            )}
+            <button className="btn w-full" disabled={busy}>{busy ? t("creating") : t("inviteMember")}</button>
           </form>
         </div>
       )}

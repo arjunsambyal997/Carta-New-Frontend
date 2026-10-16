@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { StatusBadge, TallyBar } from "@/components/ResolutionBits";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -51,12 +52,11 @@ export default function ResolutionsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">{t("navResolutions")}</h1>
-        {state.connected && (
-          <button className="btn" onClick={() => setShowForm((s) => !s)}>{t("newResolution")}</button>
-        )}
-      </div>
+      <PageHeader
+        title={t("navResolutions")}
+        subtitle={t("subResolutions")}
+        action={state.connected && <button className="btn" onClick={() => setShowForm((s) => !s)}>{t("newResolution")}</button>}
+      />
       <Status state={state} />
 
       {showForm && (

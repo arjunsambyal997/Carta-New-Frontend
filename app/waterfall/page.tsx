@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -37,7 +38,7 @@ export default function WaterfallPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("navWaterfall")}</h1>
+      <PageHeader title={t("navWaterfall")} />
       <Status state={state} />
       {state.data && (
         <>

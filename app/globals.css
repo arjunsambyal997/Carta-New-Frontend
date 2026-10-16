@@ -39,9 +39,9 @@
 }
 
 @layer base {
-  html { @apply bg-slate-50 text-slate-900 antialiased; }
+  html { @apply bg-slate-50 font-sans text-slate-900 antialiased; font-feature-settings: "cv11", "ss01"; }
   body { @apply min-h-screen; }
-  :lang(ar) { font-family: "Noto Sans Arabic", "Segoe UI", system-ui, sans-serif; }
+  :lang(ar) { font-family: var(--font-arabic), var(--font-inter), "Segoe UI", system-ui, sans-serif; }
   main h1 { @apply text-2xl font-semibold tracking-tight text-slate-900; }
   main h2 { @apply text-slate-800; }
   ::selection { background: rgb(var(--brand-600) / 0.25); }

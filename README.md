@@ -3,6 +3,8 @@
 Next.js 15 (App Router) + TypeScript + Tailwind UI for the EquiGCC share register.
 It talks to [Carta-New-Backend](https://github.com/arjunsambyal997/Carta-New-Backend).
 
+**New here?** Read the step-by-step [user guide](docs/USER_GUIDE.md); a short version is on the in-app **Guide** page (`/guide`).
+
 ## Screens
 
 | Route | What it does |

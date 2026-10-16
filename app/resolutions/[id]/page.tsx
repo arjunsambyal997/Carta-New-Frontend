@@ -22,7 +22,7 @@ const CHOICES: { v: VoteChoice; key: Key; cls: string }[] = [
 ];
 
 export default function ResolutionPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const { id } = useParams<{ id: string }>();
   const [version, setVersion] = useState(0);
   const state = useRegister(async (orgId) => {
@@ -76,7 +76,7 @@ export default function ResolutionPage() {
           />
           {r.description && <p className="whitespace-pre-wrap text-slate-700">{r.description}</p>}
           <p className="text-sm text-slate-500">
-            {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} ·{" "}
+            {t("deadline")}: {date(r.votingDeadline, true)} ·{" "}
             {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
           </p>
 
@@ -139,7 +139,7 @@ ${t("voteFinal")}`, confirmLabel: t(c.key), danger: c.v === "AGAINST" },
                 <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-3">
                   <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmCloseTitle"), detail: t("confirmCloseDetail"), confirmLabel: t("closeVoting"), danger: true }, () => api.closeResolution(orgId, r.id), t("toastClosed"))}>{t("closeVoting")}</button>
                   <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmRemindTitle"), detail: t("confirmRemindDetail"), confirmLabel: t("remindVoters") }, () => api.remindResolution(orgId, r.id), (res) => `${t("toastReminded")} ${num(res.recipients)}`)}>{t("remindVoters")}</button>
-                  {r.lastReminderAt && <span className="text-xs text-slate-500">{t("lastReminder")}: {new Date(r.lastReminderAt).toLocaleString()}</span>}
+                  {r.lastReminderAt && <span className="text-xs text-slate-500">{t("lastReminder")}: {date(r.lastReminderAt, true)}</span>}
                 </div>
               )}
             </div>
@@ -168,7 +168,7 @@ ${t("voteFinal")}`, confirmLabel: t(c.key), danger: c.v === "AGAINST" },
                         <td className="px-3 py-2 text-start font-medium">{name(v.nameEn, v.nameAr)}</td>
                         <td className="px-3 py-2 text-start">{t(`vote${v.vote === "FOR" ? "For" : v.vote === "AGAINST" ? "Against" : "Abstain"}` as Key)}</td>
                         <td className="px-3 py-2 text-end">{money(v.weight)}</td>
-                        <td className="px-3 py-2 text-end">{new Date(v.castAt).toLocaleString()}</td>
+                        <td className="px-3 py-2 text-end">{date(v.castAt, true)}</td>
                       </tr>
                     ))}
                   </tbody>

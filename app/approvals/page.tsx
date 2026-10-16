@@ -11,7 +11,7 @@ import { useI18n, type Key } from "@/lib/i18n";
 import type { PendingChange } from "@/lib/types";
 
 export default function ApprovalsPage() {
-  const { t } = useI18n();
+  const { t, date } = useI18n();
   const { confirm, toast } = useFeedback();
   const me = useMe();
   const [version, setVersion] = useState(0);
@@ -47,7 +47,7 @@ export default function ApprovalsPage() {
   const pending = changes.filter((c) => c.pending);
   const decided = changes.filter((c) => !c.pending);
   const on = !!state.data?.org.requireApproval;
-  const when = (s: string | null) => (s ? new Date(s).toLocaleString() : "");
+  const when = (s: string | null) => (s ? date(s, true) : "");
 
   return (
     <div className="space-y-5">

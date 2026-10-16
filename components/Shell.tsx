@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { api, getSession, signOut } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { Avatar } from "./Avatar";
+import { CompanySwitcher } from "./CompanySwitcher";
 import { Icon, type IconName } from "./Icon";
 import { SearchPalette } from "./SearchPalette";
 import { useSession } from "./useSession";
@@ -101,12 +102,16 @@ function Brand() {
 }
 
 function Toggles() {
-  const { t, toggle: toggleLang } = useI18n();
+  const { t, toggle: toggleLang, hijri, toggleHijri } = useI18n();
   const { theme, toggle } = useTheme();
   return (
     <>
       <button type="button" onClick={toggle} className="btn-ghost size-9 !p-0" aria-label={t("themeToggle")} title={t("themeToggle")}>
         <Icon name={theme === "dark" ? "sun" : "moon"} />
+      </button>
+      <button type="button" onClick={toggleHijri} aria-pressed={hijri} title={t("hijriToggle")} className={`btn-ghost h-9 ${hijri ? "!border-emerald-600 !text-emerald-800" : ""}`}>
+        <span className="hidden sm:inline">{t("hijriShort")}</span>
+        <span className="sm:hidden" aria-label={t("hijriToggle")}>H</span>
       </button>
       <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
         <Icon name="globe" size={16} />
@@ -232,7 +237,9 @@ export function Shell({ children }: { children: ReactNode }) {
           <button type="button" className="btn-ghost size-9 !p-0 lg:hidden" onClick={() => setOpen(true)} aria-label={t("menuOpen")}>
             <Icon name="menu" />
           </button>
-          <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
+          <div className="min-w-0 flex-1">
+            {session ? <CompanySwitcher current={org} orgId={session.orgId} canAdd={!isHolder} /> : <p className="truncate text-sm font-medium text-slate-600">{org}</p>}
+          </div>
           {session && !isHolder && <SearchPalette />}
           <Toggles />
           {session ? (

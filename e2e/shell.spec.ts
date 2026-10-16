@@ -17,6 +17,26 @@ test("switching to Arabic flips the layout right to left, and the choice survive
   await expect(page.getByRole("row", { name: /فاطمة/ })).toContainText("1,000");
 });
 
+test("Hijri dates can be switched on: the Hijri date shows first with the Gregorian date beside it, and it is remembered", async ({ page }) => {
+  const { org } = await seedRegister();
+  await signIn(page, org);
+  await page.goto("/certificates");
+  const row = page.getByRole("row", { name: new RegExp(`${org.prefix}-000001`) });
+  await expect(row).toContainText("2025-01-01");
+  await expect(row).not.toContainText("1446");
+
+  await page.getByRole("button", { name: "Hijri" }).click();
+  await expect(row).toContainText("1446"); // 1 January 2025 falls in 1446 AH
+  await expect(row).toContainText("(2025-01-01)"); // the legal Gregorian date is never dropped
+  await page.reload();
+  await expect(row).toContainText("1446");
+
+  await page.getByRole("button", { name: "Toggle language" }).click();
+  await expect(page.getByRole("row", { name: new RegExp(`${org.prefix}-000001`) })).toContainText("هـ");
+  await page.getByRole("button", { name: "هجري" }).click();
+  await expect(page.getByRole("row", { name: new RegExp(`${org.prefix}-000001`) })).not.toContainText("هـ");
+});
+
 test("dark mode switches the whole interface and is remembered", async ({ page }) => {
   const { org } = await seedRegister();
   await signIn(page, org);

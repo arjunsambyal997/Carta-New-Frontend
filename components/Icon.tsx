@@ -33,6 +33,7 @@ const PATHS: Record<string, string> = {
   alert: "M12 3l10 18H2zM12 10v4M12 17.5v.01",
   guide: "M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 21V5M8 7h7M8 11h5",
   approvals: "M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M16 15l2 2 4-4",
+  chevron: "M6 9l6 6 6-6",
   copy: "M9 9h11v11H9zM5 15H4V4h11v1",
 };
 

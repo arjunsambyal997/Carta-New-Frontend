@@ -12,7 +12,7 @@ import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
 export default function CertificatesPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const state = useRegister((o) => api.certificates(o));
   const me = useMe();
   const [signing, setSigning] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export default function CertificatesPage() {
                   <td>{name(c.shareholderNameEn, c.shareholderNameAr)}</td>
                   <td>{c.shareClassName}</td>
                   <td className="text-end tabular-nums">{num(c.quantity)}</td>
-                  <td className="ps-4">{c.dateIssued}</td>
+                  <td className="ps-4">{date(c.dateIssued)}</td>
                   <td><span className={`chip ${c.status === "ISSUED" ? "bg-emerald-50 text-emerald-800" : c.status === "CANCELLED" ? "bg-red-50 text-red-800" : "bg-slate-100 text-slate-600"}`}>{c.status}</span></td>
                   <td className="text-end">
                     <DownloadButton label={t("downloadPdf")} run={() => api.certificatePdf(state.orgId!, c.certificateNo)} />

@@ -59,6 +59,8 @@ It asks for your email, password and a current authenticator code. It adds five 
 | **Legal auditor** | Reads the register, the audit trail and UBO reports. Changes nothing |
 | **Shareholder** | Only **My holdings**: their own shares, certificates (PDF), signatures and open votes |
 
+**More than one company.** One login can run several companies. Click the **company name** in the top bar to switch to another one without signing in again, or choose **Add a company** to start a new one (you become its founder). Each company has its own register, members, approvals and audit trail.
+
 Invite people on **Members**. A temporary password is shown **once**, so copy it and send it securely. Each person sets up their own two-factor code when they first sign in.
 
 ---
@@ -195,7 +197,7 @@ Shareholders sign in and land on **My holdings**:
 
 ## 9. Good to know
 
-- **EN / العربية** in the top bar switches language and flips the layout right-to-left. The moon/sun button switches to dark mode.
+- **EN / العربية** in the top bar switches language and flips the layout right-to-left. **Hijri** (هجري) next to it shows dates as the Hijri (Umm al-Qura) date followed by the Gregorian date in brackets, for example `30 Jumada II 1446 AH (2025-01-01)`; the Gregorian date is always kept because that is the legal date. The moon/sun button switches to dark mode.
 - Anything permanent (issuing, transfers, exercising, importing, voting, signing, executing rules) asks you to confirm first and shows the details.
 - An authenticator code works once. If signing says the code is invalid, wait for the next one.
 - Five wrong passwords lock an account for 15 minutes.

@@ -12,7 +12,7 @@ import { useI18n, type Key } from "@/lib/i18n";
 
 /** Everything one shareholder acquired and disposed of, in date order, with a running share count. */
 export default function HolderLedgerPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const { id } = useParams<{ id: string }>();
   const state = useRegister((orgId) => api.ledger(orgId, id));
   const l = state.data;
@@ -49,7 +49,7 @@ export default function HolderLedgerPage() {
                 )}
                 {l.events.map((e, i) => (
                   <tr key={i} className="border-t border-slate-100">
-                    <td className="px-3 py-2">{e.date}</td>
+                    <td className="px-3 py-2">{date(e.date)}</td>
                     <td className="px-3 py-2">
                       <span className={`rounded-full px-2 py-0.5 text-[11px] ${e.type === "ACQUIRED" ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"}`}>
                         {t(e.type === "ACQUIRED" ? "ledgerAcquired" : "ledgerDisposed")}

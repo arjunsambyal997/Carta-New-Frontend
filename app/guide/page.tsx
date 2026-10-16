@@ -16,6 +16,7 @@ const SECTIONS: { title: Key; steps: Step[] }[] = [
       { href: "/setup", title: "guideClassT", body: "guideClassB" },
       { href: "/import", title: "guideHoldersT", body: "guideHoldersB" },
       { href: "/certificates/new", title: "guideIssueT", body: "guideIssueB" },
+      { href: "/companies/new", title: "guideCompaniesT", body: "guideCompaniesB" },
       { href: "/members", title: "guideMembersT", body: "guideMembersB" },
     ],
   },

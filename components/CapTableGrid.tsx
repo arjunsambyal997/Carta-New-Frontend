@@ -22,13 +22,13 @@ function Bar({ pct }: { pct: number }) {
 }
 
 export function CapTableGrid({ table }: { table: CapTable }) {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const pct = (n: number) => `${num(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
   return (
     <div className="space-y-6">
       <p className="text-sm text-slate-500">
-        {t("asOf")} {new Date(table.asOf).toLocaleString()}
+        {t("asOf")} {date(table.asOf, true)}
       </p>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label={t("issuedShares")} value={num(table.totalIssuedShares)} />

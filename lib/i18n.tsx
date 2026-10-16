@@ -577,7 +577,14 @@ const dict = {
     plannerTooBig: "The pool can be at most 50%.",
     lastReminder: "Last reminder",
     navGuide: "Guide",
+    hijriToggle: "Show Hijri dates",
+    hijriShort: "Hijri",
     signupSubmit: "Create organization",
+    switchCompany: "Switch company",
+    yourCompanies: "Your companies",
+    addCompany: "Add a company",
+    addCompanyIntro: "Start another company under this login. You become its founder; each company has its own register, members and audit trail.",
+    addCompanySubmit: "Create company",
     succCreate: "Create rule",
     skipToContent: "Skip to content",
     notFoundTitle: "Page not found",
@@ -597,6 +604,8 @@ const dict = {
     guideHoldersB: "Import them from a spreadsheet: download the template, check the file, then import. Or add them one by one on Setup.",
     guideIssueT: "Issue certificates",
     guideIssueB: "Record who owns what. Import existing holdings on the Issued shares tab, or issue one certificate at a time. Certificates cannot be edited after issue.",
+    guideCompaniesT: "Manage more than one company",
+    guideCompaniesB: "Click the company name in the top bar to switch to another company on the same login, without signing in again, or to add a new one. Each company keeps its own register, members and audit trail.",
     guideMembersT: "Invite your team",
     guideMembersB: "Add a corporate secretary, board members, auditors or shareholders. The temporary password is shown once; send it securely.",
     guideCapT: "Review the cap table",
@@ -1210,7 +1219,14 @@ const dict = {
     plannerTooBig: "الحد الأقصى للمخزون 50%.",
     lastReminder: "آخر تذكير",
     navGuide: "الدليل",
+    hijriToggle: "عرض التواريخ الهجرية",
+    hijriShort: "هجري",
     signupSubmit: "إنشاء المنشأة",
+    switchCompany: "تبديل الشركة",
+    yourCompanies: "شركاتك",
+    addCompany: "إضافة شركة",
+    addCompanyIntro: "أنشئ شركة أخرى بنفس حساب الدخول. تصبح مؤسسها، ولكل شركة سجلها وأعضاؤها وسجل تدقيقها المستقل.",
+    addCompanySubmit: "إنشاء الشركة",
     succCreate: "إنشاء القاعدة",
     skipToContent: "تخطَّ إلى المحتوى",
     notFoundTitle: "الصفحة غير موجودة",
@@ -1230,6 +1246,8 @@ const dict = {
     guideHoldersB: "استوردهم من جدول بيانات: نزّل القالب، افحص الملف، ثم استورد. أو أضفهم واحدًا تلو الآخر من صفحة الإعداد.",
     guideIssueT: "أصدر الشهادات",
     guideIssueB: "سجّل من يملك ماذا. استورد الملكيات الحالية من تبويب الأسهم المصدرة، أو أصدر شهادة واحدة في كل مرة. لا يمكن تعديل الشهادة بعد إصدارها.",
+    guideCompaniesT: "أدر أكثر من شركة",
+    guideCompaniesB: "انقر على اسم الشركة في الشريط العلوي للانتقال إلى شركة أخرى بنفس الحساب دون تسجيل دخول جديد، أو لإضافة شركة جديدة. لكل شركة سجلها وأعضاؤها وسجل تدقيقها.",
     guideMembersT: "ادعُ فريقك",
     guideMembersB: "أضف أمين سر الشركة وأعضاء المجلس والمدققين أو المساهمين. تظهر كلمة المرور المؤقتة مرة واحدة؛ أرسلها بطريقة آمنة.",
     guideCapT: "راجع جدول الملكية",
@@ -1283,16 +1301,26 @@ interface I18n {
   /** Pick the Arabic name when the UI is Arabic and one exists. */
   name: (en: string, ar?: string | null) => string;
   num: (n: number, opts?: Intl.NumberFormatOptions) => string;
+  /**
+   * A date (YYYY-MM-DD) or a moment in time. Gregorian by default; with Hijri dates switched on it shows the
+   * Umm al-Qura Hijri date first and the Gregorian date after it, so nothing is ever shown without its legal date.
+   */
+  date: (value: string | Date | null | undefined, withTime?: boolean) => string;
+  hijri: boolean;
+  toggleHijri: () => void;
 }
 
 const Ctx = createContext<I18n | null>(null);
 const KEY = "equigcc.locale";
+const HIJRI_KEY = "equigcc.hijri";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");
+  const [hijri, setHijri] = useState(false);
 
   useEffect(() => {
     try {
+      setHijri(localStorage.getItem(HIJRI_KEY) === "1");
       const saved = localStorage.getItem(KEY);
       if (saved === "ar" || saved === "en") setLocale(saved);
     } catch {
@@ -1317,6 +1345,17 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const toggleHijri = useCallback(() => {
+    setHijri((h) => {
+      try {
+        localStorage.setItem(HIJRI_KEY, h ? "0" : "1");
+      } catch {
+        /* ignore */
+      }
+      return !h;
+    });
+  }, []);
+
   const value = useMemo<I18n>(
     () => ({
       locale,
@@ -1326,8 +1365,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       name: (en, ar) => (locale === "ar" && ar ? ar : en),
       // Latin digits in both locales: share counts are compared against legal documents in Latin digits.
       num: (n, opts) => new Intl.NumberFormat(locale === "ar" ? "ar-AE-u-nu-latn" : "en-US", opts).format(n),
+      date: (value, withTime = false) => {
+        if (!value) return "";
+        const isDay = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+        const d = value instanceof Date ? value : isDay ? new Date(`${value}T12:00:00Z`) : new Date(value);
+        if (Number.isNaN(d.getTime())) return String(value);
+        const gregorian = isDay ? (value as string) : withTime ? d.toLocaleString() : d.toLocaleDateString();
+        if (!hijri) return gregorian;
+        const h = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA-u-ca-islamic-umalqura-nu-latn" : "en-US-u-ca-islamic-umalqura", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(isDay ? d : new Date(d.getTime()));
+        return `${h} (${gregorian})`;
+      },
+      hijri,
+      toggleHijri,
     }),
-    [locale, toggle],
+    [locale, toggle, hijri, toggleHijri],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

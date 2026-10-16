@@ -159,6 +159,8 @@ export interface Resolution {
   createdBy: string;
   openedAt: string | null;
   closedAt: string | null;
+  /** Latest reminder email, automatic or sent by an officer. */
+  lastReminderAt?: string | null;
   tally: Tally;
 }
 

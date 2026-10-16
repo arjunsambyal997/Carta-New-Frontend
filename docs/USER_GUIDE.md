@@ -122,9 +122,9 @@ Enter an exit value and click **Calculate**. Preferences are paid by seniority, 
 
 1. **Resolutions**, then **New resolution**: title (EN/AR), description, majority (*Ordinary* > 50% or *Special* ≥ 75%), quorum % and a voting deadline. **Create draft**.
 2. Open the draft and click **Open voting**. After this the title and terms are locked.
-3. Members vote **For / Against / Abstain**. A secretary can also record a vote on behalf of a shareholder (*Record vote for*). **Votes are final.** Shareholders see open votes on **My holdings**.
-4. The live tally shows participation against quorum and whether the resolution would pass right now.
-5. **Close and decide** records *Passed* or *Rejected* from the votes cast so far. Passed resolutions can then authorise transfers and succession rules.
+3. Everyone who can vote gets an email with a link as soon as voting opens. Members vote **For / Against / Abstain**. A secretary can also record a vote on behalf of a shareholder (*Record vote for*). **Votes are final.** Shareholders see open votes on **My holdings**.
+4. The live tally shows participation against quorum and whether the resolution would pass right now. To nudge people, click **Remind non-voters**: everyone who hasn't voted gets an email (at most once an hour). An automatic reminder also goes out in the last 24 hours before the deadline.
+5. **Close and decide** records *Passed* or *Rejected* from the votes cast so far, and everyone is emailed the result. Passed resolutions can then authorise transfers and succession rules.
 6. Under **Signatures**, members can sign the resolution with a fresh authenticator code.
 
 ---
@@ -154,7 +154,7 @@ Every change is written to an append-only log chained by hashes. **Hash chain in
 
 Shareholders sign in and land on **My holdings**:
 - shares held, fully diluted, ownership and voting %
-- **Votes waiting for you**: click one to vote
+- **Votes waiting for you**: click one to vote. A number next to **Resolutions** in the sidebar shows how many are still waiting, and you're emailed when a vote opens, before it closes, and with the result
 - their certificates, each with **Download PDF** and **Signatures** to sign it with an authenticator code
 
 ---

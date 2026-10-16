@@ -303,6 +303,12 @@ export const api = {
     request<SignatureView>(`${org(orgId)}/signatures`, { method: "POST", body: JSON.stringify(body) }),
   certificatePdf: (orgId: string, certNo: string) =>
     downloadFile(`${org(orgId)}/certificates/${encodeURIComponent(certNo)}/pdf`, `${certNo}.pdf`),
+  minutesPdf: (orgId: string, resolutionId: string) =>
+    downloadFile(`${org(orgId)}/documents/minutes/${resolutionId}`, "minutes.pdf"),
+  transferFormPdf: (orgId: string, certificateNo: string) =>
+    downloadFile(`${org(orgId)}/documents/transfer-form/${encodeURIComponent(certificateNo)}`, `transfer-${certificateNo}.pdf`),
+  statementPdf: (orgId: string, shareholderId: string, asOf?: string) =>
+    downloadFile(`${org(orgId)}/documents/statement/${shareholderId}${asOf ? `?asOf=${encodeURIComponent(asOf)}` : ""}`, "statement.pdf"),
   approvals: (orgId: string) => request<PendingChange[]>(`${org(orgId)}/approvals`),
   approveChange: (orgId: string, id: string, note?: string) =>
     request<PendingChange>(`${org(orgId)}/approvals/${id}/approve`, { method: "POST", body: JSON.stringify({ note }) }),

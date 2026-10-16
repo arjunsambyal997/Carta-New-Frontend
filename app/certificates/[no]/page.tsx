@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { DownloadButton } from "@/components/DownloadButton";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -35,7 +36,10 @@ export default function CertificateLineagePage() {
                     {n.instrumentType !== "SHARES" && <span className="ms-1 text-xs text-slate-500">({n.instrumentType})</span>} · {n.dateIssued}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  {n.reason === "TRANSFER" && state.orgId && (
+                    <DownloadButton label={t("transferFormDownload")} run={() => api.transferFormPdf(state.orgId!, n.certificateNo)} />
+                  )}
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{t(`reason${n.reason}` as Key)}</span>
                   <span className={`rounded-full px-2 py-0.5 ${n.status === "ISSUED" ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}>{n.status}</span>
                 </div>

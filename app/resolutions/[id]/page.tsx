@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { DownloadButton } from "@/components/DownloadButton";
 import { useFeedback } from "@/components/Feedback";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge, TallyBar } from "@/components/ResolutionBits";
@@ -62,7 +63,17 @@ export default function ResolutionPage() {
       <Status state={state} />
       {r && orgId && (
         <>
-          <PageHeader title={name(r.title, r.titleAr)} action={<StatusBadge status={r.status} />} />
+          <PageHeader
+            title={name(r.title, r.titleAr)}
+            action={
+              <>
+                {(r.status === "PASSED" || r.status === "REJECTED") && me && me.role !== "SHAREHOLDER" && (
+                  <DownloadButton label={t("minutesDownload")} run={() => api.minutesPdf(orgId, r.id)} />
+                )}
+                <StatusBadge status={r.status} />
+              </>
+            }
+          />
           {r.description && <p className="whitespace-pre-wrap text-slate-700">{r.description}</p>}
           <p className="text-sm text-slate-500">
             {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} ·{" "}

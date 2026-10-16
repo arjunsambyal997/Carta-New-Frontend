@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
+import { DownloadButton } from "@/components/DownloadButton";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -14,6 +16,7 @@ export default function HolderLedgerPage() {
   const { id } = useParams<{ id: string }>();
   const state = useRegister((orgId) => api.ledger(orgId, id));
   const l = state.data;
+  const [asOf, setAsOf] = useState("");
 
   return (
     <div className="max-w-5xl space-y-4">
@@ -21,7 +24,13 @@ export default function HolderLedgerPage() {
       <Status state={state} />
       {l && (
         <>
-          <PageHeader eyebrow={t("ledgerTitle")} title={name(l.nameEn, l.nameAr)} subtitle={`${t("ledgerNow")}: ${num(l.currentShares)}`} />
+          <PageHeader eyebrow={t("ledgerTitle")} title={name(l.nameEn, l.nameAr)} subtitle={`${t("ledgerNow")}: ${num(l.currentShares)}`}
+            action={
+              <>
+                <input aria-label={t("capAsOf")} type="date" className="input h-10 w-40" dir="ltr" max={new Date().toISOString().slice(0, 10)} value={asOf} onChange={(e) => setAsOf(e.target.value)} />
+                <DownloadButton label={t("statementDownload")} run={() => api.statementPdf(state.orgId!, id, asOf || undefined)} />
+              </>
+            } />
           <div className="card overflow-x-auto p-0">
             <table className="w-full min-w-[720px] text-sm">
               <thead className="bg-slate-50 text-slate-500">

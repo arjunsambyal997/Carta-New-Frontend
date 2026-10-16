@@ -23,6 +23,7 @@ export default function PortalPage() {
         eyebrow={d ? name(d.organizationNameEn, d.organizationNameAr) : undefined}
         title={d ? name(d.holderNameEn, d.holderNameAr) : t("navPortal")}
         subtitle={t("portalIntro")}
+        action={d && <DownloadButton label={t("statementDownload")} run={() => api.statementPdf(d.organizationId, d.shareholderId)} />}
       />
       <Status state={state} />
       {d && (

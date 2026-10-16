@@ -144,6 +144,18 @@ The number in the sidebar next to **Approvals** shows how many requests are wait
 
 ---
 
+### Paperwork as PDFs
+
+Three bilingual (English and Arabic) PDFs are generated from the register. Every download is recorded in the audit trail.
+
+| Document | Where | What it contains |
+|---|---|---|
+| **Minutes** | A closed resolution, **Download minutes** | The result, majority and quorum, the tally, every vote with its weight, and the signatures recorded on the resolution |
+| **Share transfer instrument** | A holder's certificate history (**Certificates → History**), on the certificate issued to the buyer, **Transfer instrument** | Seller and buyer, class, number of shares, price and total, the surrendered and new certificate numbers, and signature lines |
+| **Shareholder statement** | A holder's ledger (click a name on the cap table) or **My holdings**, **Download statement** | Their certificates, ownership %, fully diluted % and votes on a chosen date (today if blank) |
+
+A statement is not a certificate of title; the numbered share certificates remain the proof of ownership.
+
 ## 7. Compliance
 
 ### Beneficial owners (UBO)

@@ -3,11 +3,13 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
+import { useFeedback } from "./Feedback";
 import type { DocumentType, SignatureView } from "@/lib/types";
 
 /** Who has signed a resolution or certificate, and a form to add your own signature with a fresh authenticator code. */
 export function SignaturesPanel({ orgId, type, docRef, allowSign = true }: { orgId: string; type: DocumentType; docRef: string; allowSign?: boolean }) {
   const { t } = useI18n();
+  const { confirm, toast } = useFeedback();
   const [list, setList] = useState<SignatureView[] | null>(null);
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState("");
@@ -26,6 +28,14 @@ export function SignaturesPanel({ orgId, type, docRef, allowSign = true }: { org
 
   async function sign(e: FormEvent) {
     e.preventDefault();
+    const ok = await confirm({
+      message: t("confirmSignTitle"),
+      detail: `“${statement.trim() || t("sigStatementDefault")}”
+
+${t("confirmSignDetail")}`,
+      confirmLabel: t("sigSign"),
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
     try {
@@ -34,6 +44,7 @@ export function SignaturesPanel({ orgId, type, docRef, allowSign = true }: { org
       setCode("");
       setStatement("");
       setVersion((v) => v + 1);
+      toast(t("toastSigned"));
     } catch (err) {
       setError((err as Error).message);
     } finally {

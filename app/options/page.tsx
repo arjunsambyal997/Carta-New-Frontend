@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -20,10 +22,7 @@ export default function OptionsPage() {
 
   return (
     <div className="max-w-5xl space-y-5">
-      <div>
-        <h1>{t("navOptions")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("optionsIntro")}</p>
-      </div>
+      <PageHeader title={t("navOptions")} subtitle={t("optionsIntro")} />
       <Status state={state} />
       {state.data && state.orgId && (
         <>
@@ -49,21 +48,30 @@ export default function OptionsPage() {
 
 function Grant({ s, orgId, classes, onDone }: { s: VestingStatus; orgId: string; classes: { id: string; name: string; nameAr: string | null; classType: string }[]; onDone: () => void }) {
   const { t, num, name } = useI18n();
+  const { confirm, toast } = useFeedback();
   const [qty, setQty] = useState("");
   const [cls, setCls] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState(false);
   const w = (n: number) => `${(n / s.granted) * 100}%`;
 
   async function exercise(e: FormEvent) {
     e.preventDefault();
+    const into = classes.find((c) => c.id === cls);
+    const ok = await confirm({
+      message: t("confirmExerciseTitle"),
+      detail: `${num(Number(qty))} × ${into ? name(into.name, into.nameAr) : s.shareClassName} → ${name(s.holderNameEn, s.holderNameAr)} · ${t("optionsStrike")} ${s.currency} ${num(s.strikePrice, { maximumFractionDigits: 4 })}
+
+${t("confirmExerciseDetail")}`,
+      confirmLabel: t("optionsExercise"),
+      danger: true,
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
-    setOk(false);
     try {
       await api.exerciseOptions(orgId, s.certificateNo, { quantity: Number(qty), shareClassId: cls || undefined });
-      setOk(true);
+      toast(t("optionsExerciseDone"));
       setQty("");
       onDone();
     } catch (err) {
@@ -112,7 +120,6 @@ function Grant({ s, orgId, classes, onDone }: { s: VestingStatus; orgId: string;
         </form>
       )}
       {error && <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-800">{error}</div>}
-      {ok && <div role="status" className="rounded-md border border-emerald-200 bg-emerald-50 p-2 text-xs text-emerald-800">{t("optionsExerciseDone")}</div>}
     </section>
   );
 }
@@ -128,6 +135,7 @@ function Stat({ k, v }: { k: string; v: string }) {
 
 function ScheduleForm({ orgId, certNo, label, date, onDone }: { orgId: string; certNo: string; label: string; date: string; onDone: () => void }) {
   const { t } = useI18n();
+  const { confirm, toast } = useFeedback();
   const [start, setStart] = useState(date);
   const [cliff, setCliff] = useState("12");
   const [months, setMonths] = useState("48");
@@ -136,10 +144,20 @@ function ScheduleForm({ orgId, certNo, label, date, onDone }: { orgId: string; c
 
   async function save(e: FormEvent) {
     e.preventDefault();
+    const ok = await confirm({
+      message: t("confirmScheduleTitle"),
+      detail: `${label}
+${t("optionsStart")} ${start} · ${t("optionsCliff")} ${cliff} · ${t("optionsTotalMonths")} ${months}
+
+${t("confirmScheduleDetail")}`,
+      confirmLabel: t("optionsSetSchedule"),
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
     try {
       await api.setVesting(orgId, certNo, { startDate: start, cliffMonths: Number(cliff), vestingMonths: Number(months) });
+      toast(t("toastScheduled"));
       onDone();
     } catch (err) {
       setError((err as Error).message);

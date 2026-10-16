@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Dashboard } from "@/components/Dashboard";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useMe } from "@/components/useMe";
 import { useRegister } from "@/components/useRegister";
@@ -37,10 +38,7 @@ function StaffDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-slate-500">{t("dashWelcome")}</p>
-        <h1>{state.data ? name(state.data.org.legalNameEn, state.data.org.legalNameAr) : t("navDashboard")}</h1>
-      </div>
+      <PageHeader eyebrow={t("dashWelcome")} title={state.data ? name(state.data.org.legalNameEn, state.data.org.legalNameAr) : t("navDashboard")} />
       <Status state={state} />
       {state.data && <Dashboard table={state.data.table} resolutions={state.data.resolutions} certificates={state.data.certificates} setup={state.data.setup} />}
     </div>

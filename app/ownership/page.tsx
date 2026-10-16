@@ -1,6 +1,7 @@
 "use client";
 
 import { OwnershipTree } from "@/components/OwnershipTree";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -19,7 +20,7 @@ export default function OwnershipPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("navOwnership")}</h1>
+      <PageHeader title={t("navOwnership")} />
       <Status state={state} />
       {state.data && <OwnershipTree org={state.data.org} table={state.data.table} links={state.data.links} />}
     </div>

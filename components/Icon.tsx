@@ -30,6 +30,8 @@ const PATHS: Record<string, string> = {
   portal: "M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6",
   sign: "M4 20h16M6 16l9-9 3 3-9 9H6z",
   check: "M5 12l5 5 9-10",
+  alert: "M12 3l10 18H2zM12 10v4M12 17.5v.01",
+  copy: "M9 9h11v11H9zM5 15H4V4h11v1",
 };
 
 export type IconName = keyof typeof PATHS;

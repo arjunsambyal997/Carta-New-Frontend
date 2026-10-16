@@ -95,7 +95,7 @@ function RuleForm({ orgId, classes, holders, onDone }: {
       <div className="sm:col-span-2"><label className="label" htmlFor="sl">{t("succLegal")}</label>
         <input id="sl" className="input" required maxLength={500} value={f.legalReference} onChange={set("legalReference")} /></div>
       {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2 lg:col-span-3">{error}</p>}
-      <button className="btn sm:col-span-2 lg:col-span-3">{t("create")}</button>
+      <button className="btn sm:col-span-2 lg:col-span-3">{t("succCreate")}</button>
     </form>
   );
 }

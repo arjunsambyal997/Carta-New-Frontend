@@ -50,7 +50,7 @@ export default function ApprovalsPage() {
   const when = (s: string | null) => (s ? new Date(s).toLocaleString() : "");
 
   return (
-    <div className="max-w-4xl space-y-5">
+    <div className="space-y-5">
       <PageHeader title={t("navApprovals")} subtitle={t("subApprovals")} />
       <Status state={state} />
       {state.data && (

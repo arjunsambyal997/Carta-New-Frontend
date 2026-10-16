@@ -105,9 +105,11 @@ export default function RoundsPage() {
   }
 
   return (
-    <div className="max-w-4xl space-y-5">
+    <div className="space-y-5">
       <PageHeader title={t("navRounds")} subtitle={t("roundsIntro")} />
       <Status state={state} />
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
+      <div className="min-w-0 space-y-5">
       {state.data && (
         <form onSubmit={run} className="card grid gap-4 sm:grid-cols-2">
           <div>
@@ -132,7 +134,7 @@ export default function RoundsPage() {
             <legend className="text-sm font-semibold">{t("roundConvertibles")}</legend>
             <p className="text-xs text-slate-500">{t("roundConvertiblesHint")}</p>
             {convs.map((c) => (
-              <div key={c.id} className="grid gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-6">
+              <div key={c.id} className="grid grid-cols-2 gap-3 rounded-lg border border-slate-200 p-3">
                 <div>
                   <label className="label" htmlFor={`k-${c.id}`}>{t("roundConvKind")}</label>
                   <select id={`k-${c.id}`} className="input" value={c.kind} onChange={(e) => setConv(c.id, { kind: e.target.value as Conv["kind"] })}>
@@ -140,7 +142,7 @@ export default function RoundsPage() {
                     <option value="NOTE">{t("roundKindNOTE")}</option>
                   </select>
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className="label" htmlFor={`n-${c.id}`}>{t("roundConvName")}</label>
                   <input id={`n-${c.id}`} maxLength={100} className="input" value={c.name} onChange={(e) => setConv(c.id, { name: e.target.value })} />
                 </div>
@@ -168,7 +170,7 @@ export default function RoundsPage() {
                     </div>
                   </>
                 )}
-                <div className="flex items-end sm:col-start-6">
+                <div className="col-span-2 flex items-end justify-end">
                   <button type="button" className="btn-ghost" onClick={() => setConvs((l) => l.filter((x) => x.id !== c.id))}>{t("remove")}</button>
                 </div>
               </div>
@@ -193,8 +195,8 @@ export default function RoundsPage() {
           <div className="mt-3 space-y-3">
             <p className="text-sm text-slate-600">{t("plannerHelp")}</p>
             {hires.map((h) => (
-              <div key={h.id} className="grid gap-3 sm:grid-cols-4">
-                <div className="sm:col-span-2">
+              <div key={h.id} className="grid grid-cols-2 gap-3">
+                <div className="col-span-2">
                   <label className="label" htmlFor={`r-${h.id}`}>{t("plannerRole")}</label>
                   <input id={`r-${h.id}`} maxLength={100} className="input" value={h.role} onChange={(e) => setHire(h.id, { role: e.target.value })} />
                 </div>
@@ -224,7 +226,11 @@ export default function RoundsPage() {
           </div>
         </details>
       )}
-
+      </div>
+      <div className="min-w-0 space-y-5">
+      {!result && scenarios.length === 0 && state.data && (
+        <p className="card text-sm text-slate-500">{t("roundResultsEmpty")}</p>
+      )}
       {result && (
         <div className="space-y-4" aria-live="polite">
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -307,6 +313,8 @@ export default function RoundsPage() {
           <p className="mt-2 text-xs text-slate-500">{t("roundScenarioNote")}</p>
         </section>
       )}
+      </div>
+      </div>
     </div>
   );
 }

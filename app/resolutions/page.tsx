@@ -96,7 +96,7 @@ export default function ResolutionsPage() {
       )}
 
       {state.data && state.data.length === 0 && <p className="text-slate-500">{t("noResolutions")}</p>}
-      <ul className="space-y-3">
+      <ul className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3 [&>li]:content-start">
         {state.data?.map((r) => (
           <li key={r.id} className="card space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">

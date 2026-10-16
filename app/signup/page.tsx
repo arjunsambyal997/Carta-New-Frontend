@@ -34,7 +34,7 @@ export default function SignupPage() {
         },
       });
       saveSession(r.accessToken!, r.organizationId!, r.refreshToken);
-      router.push("/security");
+      router.push(r.mfaEnrollmentRequired ? "/security" : "/");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -74,7 +74,7 @@ export default function SignupPage() {
           <p className="mt-1 text-xs text-slate-500">{t("certPrefixHint")}</p>
         </div>
         {error && <p role="alert" className="text-sm text-red-700 sm:col-span-2">{error}</p>}
-        <button className="btn sm:col-span-2" disabled={busy}>{t("create")}</button>
+        <button className="btn sm:col-span-2" disabled={busy}>{busy ? t("creating") : t("signupSubmit")}</button>
       </form>
       <p className="text-sm text-slate-600">{t("haveAccount")} <Link href="/login" className="text-emerald-700 underline">{t("signIn")}</Link></p>
     </div>

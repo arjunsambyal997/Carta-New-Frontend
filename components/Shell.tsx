@@ -16,42 +16,50 @@ const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconNa
   { label: "groupAdmin", items: [{ href: "/security", key: "navSecurity", icon: "security" }, { href: "/password", key: "navPassword", icon: "password" }, { href: "/guide", key: "navGuide", icon: "guide" }] },
 ];
 
-const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
+type Role = "FOUNDER" | "CORPORATE_SECRETARY" | "BOARD_MEMBER" | "LEGAL_AUDITOR" | "SHAREHOLDER";
+type NavItem = { href: string; key: Key; icon: IconName; roles?: Role[] };
+
+/** Who may open each page: the same rules the server enforces, so nobody is shown a page that would only refuse them. */
+const STAFF: Role[] = ["FOUNDER", "CORPORATE_SECRETARY"];
+const READERS: Role[] = [...STAFF, "BOARD_MEMBER", "LEGAL_AUDITOR"];
+const COMPLIANCE: Role[] = [...STAFF, "LEGAL_AUDITOR"];
+
+const GROUPS: { label: Key; items: NavItem[] }[] = [
   {
     label: "groupOverview",
     items: [
-      { href: "/", key: "navDashboard", icon: "dashboard" },
-      { href: "/cap-table", key: "navCapTable", icon: "captable" },
-      { href: "/ownership", key: "navOwnership", icon: "ownership" },
-      { href: "/waterfall", key: "navWaterfall", icon: "waterfall" },
-      { href: "/transfers", key: "navTransfers", icon: "transfer" },
-      { href: "/options", key: "navOptions", icon: "options" },
-      { href: "/rounds", key: "navRounds", icon: "rounds" },
+      { href: "/", key: "navDashboard", icon: "dashboard", roles: READERS },
+      { href: "/cap-table", key: "navCapTable", icon: "captable", roles: READERS },
+      { href: "/ownership", key: "navOwnership", icon: "ownership", roles: READERS },
+      { href: "/waterfall", key: "navWaterfall", icon: "waterfall", roles: READERS },
+      { href: "/transfers", key: "navTransfers", icon: "transfer", roles: STAFF },
+      { href: "/options", key: "navOptions", icon: "options", roles: READERS },
+      { href: "/rounds", key: "navRounds", icon: "rounds", roles: READERS },
     ],
   },
   {
     label: "groupGovernance",
     items: [
-      { href: "/resolutions", key: "navResolutions", icon: "resolutions" },
-      { href: "/approvals", key: "navApprovals", icon: "approvals" },
-      { href: "/succession", key: "navSuccession", icon: "succession" },
+      { href: "/resolutions", key: "navResolutions", icon: "resolutions", roles: READERS },
+      { href: "/approvals", key: "navApprovals", icon: "approvals", roles: READERS },
+      { href: "/succession", key: "navSuccession", icon: "succession", roles: READERS },
     ],
   },
   {
     label: "groupCompliance",
     items: [
-      { href: "/ubo", key: "navUbo", icon: "ubo" },
-      { href: "/certificates", key: "navCertificates", icon: "certificates" },
-      { href: "/vault", key: "navVault", icon: "vault" },
-      { href: "/audit", key: "navAudit", icon: "audit" },
+      { href: "/ubo", key: "navUbo", icon: "ubo", roles: COMPLIANCE },
+      { href: "/certificates", key: "navCertificates", icon: "certificates", roles: READERS },
+      { href: "/vault", key: "navVault", icon: "vault", roles: READERS },
+      { href: "/audit", key: "navAudit", icon: "audit", roles: COMPLIANCE },
     ],
   },
   {
     label: "groupAdmin",
     items: [
-      { href: "/setup", key: "navSetup", icon: "setup" },
-      { href: "/import", key: "navImport", icon: "import" },
-      { href: "/members", key: "navMembers", icon: "members" },
+      { href: "/setup", key: "navSetup", icon: "setup", roles: STAFF },
+      { href: "/import", key: "navImport", icon: "import", roles: STAFF },
+      { href: "/members", key: "navMembers", icon: "members", roles: ["FOUNDER"] },
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
       { href: "/guide", key: "navGuide", icon: "guide" },
@@ -143,13 +151,14 @@ export function Shell({ children }: { children: ReactNode }) {
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
     return (
       <div className="flex min-h-screen flex-col" style={{ backgroundImage: "radial-gradient(60rem 28rem at 50% -8rem, rgb(var(--brand-100) / .65), transparent)" }}>
+        <a href="#main" className="skip-link">{t("skipToContent")}</a>
         <header className="flex items-center justify-between px-4 py-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
             <Toggles />
           </div>
         </header>
-        <main className="page mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-16 pt-6 [&>*]:w-full [&>div:not([class*=max-w])]:max-w-md">{children}</main>
+        <main id="main" tabIndex={-1} className="page mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-16 pt-6 outline-none [&>*]:w-full [&>div:not([class*=max-w])]:max-w-md">{children}</main>
       </div>
     );
   }
@@ -157,7 +166,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const isHolder = who?.role === "SHAREHOLDER";
   const nav = (
     <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4" aria-label="Main">
-      {(isHolder ? HOLDER_GROUPS : GROUPS).map((g) => (
+      {(isHolder ? HOLDER_GROUPS : GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => !n.roles || !who || n.roles.includes(who.role as Role)) })).filter((g) => g.items.length > 0)).map((g) => (
         <div key={g.label}>
           <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{t(g.label)}</p>
           <ul className="space-y-0.5">
@@ -192,6 +201,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen lg:ps-64">
+      <a href="#main" className="skip-link">{t("skipToContent")}</a>
       {/* sidebar: fixed on desktop, drawer on small screens */}
       <aside
         className={`fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e border-slate-200 bg-surface transition-transform duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${
@@ -234,7 +244,7 @@ export function Shell({ children }: { children: ReactNode }) {
             session === null && <Link href="/login" className="btn h-9">{t("signIn")}</Link>
           )}
         </header>
-        <main className="page mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+        <main id="main" tabIndex={-1} className="page w-full flex-1 px-4 py-6 outline-none sm:px-6 sm:py-8 lg:px-8 2xl:px-12">{children}</main>
       </div>
     </div>
   );

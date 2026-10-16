@@ -108,7 +108,7 @@ export default function ResolutionPage() {
           {r.status === "ACTIVE" && (
             <div className="card space-y-3">
               <h2 className="text-sm font-semibold text-slate-700">{t("castVote")}</h2>
-              {officer && state.data!.holders.length > 0 && (
+              {me?.role === "CORPORATE_SECRETARY" && state.data!.holders.length > 0 && (
                 <div>
                   <label className="label" htmlFor="behalf">{t("recordFor")}</label>
                   <select id="behalf" className="input max-w-sm" value={onBehalf} onChange={(e) => setOnBehalf(e.target.value)}>

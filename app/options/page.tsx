@@ -21,7 +21,7 @@ export default function OptionsPage() {
   const reload = () => setRefresh((n) => n + 1);
 
   return (
-    <div className="max-w-5xl space-y-5">
+    <div className="space-y-5">
       <PageHeader title={t("navOptions")} subtitle={t("optionsIntro")} />
       <Status state={state} />
       {state.data && state.orgId && (

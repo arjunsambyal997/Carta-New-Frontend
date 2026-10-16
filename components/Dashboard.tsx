@@ -127,7 +127,7 @@ function Resolutions({ list }: { list: Resolution[] | null }) {
   const { t, num, name } = useI18n();
   const shown = [...(list ?? [])].sort((a, b) => (b.openedAt ?? b.votingDeadline).localeCompare(a.openedAt ?? a.votingDeadline)).slice(0, 4);
   return (
-    <Panel title={t("recentResolutions")} action={<ViewAll href="/resolutions" />}>
+    <Panel title={t("recentResolutions")} action={<ViewAll href="/resolutions" />} className="2xl:order-3">
       {shown.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-400">{t("noResolutions")}</p>
       ) : (
@@ -155,7 +155,7 @@ function Certificates({ list }: { list: Certificate[] | null }) {
   const { t, num, name } = useI18n();
   const shown = [...(list ?? [])].sort((a, b) => b.dateIssued.localeCompare(a.dateIssued) || b.certificateNo.localeCompare(a.certificateNo)).slice(0, 5);
   return (
-    <Panel title={t("recentCertificates")} action={<ViewAll href="/certificates" />} className="lg:col-span-2">
+    <Panel title={t("recentCertificates")} action={<ViewAll href="/certificates" />} className="lg:col-span-2 2xl:order-4 2xl:col-span-4">
       {shown.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-400">{t("noCertificates")}</p>
       ) : (
@@ -226,13 +226,13 @@ export function Dashboard({ table, resolutions, certificates, setup }: { table: 
   return (
     <div className="space-y-5">
       <Onboarding setup={setup} resolutions={resolutions} certificates={certificates} />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 2xl:gap-5">
         <Kpi delay={0} label={t("issuedShares")} value={num(table.totalIssuedShares)} sub={`${t("kpiFdSub")} ${num(table.totalFullyDilutedShares)}`} />
         <Kpi delay={40} label={t("votingPower")} value={num(table.totalVotingPower)} sub={`${t("kpiTreasurySub")} ${num(table.treasuryShares)}`} />
         <Kpi delay={80} label={t("kpiHolders")} value={num(table.holders.length)} sub={`${num(table.classes.length)} ${t("shareClasses").toLowerCase()}`} />
         <Kpi delay={120} label={t("kpiOpenRes")} value={num(open)} sub={`${num((resolutions ?? []).length)} ${t("navResolutions").toLowerCase()}`} />
       </div>
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3 2xl:grid-cols-4">
         <EconVsVoting table={table} />
         <ClassMix table={table} />
         <Certificates list={certificates} />

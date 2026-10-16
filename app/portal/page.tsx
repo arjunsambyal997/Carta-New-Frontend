@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
+import { PageHeader } from "@/components/PageHeader";
 import { SignaturesPanel } from "@/components/SignaturesPanel";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -18,10 +19,11 @@ export default function PortalPage() {
 
   return (
     <div className="max-w-4xl space-y-5">
-      <div>
-        <p className="text-sm text-slate-500">{d ? name(d.organizationNameEn, d.organizationNameAr) : t("navPortal")}</p>
-        <h1>{d ? name(d.holderNameEn, d.holderNameAr) : t("navPortal")}</h1>
-      </div>
+      <PageHeader
+        eyebrow={d ? name(d.organizationNameEn, d.organizationNameAr) : undefined}
+        title={d ? name(d.holderNameEn, d.holderNameAr) : t("navPortal")}
+        subtitle={t("portalIntro")}
+      />
       <Status state={state} />
       {d && (
         <>

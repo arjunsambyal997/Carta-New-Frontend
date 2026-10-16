@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
 export default function TransfersPage() {
-  const { t, name } = useI18n();
+  const { t, name, num } = useI18n();
+  const { confirm, toast } = useFeedback();
   const [refresh, setRefresh] = useState(0);
   const state = useRegister(async (orgId) => {
     const [holders, classes, resolutions] = await Promise.all([
@@ -29,14 +32,26 @@ export default function TransfersPage() {
   const [reference, setReference] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!state.orgId) return;
+    const who = (id: string) => {
+      const h = holders.find((x) => x.id === id);
+      return h ? name(h.fullNameEn, h.fullNameAr) : "";
+    };
+    const c = classes.find((x) => x.id === cls);
+    const ok = await confirm({
+      message: t(mode === "transfer" ? "confirmTransferTitle" : "confirmBuyBackTitle"),
+      detail: `${num(Number(qty))} × ${c ? name(c.name, c.nameAr) : ""}: ${who(from)} → ${mode === "transfer" ? who(to) : t("tabBuyBack")}${price ? ` · ${t("pricePerShare")} ${price}` : ""}
+
+${t("confirmMoveDetail")}`,
+      confirmLabel: t(mode === "transfer" ? "transferSubmit" : "buyBackSubmit"),
+      danger: true,
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
-    setDone(false);
     const common = {
       fromShareholderId: from,
       shareClassId: cls,
@@ -51,7 +66,7 @@ export default function TransfersPage() {
       } else {
         await api.buyBack(state.orgId, { ...common, pricePerShare: Number(price) });
       }
-      setDone(true);
+      toast(t(mode === "transfer" ? "transferDone" : "buyBackDone"));
       setQty("");
       setRefresh((n) => n + 1);
     } catch (err) {
@@ -66,16 +81,13 @@ export default function TransfersPage() {
 
   return (
     <div className="max-w-xl space-y-4">
-      <div>
-        <h1>{t("navTransfers")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("transfersIntro")}</p>
-      </div>
+      <PageHeader title={t("navTransfers")} subtitle={t("transfersIntro")} />
       <Status state={state} />
       {state.data && (
         <form onSubmit={submit} className="card space-y-4">
           <div className="flex gap-2" role="tablist">
             {(["transfer", "buyback"] as const).map((m) => (
-              <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "btn" : "btn-ghost"} onClick={() => { setMode(m); setDone(false); setError(null); }}>
+              <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "btn" : "btn-ghost"} onClick={() => { setMode(m); setError(null); }}>
                 {t(m === "transfer" ? "tabTransfer" : "tabBuyBack")}
               </button>
             ))}
@@ -129,7 +141,6 @@ export default function TransfersPage() {
             </select>
           </div>
           {error && <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
-          {done && <div role="status" className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{t(mode === "transfer" ? "transferDone" : "buyBackDone")}</div>}
           <button className="btn" disabled={busy} type="submit">{busy ? t("loading") : t(mode === "transfer" ? "transferSubmit" : "buyBackSubmit")}</button>
         </form>
       )}

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -11,7 +13,8 @@ import type { ImportResult } from "@/lib/types";
 type Kind = "shareholders" | "issuances";
 
 export default function ImportPage() {
-  const { t } = useI18n();
+  const { t, num } = useI18n();
+  const { confirm, toast } = useFeedback();
   const state = useRegister((orgId) => api.organization(orgId));
   const [kind, setKind] = useState<Kind>("shareholders");
   const [file, setFile] = useState<File | null>(null);
@@ -21,10 +24,13 @@ export default function ImportPage() {
 
   async function run(dryRun: boolean) {
     if (!state.orgId || !file) return;
+    if (!dryRun && !(await confirm({ message: t("confirmImportTitle"), detail: `${file.name} · ${num(result?.created ?? 0)} ${t("importWillCreate")}\n\n${t("confirmImportDetail")}`, confirmLabel: t("importRun") }))) return;
     setBusy(true);
     setError(null);
     try {
-      setResult(await api.importCsv(state.orgId, kind, file, dryRun));
+      const r = await api.importCsv(state.orgId, kind, file, dryRun);
+      setResult(r);
+      if (!dryRun) toast(`${t("importDone")} ${num(r.created)} ${t("importCreated")}`);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -41,10 +47,7 @@ export default function ImportPage() {
 
   return (
     <div className="max-w-3xl space-y-5">
-      <div>
-        <h1>{t("navImport")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("importIntro")}</p>
-      </div>
+      <PageHeader title={t("navImport")} subtitle={t("importIntro")} />
       <Status state={state} />
       {state.orgId && (
         <div className="card space-y-5">

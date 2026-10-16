@@ -18,7 +18,7 @@ export default function PortalPage() {
   const d = state.data;
 
   return (
-    <div className="max-w-4xl space-y-5">
+    <div className="space-y-5">
       <PageHeader
         eyebrow={d ? name(d.organizationNameEn, d.organizationNameAr) : undefined}
         title={d ? name(d.holderNameEn, d.holderNameAr) : t("navPortal")}

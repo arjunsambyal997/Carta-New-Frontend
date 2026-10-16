@@ -44,7 +44,7 @@ export default function CertificatesPage() {
                   <td>{c.shareClassName}</td>
                   <td className="text-end tabular-nums">{num(c.quantity)}</td>
                   <td className="ps-4">{c.dateIssued}</td>
-                  <td>{c.status}</td>
+                  <td><span className={`chip ${c.status === "ISSUED" ? "bg-emerald-50 text-emerald-800" : c.status === "CANCELLED" ? "bg-red-50 text-red-800" : "bg-slate-100 text-slate-600"}`}>{c.status}</span></td>
                   <td className="text-end">
                     <DownloadButton label={t("downloadPdf")} run={() => api.certificatePdf(state.orgId!, c.certificateNo)} />
                     {me && me.role !== "SHAREHOLDER" && <Link className="btn-ghost ms-1" href={`/certificates/${encodeURIComponent(c.certificateNo)}`}>{t("lineageTitle")}</Link>}

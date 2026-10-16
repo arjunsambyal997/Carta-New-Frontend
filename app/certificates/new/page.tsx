@@ -4,6 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useState, type FormEvent } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
 import { useFeedback } from "@/components/Feedback";
+import { HelpPanel } from "@/components/HelpPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -105,11 +106,12 @@ ${t("confirmIssueDetail")}`,
   }
 
   return (
-    <div className="max-w-xl space-y-4">
-      <PageHeader title={t("navIssue")} />
+    <div className="space-y-4">
+      <PageHeader title={t("navIssue")} subtitle={t("subIssue")} />
       <Status state={state} />
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
       {state.data && (
-        <form onSubmit={submit} className="card space-y-4">
+        <form onSubmit={submit} className="card grid max-w-5xl gap-4 sm:grid-cols-2 2xl:grid-cols-3">
           <div>
             <label className="label" htmlFor="holder">{t("shareholderLabel")}</label>
             <select id="holder" required className="input" value={holderId} onChange={(e) => setHolderId(e.target.value)}>
@@ -134,7 +136,7 @@ ${t("confirmIssueDetail")}`,
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="contents">
             <div>
               <label className="label" htmlFor="qty">{t("quantity")}</label>
               <input id="qty" required type="number" min={1} step={1} className="input" dir="ltr" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
@@ -156,17 +158,19 @@ ${t("confirmIssueDetail")}`,
                 {CURRENCIES.map((c) => <option key={c}>{c}</option>)}
               </select>
             </div>
-            <div className="col-span-2">
+            <div>
               <label className="label" htmlFor="date">{t("dateIssued")} ({t("optionalDefault")})</label>
               <input id="date" type="date" className="input" dir="ltr" value={date} onChange={(e) => setDate(e.target.value)} />
             </div>
           </div>
           {error && (
-            <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>
+            <div role="alert" className="col-span-full rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>
           )}
-          <button className="btn" disabled={busy} type="submit">{busy ? t("issuing") : t("issue")}</button>
+          <button className="btn col-span-full justify-self-start" disabled={busy} type="submit">{busy ? t("issuing") : t("issue")}</button>
         </form>
       )}
+      <HelpPanel title={t("issueHelpTitle")} items={[t("issueHelp1"), t("issueHelp2"), t("issueHelp3"), t("issueHelp4")]} />
+      </div>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function HolderLedgerPage() {
   const [asOf, setAsOf] = useState("");
 
   return (
-    <div className="max-w-5xl space-y-4">
+    <div className="space-y-4">
       <Link href="/cap-table" className="text-sm text-slate-500 hover:underline">← {t("back")}</Link>
       <Status state={state} />
       {l && (

@@ -18,7 +18,7 @@ export default function CertificateLineagePage() {
   const nodes = state.data;
 
   return (
-    <div className="max-w-4xl space-y-4">
+    <div className="space-y-4">
       <Link href="/certificates" className="text-sm text-slate-500 hover:underline">← {t("back")}</Link>
       <PageHeader eyebrow={t("lineageTitle")} title={<span dir="ltr" className="font-mono">{certNo}</span>} subtitle={t("lineageIntro")} />
       <Status state={state} />

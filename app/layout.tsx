@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Arabic } from "next/font/google";
 import type { ReactNode } from "react";
 import { I18nProvider } from "@/lib/i18n";
@@ -9,6 +9,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "EquiGCC",
   description: "Digital share register and cap table for the GCC",
+};
+
+export const viewport: Viewport = {
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#f5f7fa" }, { media: "(prefers-color-scheme: dark)", color: "#0c1016" }],
 };
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });

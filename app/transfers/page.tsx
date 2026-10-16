@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useFeedback } from "@/components/Feedback";
+import { HelpPanel } from "@/components/HelpPanel";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -78,12 +79,13 @@ ${t("confirmMoveDetail")}`,
   const holders = state.data?.holders ?? [];
 
   return (
-    <div className="max-w-xl space-y-4">
+    <div className="space-y-4">
       <PageHeader title={t("navTransfers")} subtitle={t("transfersIntro")} />
       <Status state={state} />
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
       {state.data && (
-        <form onSubmit={submit} className="card space-y-4">
-          <div className="flex gap-2" role="tablist">
+        <form onSubmit={submit} className="card grid max-w-5xl gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          <div className="col-span-full flex gap-2" role="tablist">
             {(["transfer", "buyback"] as const).map((m) => (
               <button key={m} type="button" role="tab" aria-selected={mode === m} className={mode === m ? "btn" : "btn-ghost"} onClick={() => { setMode(m); setError(null); }}>
                 {t(m === "transfer" ? "tabTransfer" : "tabBuyBack")}
@@ -113,7 +115,7 @@ ${t("confirmMoveDetail")}`,
               {classes.map((c) => <option key={c.id} value={c.id}>{name(c.name, c.nameAr)}</option>)}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="contents">
             <div>
               <label className="label" htmlFor="qty">{t("quantity")}</label>
               <input id="qty" required type="number" min={1} step={1} className="input" dir="ltr" value={qty} onChange={(e) => setQty(e.target.value)} />
@@ -138,10 +140,12 @@ ${t("confirmMoveDetail")}`,
               {state.data.resolutions.map((r) => <option key={r.id} value={r.id}>{name(r.title, r.titleAr)}</option>)}
             </select>
           </div>
-          {error && <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
-          <button className="btn" disabled={busy} type="submit">{busy ? t("loading") : t(mode === "transfer" ? "transferSubmit" : "buyBackSubmit")}</button>
+          {error && <div role="alert" className="col-span-full rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
+          <button className="btn col-span-full justify-self-start" disabled={busy} type="submit">{busy ? t("loading") : t(mode === "transfer" ? "transferSubmit" : "buyBackSubmit")}</button>
         </form>
       )}
+      <HelpPanel title={t("transfersHelpTitle")} items={[t("transfersHelp1"), t("transfersHelp2"), t("transfersHelp3"), t("transfersHelp4"), t("transfersHelp5")]} />
+      </div>
     </div>
   );
 }

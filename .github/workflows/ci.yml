@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+
+  e2e:
+    name: End-to-end tests (real backend and database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: equigcc
+          POSTGRES_PASSWORD: equigcc
+          POSTGRES_DB: equigcc_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U equigcc"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # The tests need the API. Set the repository secret BACKEND_REPO_TOKEN (read access to the backend
+      # repository) when it is private, and the variable BACKEND_REF to test against a branch other than main.
+      - name: Check out the backend
+        uses: actions/checkout@v4
+        with:
+          repository: arjunsambyal997/Carta-New-Backend
+          ref: ${{ vars.BACKEND_REF || 'main' }}
+          token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+          path: backend
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: "Build and start the backend (authenticator off, tests only)"
+        working-directory: backend
+        run: |
+          mvn -B -ntp -DskipTests package
+          DB_URL=jdbc:postgresql://localhost:5432/equigcc_e2e SERVER_PORT=8090 \
+          DEV_SKIP_MFA=true RATE_LIMIT_ENABLED=false \
+          nohup java -jar target/*-SNAPSHOT.jar > ../backend.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8090/v3/api-docs > /dev/null && exit 0
+            sleep 2
+          done
+          cat ../backend.log
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run the end-to-end suite
+        run: npm run e2e
+        env:
+          CI: "true"
+          BACKEND_URL: http://localhost:8090
+          API_URL: http://localhost:8090
+
+      - name: Keep the report and the backend log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            playwright-report
+            test-results
+            backend.log
+          retention-days: 7

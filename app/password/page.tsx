@@ -36,7 +36,7 @@ export default function ChangePasswordPage() {
         <div><label className="label" htmlFor="n2">{t("confirmPassword")}</label><input id="n2" type="password" minLength={12} className="input" dir="ltr" required autoComplete="new-password" value={pw2} onChange={(e) => setPw2(e.target.value)} /></div>
         {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
         {ok && <p className="text-sm text-emerald-700">{t("changeDone")}</p>}
-        <button className="btn w-full">{t("save")}</button>
+        <button className="btn w-full">{t("changeTitle")}</button>
       </form>
     </div>
   );

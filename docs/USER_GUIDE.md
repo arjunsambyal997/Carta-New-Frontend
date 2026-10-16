@@ -118,6 +118,18 @@ Enter an exit value and click **Calculate**. Preferences are paid by seniority, 
 
 ---
 
+### Two-person approval: Approvals
+
+For more control, a founder can turn on **Require a second person to approve** on the **Approvals** page.
+
+1. From then on, when a secretary (or founder) issues a certificate, records a transfer or buy-back, or exercises options, the change is **not applied**. It is saved as a request and appears under *Waiting for approval*. The person who made it sees "Sent for approval".
+2. A **different** founder or board member opens **Approvals**, reads the request, optionally adds a note, and clicks **Approve** or **Reject**. Approving applies it to the register straight away, under all the normal rules (if something is no longer valid, such as not enough shares, they see the error and the request stays waiting).
+3. Nobody can approve their own request. The requester can **Withdraw** it.
+4. The audit trail records both names, for example `sec@acme.com (approved by founder@acme.com)`.
+5. If nobody else could approve (for example, a company with a single founder and no board members), changes go through directly, so you're never locked out.
+
+The number in the sidebar next to **Approvals** shows how many requests are waiting.
+
 ## 6. Board resolutions and voting
 
 1. **Resolutions**, then **New resolution**: title (EN/AR), description, majority (*Ordinary* > 50% or *Special* ≥ 75%), quorum % and a voting deadline. **Create draft**.

@@ -7,7 +7,7 @@ import { useFeedback } from "@/components/Feedback";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
-import { api } from "@/lib/api";
+import { api, isPendingChange } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import type { Certificate, Currency, InstrumentType } from "@/lib/types";
 
@@ -33,7 +33,7 @@ export default function IssueCertificatePage() {
   const [issued, setIssued] = useState<Certificate | null>(null);
 
   const selectedClass = state.data?.classes.find((c) => c.id === classId);
-  const { confirm } = useFeedback();
+  const { confirm, toast } = useFeedback();
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -61,7 +61,12 @@ ${t("confirmIssueDetail")}`,
         currency: currency || undefined,
         dateIssued: date || undefined,
       });
-      setIssued(cert);
+      if (isPendingChange(cert)) {
+        toast(t("toastSentForApproval"));
+        setQuantity("");
+      } else {
+        setIssued(cert);
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {

@@ -524,6 +524,27 @@ export interface RoundResult {
   investorPct: number;
   poolPct: number;
   rows: RoundRow[];
+  convertedShares?: number;
+  conversions?: RoundConversion[];
+}
+
+export interface RoundConversion {
+  name: string;
+  kind: "SAFE" | "NOTE";
+  amountConverted: number;
+  conversionPrice: number;
+  shares: number;
+  basis: "CAP" | "DISCOUNT" | "ROUND";
+}
+
+export interface ConvertibleInput {
+  kind: "SAFE" | "NOTE";
+  name?: string;
+  amount: number;
+  capValuation?: number;
+  discountPct?: number;
+  interestPct?: number;
+  months?: number;
 }
 
 export interface RoundInput {
@@ -531,6 +552,7 @@ export interface RoundInput {
   investment: number;
   poolPct?: number;
   investorName?: string;
+  convertibles?: ConvertibleInput[];
 }
 
 export interface VestingStatus {

@@ -116,6 +116,12 @@ Every certificate has a QR code. Scanning it opens a public verification page th
 ### Model a funding round: Funding round
 Enter the pre-money valuation, investment, optional option pool % and investor name, then click **Simulate**. You see the price per share, post-money, new shares and everyone's ownership before and after. **Nothing is saved**, so try as many scenarios as you like.
 
+**SAFEs and convertible notes.** Under *SAFEs and convertible notes*, add each instrument: its type, amount, valuation cap, discount, and for a note its yearly interest and months outstanding. Each converts at the **lowest** of three prices: the round price, the round price less the discount, and the cap price (cap divided by the shares before the round). The *How they convert* table shows which price each got. Converted shares sit in the pre-money, so existing holders carry them and the new investor still gets investment ÷ post-money.
+
+**Option pool planner.** Open *Option pool planner*, add the roles you plan to grant options to (people, and each grant as a % of the company after the round). The total is the pool you need; **Use as the option pool** fills it into the simulation.
+
+**Compare scenarios.** After a simulation, **Save as scenario** keeps it (up to four). *Scenarios side by side* shows price, shares, pool and everyone's ownership after each, so you can compare term sheets. Scenarios live on the page only.
+
 ### Model an exit: Exit waterfall
 Enter an exit value and click **Calculate**. Preferences are paid by seniority, then the remainder is split by shares. Each preferred class either keeps its preference or converts, whichever pays more. Results show by class and by shareholder.
 
@@ -152,6 +158,7 @@ Three bilingual (English and Arabic) PDFs are generated from the register. Every
 |---|---|---|
 | **Minutes** | A closed resolution, **Download minutes** | The result, majority and quorum, the tally, every vote with its weight, and the signatures recorded on the resolution |
 | **Share transfer instrument** | A holder's certificate history (**Certificates → History**), on the certificate issued to the buyer, **Transfer instrument** | Seller and buyer, class, number of shares, price and total, the surrendered and new certificate numbers, and signature lines |
+| **Option statement** | A holder's ledger or **My holdings**, **Download option statement** (shown when they hold options) | Each grant: granted, vested, exercised, can exercise now, unvested, and the vesting schedule |
 | **Shareholder statement** | A holder's ledger (click a name on the cap table) or **My holdings**, **Download statement** | Their certificates, ownership %, fully diluted % and votes on a chosen date (today if blank) |
 
 A statement is not a certificate of title; the numbered share certificates remain the proof of ownership.

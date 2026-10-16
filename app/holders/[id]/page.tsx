@@ -29,6 +29,9 @@ export default function HolderLedgerPage() {
               <>
                 <input aria-label={t("capAsOf")} type="date" className="input h-10 w-40" dir="ltr" max={new Date().toISOString().slice(0, 10)} value={asOf} onChange={(e) => setAsOf(e.target.value)} />
                 <DownloadButton label={t("statementDownload")} run={() => api.statementPdf(state.orgId!, id, asOf || undefined)} />
+                {l.events.some((e) => e.instrumentType === "OPTION") && (
+                  <DownloadButton label={t("optionStatementDownload")} run={() => api.optionStatementPdf(state.orgId!, id, asOf || undefined)} />
+                )}
               </>
             } />
           <div className="card overflow-x-auto p-0">

@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -12,7 +13,7 @@ export default function AuditPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">{t("navAudit")}</h1>
+      <PageHeader title={t("navAudit")} subtitle={t("subAudit")} />
       <Status state={state} />
       {trail && (
         <>

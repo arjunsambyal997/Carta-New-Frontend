@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { clearSession, getSession, saveSession } from "@/lib/api";
+import { PageHeader } from "@/components/PageHeader";
 import { useI18n } from "@/lib/i18n";
 
 export default function SettingsPage() {
@@ -21,7 +22,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-xl space-y-4">
-      <h1 className="text-2xl font-semibold">{t("connectTitle")}</h1>
+      <PageHeader title={t("connectTitle")} />
       <form
         className="card space-y-4"
         onSubmit={(e) => {

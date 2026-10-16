@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusBadge, TallyBar } from "@/components/ResolutionBits";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
@@ -27,13 +29,17 @@ export default function ResolutionPage() {
   const [onBehalf, setOnBehalf] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { confirm, toast } = useFeedback();
 
-  async function act(fn: () => Promise<unknown>) {
+  /** Asks first, then runs the action; every action on this page is irreversible. */
+  async function act(ask: Parameters<typeof confirm>[0], fn: () => Promise<unknown>, done: string) {
+    if (!(await confirm(ask))) return;
     setBusy(true);
     setError(null);
     try {
       await fn();
       setVersion((v) => v + 1);
+      toast(done);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -52,10 +58,7 @@ export default function ResolutionPage() {
       <Status state={state} />
       {r && orgId && (
         <>
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <h1 className="text-2xl font-semibold">{name(r.title, r.titleAr)}</h1>
-            <StatusBadge status={r.status} />
-          </div>
+          <PageHeader title={name(r.title, r.titleAr)} action={<StatusBadge status={r.status} />} />
           {r.description && <p className="whitespace-pre-wrap text-slate-700">{r.description}</p>}
           <p className="text-sm text-slate-500">
             {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} ·{" "}
@@ -84,7 +87,7 @@ export default function ResolutionPage() {
           {error && <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}</div>}
 
           {r.status === "DRAFT" && (
-            <button className="btn" disabled={busy} onClick={() => act(() => api.openResolution(orgId, r.id))}>{t("openVoting")}</button>
+            <button className="btn" disabled={busy} onClick={() => act({ message: t("confirmOpenTitle"), detail: t("confirmOpenDetail"), confirmLabel: t("openVoting") }, () => api.openResolution(orgId, r.id), t("toastOpened"))}>{t("openVoting")}</button>
           )}
 
           {r.status === "ACTIVE" && (
@@ -103,13 +106,21 @@ export default function ResolutionPage() {
               )}
               <div className="flex flex-wrap gap-2">
                 {CHOICES.map((c) => (
-                  <button key={c.v} disabled={busy} className={`btn ${c.cls}`} onClick={() => act(() => api.castVote(orgId, r.id, c.v, onBehalf))}>
+                  <button key={c.v} disabled={busy} className={`btn ${c.cls}`} onClick={() => {
+                    const holder = state.data!.holders.find((h) => h.id === onBehalf);
+                    act(
+                      { message: t("confirmVoteTitle"), detail: `${t(c.key)} · ${holder ? name(holder.fullNameEn, holder.fullNameAr) : t("myself")}
+${t("voteFinal")}`, confirmLabel: t(c.key), danger: c.v === "AGAINST" },
+                      () => api.castVote(orgId, r.id, c.v, onBehalf),
+                      t("toastVoted"),
+                    );
+                  }}>
                     {t(c.key)}
                   </button>
                 ))}
               </div>
               <p className="text-xs text-slate-500">{t("voteFinal")}</p>
-              <button className="btn-ghost" disabled={busy} onClick={() => act(() => api.closeResolution(orgId, r.id))}>{t("closeVoting")}</button>
+              <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmCloseTitle"), detail: t("confirmCloseDetail"), confirmLabel: t("closeVoting"), danger: true }, () => api.closeResolution(orgId, r.id), t("toastClosed"))}>{t("closeVoting")}</button>
             </div>
           )}
 

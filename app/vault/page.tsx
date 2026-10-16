@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -44,7 +45,7 @@ export default function VaultPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">{t("vaultTitle")}</h1>
+      <PageHeader title={t("vaultTitle")} />
       <Status state={state} />
       {state.data && state.orgId && (
         <>

@@ -3,6 +3,8 @@
 import { QRCodeSVG } from "qrcode.react";
 import { useState, type FormEvent } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -31,10 +33,22 @@ export default function IssueCertificatePage() {
   const [issued, setIssued] = useState<Certificate | null>(null);
 
   const selectedClass = state.data?.classes.find((c) => c.id === classId);
+  const { confirm } = useFeedback();
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!state.orgId) return;
+    const holder = state.data?.holders.find((h) => h.id === holderId);
+    const cur = currency || selectedClass?.currency || "";
+    const ok = await confirm({
+      message: t("confirmIssueTitle"),
+      detail: `${num(Number(quantity))} × ${selectedClass ? name(selectedClass.name, selectedClass.nameAr) : ""} → ${holder ? name(holder.fullNameEn, holder.fullNameAr) : ""}
+${t("consideration")}: ${cur} ${num(Number(quantity) * Number(price), { maximumFractionDigits: 2 })}
+
+${t("confirmIssueDetail")}`,
+      confirmLabel: t("issue"),
+    });
+    if (!ok) return;
     setBusy(true);
     setError(null);
     try {
@@ -87,7 +101,7 @@ export default function IssueCertificatePage() {
 
   return (
     <div className="max-w-xl space-y-4">
-      <h1 className="text-2xl font-semibold">{t("navIssue")}</h1>
+      <PageHeader title={t("navIssue")} />
       <Status state={state} />
       {state.data && (
         <form onSubmit={submit} className="card space-y-4">

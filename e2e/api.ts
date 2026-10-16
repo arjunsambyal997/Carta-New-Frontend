@@ -60,6 +60,9 @@ export async function loginAs(email: string, password: string, orgId: string, ro
 /** Starts the browser already signed in, the same way the app stores a session after login. */
 export async function signIn(page: Page, a: Pick<Account, "token" | "orgId" | "refresh">) {
   await page.addInitScript(([t, o, r]) => {
+    // seed once per tab: later page loads must keep whatever the app stored itself (for example after switching company)
+    if (sessionStorage.getItem("e2e.seeded")) return;
+    sessionStorage.setItem("e2e.seeded", "1");
     localStorage.setItem("equigcc.token", t);
     localStorage.setItem("equigcc.orgId", o);
     localStorage.setItem("equigcc.refresh", r);

@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { api, getSession, signOut } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { Avatar } from "./Avatar";
+import { CompanySwitcher } from "./CompanySwitcher";
 import { Icon, type IconName } from "./Icon";
 import { SearchPalette } from "./SearchPalette";
 import { useSession } from "./useSession";
@@ -232,7 +233,9 @@ export function Shell({ children }: { children: ReactNode }) {
           <button type="button" className="btn-ghost size-9 !p-0 lg:hidden" onClick={() => setOpen(true)} aria-label={t("menuOpen")}>
             <Icon name="menu" />
           </button>
-          <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
+          <div className="min-w-0 flex-1">
+            {session ? <CompanySwitcher current={org} orgId={session.orgId} canAdd={!isHolder} /> : <p className="truncate text-sm font-medium text-slate-600">{org}</p>}
+          </div>
           {session && !isHolder && <SearchPalette />}
           <Toggles />
           {session ? (

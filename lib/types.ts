@@ -299,6 +299,15 @@ export interface InviteResult {
   temporaryPassword: string | null;
 }
 
+export interface NewCompany {
+  legalNameEn: string;
+  legalNameAr?: string;
+  jurisdiction: Jurisdiction;
+  commercialLicenseNo: string;
+  baseCurrency: string;
+  certificatePrefix: string;
+}
+
 export interface SignupRequest {
   email: string;
   password: string;

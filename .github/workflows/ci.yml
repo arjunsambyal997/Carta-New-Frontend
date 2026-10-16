@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      backend_ref:
+        description: "Backend branch to test against (default: a branch with the same name as this one, else main)"
+        required: false
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -48,13 +53,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The tests need the API. Set the repository secret BACKEND_REPO_TOKEN (read access to the backend
-      # repository) when it is private, and the variable BACKEND_REF to test against a branch other than main.
+      # The tests need the API. Which backend branch: the one you asked for (manual run or the BACKEND_REF variable),
+      # else a backend branch with the same name as this branch, else main. If the backend repository is private,
+      # add the secret BACKEND_REPO_TOKEN (a token with read access to it).
+      - name: Pick the backend branch
+        id: backend
+        env:
+          ASKED: ${{ inputs.backend_ref || vars.BACKEND_REF }}
+          SAME: ${{ github.head_ref || github.ref_name }}
+          TOKEN: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
+        run: |
+          url="https://x-access-token:${TOKEN}@github.com/arjunsambyal997/Carta-New-Backend.git"
+          ref=main
+          for candidate in "$ASKED" "$SAME"; do
+            if [ -n "$candidate" ] && git ls-remote --exit-code --heads "$url" "$candidate" > /dev/null 2>&1; then
+              ref="$candidate"
+              break
+            fi
+          done
+          echo "Testing against backend branch: $ref"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+
       - name: Check out the backend
         uses: actions/checkout@v4
         with:
           repository: arjunsambyal997/Carta-New-Backend
-          ref: ${{ vars.BACKEND_REF || 'main' }}
+          ref: ${{ steps.backend.outputs.ref }}
           token: ${{ secrets.BACKEND_REPO_TOKEN || github.token }}
           path: backend
 

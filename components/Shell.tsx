@@ -102,12 +102,16 @@ function Brand() {
 }
 
 function Toggles() {
-  const { t, toggle: toggleLang } = useI18n();
+  const { t, toggle: toggleLang, hijri, toggleHijri } = useI18n();
   const { theme, toggle } = useTheme();
   return (
     <>
       <button type="button" onClick={toggle} className="btn-ghost size-9 !p-0" aria-label={t("themeToggle")} title={t("themeToggle")}>
         <Icon name={theme === "dark" ? "sun" : "moon"} />
+      </button>
+      <button type="button" onClick={toggleHijri} aria-pressed={hijri} title={t("hijriToggle")} className={`btn-ghost h-9 ${hijri ? "!border-emerald-600 !text-emerald-800" : ""}`}>
+        <span className="hidden sm:inline">{t("hijriShort")}</span>
+        <span className="sm:hidden" aria-label={t("hijriToggle")}>H</span>
       </button>
       <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
         <Icon name="globe" size={16} />

@@ -8,7 +8,7 @@ import type { DocumentType, SignatureView } from "@/lib/types";
 
 /** Who has signed a resolution or certificate, and a form to add your own signature with a fresh authenticator code. */
 export function SignaturesPanel({ orgId, type, docRef, allowSign = true }: { orgId: string; type: DocumentType; docRef: string; allowSign?: boolean }) {
-  const { t } = useI18n();
+  const { t, date } = useI18n();
   const { confirm, toast } = useFeedback();
   const [list, setList] = useState<SignatureView[] | null>(null);
   const [open, setOpen] = useState(false);
@@ -70,7 +70,7 @@ ${t("confirmSignDetail")}`,
                 </span>
               </div>
               <p className="mt-1 text-slate-600">“{s.statement}”</p>
-              <p className="mt-1 text-xs text-slate-400">{new Date(s.signedAt).toLocaleString()} · <span dir="ltr" className="font-mono">{s.signatureHash.slice(0, 16)}…</span></p>
+              <p className="mt-1 text-xs text-slate-400">{date(s.signedAt, true)} · <span dir="ltr" className="font-mono">{s.signatureHash.slice(0, 16)}…</span></p>
             </li>
           ))}
         </ul>

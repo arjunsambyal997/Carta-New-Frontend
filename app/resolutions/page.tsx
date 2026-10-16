@@ -11,7 +11,7 @@ import { useI18n } from "@/lib/i18n";
 import type { ResolutionThreshold } from "@/lib/types";
 
 export default function ResolutionsPage() {
-  const { t, name } = useI18n();
+  const { t, name, date } = useI18n();
   const [version, setVersion] = useState(0);
   const state = useRegister((orgId) => api.resolutions(orgId), version);
   const [showForm, setShowForm] = useState(false);
@@ -106,7 +106,7 @@ export default function ResolutionsPage() {
               <StatusBadge status={r.status} />
             </div>
             <p className="text-xs text-slate-500">
-              {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} · {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
+              {t("deadline")}: {date(r.votingDeadline, true)} · {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
             </p>
             {r.status !== "DRAFT" && <TallyBar r={r} />}
           </li>

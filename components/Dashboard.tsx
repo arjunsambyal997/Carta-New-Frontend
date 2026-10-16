@@ -124,7 +124,7 @@ function ClassMix({ table }: { table: CapTable }) {
 }
 
 function Resolutions({ list }: { list: Resolution[] | null }) {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const shown = [...(list ?? [])].sort((a, b) => (b.openedAt ?? b.votingDeadline).localeCompare(a.openedAt ?? a.votingDeadline)).slice(0, 4);
   return (
     <Panel title={t("recentResolutions")} action={<ViewAll href="/resolutions" />} className="2xl:order-3">
@@ -138,7 +138,7 @@ function Resolutions({ list }: { list: Resolution[] | null }) {
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium">{name(r.title, r.titleAr)}</span>
                   <span className="text-xs tabular-nums text-slate-500">
-                    {t("quorumShort")} {num(r.quorumPct)}% · {new Date(r.votingDeadline).toLocaleDateString()}
+                    {t("quorumShort")} {num(r.quorumPct)}% · {date(r.votingDeadline)}
                   </span>
                 </span>
                 <StatusBadge status={r.status} />

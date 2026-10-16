@@ -11,7 +11,7 @@ import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
 export default function PortalPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const state = useRegister(() => api.portalSummary());
   const [signing, setSigning] = useState<string | null>(null);
   const pct = (n: number) => `${num(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
@@ -51,7 +51,7 @@ export default function PortalPage() {
                   <Link href={`/resolutions/${v.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 p-3 text-sm hover:bg-slate-50">
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{name(v.title, v.titleAr)}</span>
-                      <span className="block text-xs text-slate-500">{t("deadline")}: {new Date(v.votingDeadline).toLocaleString()}</span>
+                      <span className="block text-xs text-slate-500">{t("deadline")}: {date(v.votingDeadline, true)}</span>
                     </span>
                     <span className={`rounded-full px-2 py-0.5 text-[11px] ${v.voted ? "bg-emerald-50 text-emerald-800" : "bg-amber-50 text-amber-800"}`}>
                       {v.voted ? t("portalVoted") : t("portalVoteNow")}

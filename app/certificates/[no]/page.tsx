@@ -11,7 +11,7 @@ import { useI18n, type Key } from "@/lib/i18n";
 
 /** The family tree of a certificate: what it replaced and what replaced it. */
 export default function CertificateLineagePage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const { no } = useParams<{ no: string }>();
   const certNo = decodeURIComponent(no);
   const state = useRegister((orgId) => api.lineage(orgId, certNo));
@@ -33,7 +33,7 @@ export default function CertificateLineagePage() {
                   </p>
                   <p className="text-sm text-slate-600">
                     {name(n.holderEn, n.holderAr)} · {num(n.quantity)} {n.className}
-                    {n.instrumentType !== "SHARES" && <span className="ms-1 text-xs text-slate-500">({n.instrumentType})</span>} · {n.dateIssued}
+                    {n.instrumentType !== "SHARES" && <span className="ms-1 text-xs text-slate-500">({n.instrumentType})</span>} · {date(n.dateIssued)}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">

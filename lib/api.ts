@@ -1,4 +1,4 @@
-import type { PendingChange,
+import type { Ledger, LineageNode, PendingChange,
   CapTable,
   Certificate,
   CertificateVerification,
@@ -199,7 +199,9 @@ export const api = {
   organization: (orgId: string) => request<Organization>(org(orgId)),
   shareClasses: (orgId: string) => request<ShareClass[]>(`${org(orgId)}/share-classes`),
   shareholders: (orgId: string) => request<Shareholder[]>(`${org(orgId)}/shareholders`),
-  capTable: (orgId: string) => request<CapTable>(`${org(orgId)}/cap-table`),
+  capTable: (orgId: string, asOf?: string) => request<CapTable>(`${org(orgId)}/cap-table${asOf ? `?asOf=${encodeURIComponent(asOf)}` : ""}`),
+  ledger: (orgId: string, shareholderId: string) => request<Ledger>(`${org(orgId)}/shareholders/${shareholderId}/ledger`),
+  lineage: (orgId: string, certificateNo: string) => request<LineageNode[]>(`${org(orgId)}/certificates/${encodeURIComponent(certificateNo)}/lineage`),
   waterfall: (orgId: string, exitValue: number) =>
     request<Waterfall>(`${org(orgId)}/waterfall?exitValue=${encodeURIComponent(exitValue)}`),
   resolutions: (orgId: string) => request<Resolution[]>(`${org(orgId)}/resolutions`),

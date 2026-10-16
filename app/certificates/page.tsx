@@ -47,6 +47,7 @@ export default function CertificatesPage() {
                   <td>{c.status}</td>
                   <td className="text-end">
                     <DownloadButton label={t("downloadPdf")} run={() => api.certificatePdf(state.orgId!, c.certificateNo)} />
+                    {me && me.role !== "SHAREHOLDER" && <Link className="btn-ghost ms-1" href={`/certificates/${encodeURIComponent(c.certificateNo)}`}>{t("lineageTitle")}</Link>}
                     {canSign && c.status === "ISSUED" && (
                       <button className="btn-ghost ms-1" onClick={() => setSigning(signing === c.certificateNo ? null : c.certificateNo)}>{t("sigTitle")}</button>
                     )}

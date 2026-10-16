@@ -48,6 +48,43 @@ export interface Shareholder {
   nationality: string | null;
 }
 
+export interface LedgerEvent {
+  date: string;
+  type: "ACQUIRED" | "DISPOSED";
+  certificateNo: string;
+  instrumentType: InstrumentType;
+  className: string;
+  quantity: number;
+  counterpartyEn: string | null;
+  counterpartyAr: string | null;
+  counterpartyCertificateNo: string | null;
+  reason: string;
+  sharesAfter: number;
+}
+
+export interface Ledger {
+  shareholderId: string;
+  nameEn: string;
+  nameAr: string | null;
+  currentShares: number;
+  events: LedgerEvent[];
+}
+
+export interface LineageNode {
+  certificateNo: string;
+  status: string;
+  instrumentType: InstrumentType;
+  holderEn: string;
+  holderAr: string | null;
+  className: string;
+  quantity: number;
+  dateIssued: string;
+  predecessorNo: string | null;
+  reason: string;
+  depth: number;
+  current: boolean;
+}
+
 export interface HolderPosition {
   shareholderId: string;
   nameEn: string;

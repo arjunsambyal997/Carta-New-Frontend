@@ -95,6 +95,9 @@ Every certificate has a QR code. Scanning it opens a public verification page th
 ### See ownership
 - **Dashboard:** key numbers, economic vs. voting power, class mix, recent votes and certificates.
 - **Cap table:** every holder by class, issued and fully diluted %, votes. Export as CSV or PDF.
+- **Back in time:** on **Cap table**, pick an **As of date** to see the register exactly as it stood at the end of that day (useful for audits, due diligence and "who owned what when we signed?"). **Back to today** returns to the live view.
+- **A holder's ledger:** click a name on the cap table to see everything that holder acquired and disposed of, in date order, who was on the other side, and a running share count.
+- **A certificate's history:** on **Certificates**, **History** shows the family tree: what the certificate replaced and what replaced it (transfer, option exercise, succession, reissue).
 - **Ownership tree:** a visual tree. Under a company you see its recorded owners.
 - **Search** (top bar, or Ctrl+K): find any holder, certificate, resolution or document.
 

@@ -36,14 +36,14 @@ export default function ResolutionPage() {
   const { confirm, toast } = useFeedback();
 
   /** Asks first, then runs the action; every action on this page is irreversible. */
-  async function act(ask: Parameters<typeof confirm>[0], fn: () => Promise<unknown>, done: string) {
+  async function act<T>(ask: Parameters<typeof confirm>[0], fn: () => Promise<T>, done: string | ((res: T) => string)) {
     if (!(await confirm(ask))) return;
     setBusy(true);
     setError(null);
     try {
-      await fn();
+      const res = await fn();
       setVersion((v) => v + 1);
-      toast(done);
+      toast(typeof done === "string" ? done : done(res));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -125,7 +125,11 @@ ${t("voteFinal")}`, confirmLabel: t(c.key), danger: c.v === "AGAINST" },
               </div>
               <p className="text-xs text-slate-500">{t("voteFinal")}</p>
               {officer && (
-                <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmCloseTitle"), detail: t("confirmCloseDetail"), confirmLabel: t("closeVoting"), danger: true }, () => api.closeResolution(orgId, r.id), t("toastClosed"))}>{t("closeVoting")}</button>
+                <div className="flex flex-wrap items-center gap-2 border-t border-slate-200 pt-3">
+                  <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmCloseTitle"), detail: t("confirmCloseDetail"), confirmLabel: t("closeVoting"), danger: true }, () => api.closeResolution(orgId, r.id), t("toastClosed"))}>{t("closeVoting")}</button>
+                  <button className="btn-ghost" disabled={busy} onClick={() => act({ message: t("confirmRemindTitle"), detail: t("confirmRemindDetail"), confirmLabel: t("remindVoters") }, () => api.remindResolution(orgId, r.id), (res) => `${t("toastReminded")} ${num(res.recipients)}`)}>{t("remindVoters")}</button>
+                  {r.lastReminderAt && <span className="text-xs text-slate-500">{t("lastReminder")}: {new Date(r.lastReminderAt).toLocaleString()}</span>}
+                </div>
               )}
             </div>
           )}

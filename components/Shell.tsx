@@ -114,6 +114,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [org, setOrg] = useState<string | null>(null);
   const [who, setWho] = useState<{ email: string; role: string } | null>(null);
+  const [pendingVotes, setPendingVotes] = useState(0);
 
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
@@ -123,6 +124,12 @@ export function Shell({ children }: { children: ReactNode }) {
     api.me().then((m) => setWho({ email: m.email, role: m.role })).catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, t]);
+
+  // Shareholders see how many open votes still wait for them; re-checked on every page change so it drops after voting.
+  useEffect(() => {
+    if (who?.role !== "SHAREHOLDER") return;
+    api.portalSummary().then((s) => setPendingVotes(s.openVotes.filter((v) => !v.voted).length)).catch(() => undefined);
+  }, [who, path]);
 
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
     return (
@@ -158,6 +165,9 @@ export function Shell({ children }: { children: ReactNode }) {
                   >
                     <Icon name={n.icon} className={active ? "text-emerald-700" : "text-slate-400"} />
                     {t(n.key)}
+                    {isHolder && n.href === "/resolutions" && pendingVotes > 0 && (
+                      <span className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800" aria-label={`${pendingVotes} ${t("portalVotes")}`}>{pendingVotes}</span>
+                    )}
                   </Link>
                 </li>
               );

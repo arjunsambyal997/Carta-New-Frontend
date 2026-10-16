@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import type { CapTable } from "@/lib/types";
 
@@ -50,7 +51,7 @@ export function CapTableGrid({ table }: { table: CapTable }) {
           <tbody className="divide-y divide-slate-100 tabular-nums">
             {table.holders.map((h) => (
               <tr key={h.shareholderId} className="hover:bg-slate-50">
-                <td className="px-3 py-2 text-start font-medium">{name(h.nameEn, h.nameAr)}</td>
+                <td className="px-3 py-2 text-start font-medium"><Link className="hover:underline" href={`/holders/${h.shareholderId}`} title={t("ledgerTitle")}>{name(h.nameEn, h.nameAr)}</Link></td>
                 <td className="px-3 py-2 text-end">{num(h.issuedShares)}</td>
                 <td className="px-3 py-2 text-end">{pct(h.issuedOwnershipPct)}</td>
                 <td className="px-3 py-2">

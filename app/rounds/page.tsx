@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -39,10 +40,7 @@ export default function RoundsPage() {
 
   return (
     <div className="max-w-4xl space-y-5">
-      <div>
-        <h1>{t("navRounds")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("roundsIntro")}</p>
-      </div>
+      <PageHeader title={t("navRounds")} subtitle={t("roundsIntro")} />
       <Status state={state} />
       {state.data && (
         <form onSubmit={run} className="card grid gap-4 sm:grid-cols-2">

@@ -1,4 +1,4 @@
-import type {
+import type { PendingChange,
   CapTable,
   Certificate,
   CertificateVerification,
@@ -164,9 +164,18 @@ async function request<T>(path: string, init: RequestInit = {}, auth = true): Pr
     if (res.status === 403) detail = detail && detail !== "Forbidden" ? detail : "Forbidden: check role, organization and MFA";
     throw new ApiError(res.status, detail);
   }
-  if (res.status === 202 || res.status === 204) return undefined as T;
+  if (res.status === 204) return undefined as T;
+  if (res.status === 202) {
+    // 202 is "accepted": usually no body, but a gated register change answers with the pending change.
+    const text = await res.text();
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
   return res.json() as Promise<T>;
 }
+
+/** True when a gated action (issue, transfer, buy-back, exercise) was held for approval instead of carried out. */
+export const isPendingChange = (x: unknown): x is PendingChange =>
+  typeof x === "object" && x !== null && "pending" in x && "kind" in x && "summary" in x;
 
 /** Fetches an authenticated binary response and hands it to the browser as a file download. */
 export async function downloadFile(path: string, fallbackName: string): Promise<void> {
@@ -292,8 +301,16 @@ export const api = {
     request<SignatureView>(`${org(orgId)}/signatures`, { method: "POST", body: JSON.stringify(body) }),
   certificatePdf: (orgId: string, certNo: string) =>
     downloadFile(`${org(orgId)}/certificates/${encodeURIComponent(certNo)}/pdf`, `${certNo}.pdf`),
+  approvals: (orgId: string) => request<PendingChange[]>(`${org(orgId)}/approvals`),
+  approveChange: (orgId: string, id: string, note?: string) =>
+    request<PendingChange>(`${org(orgId)}/approvals/${id}/approve`, { method: "POST", body: JSON.stringify({ note }) }),
+  rejectChange: (orgId: string, id: string, note?: string) =>
+    request<PendingChange>(`${org(orgId)}/approvals/${id}/reject`, { method: "POST", body: JSON.stringify({ note }) }),
+  cancelChange: (orgId: string, id: string) => request<PendingChange>(`${org(orgId)}/approvals/${id}/cancel`, { method: "POST" }),
+  setApprovalRequired: (orgId: string, required: boolean) =>
+    request<{ required: boolean }>(`${org(orgId)}/settings/approvals`, { method: "PUT", body: JSON.stringify({ required }) }),
   issueCertificate: (orgId: string, body: IssueCertificateRequest) =>
-    request<Certificate>(`${org(orgId)}/certificates`, { method: "POST", body: JSON.stringify(body) }),
+    request<Certificate | PendingChange>(`${org(orgId)}/certificates`, { method: "POST", body: JSON.stringify(body) }),
   verifyCertificate: (certNo: string, hash?: string) =>
     request<CertificateVerification>(
       `/api/v1/certificates/${encodeURIComponent(certNo)}/verify${hash ? `?h=${encodeURIComponent(hash)}` : ""}`,

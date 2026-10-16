@@ -5,7 +5,7 @@ import { useFeedback } from "@/components/Feedback";
 import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
-import { api } from "@/lib/api";
+import { api, isPendingChange } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import type { VestingStatus } from "@/lib/types";
 
@@ -70,8 +70,8 @@ ${t("confirmExerciseDetail")}`,
     setBusy(true);
     setError(null);
     try {
-      await api.exerciseOptions(orgId, s.certificateNo, { quantity: Number(qty), shareClassId: cls || undefined });
-      toast(t("optionsExerciseDone"));
+      const res = await api.exerciseOptions(orgId, s.certificateNo, { quantity: Number(qty), shareClassId: cls || undefined });
+      toast(isPendingChange(res) ? t("toastSentForApproval") : t("optionsExerciseDone"));
       setQty("");
       onDone();
     } catch (err) {

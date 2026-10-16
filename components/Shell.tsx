@@ -33,6 +33,7 @@ const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] 
     label: "groupGovernance",
     items: [
       { href: "/resolutions", key: "navResolutions", icon: "resolutions" },
+      { href: "/approvals", key: "navApprovals", icon: "approvals" },
       { href: "/succession", key: "navSuccession", icon: "succession" },
     ],
   },
@@ -115,6 +116,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [org, setOrg] = useState<string | null>(null);
   const [who, setWho] = useState<{ email: string; role: string } | null>(null);
   const [pendingVotes, setPendingVotes] = useState(0);
+  const [pendingApprovals, setPendingApprovals] = useState(0);
 
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
@@ -129,6 +131,13 @@ export function Shell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (who?.role !== "SHAREHOLDER") return;
     api.portalSummary().then((s) => setPendingVotes(s.openVotes.filter((v) => !v.voted).length)).catch(() => undefined);
+  }, [who, path]);
+
+  // Staff see how many register changes wait for a second person.
+  useEffect(() => {
+    const s = getSession();
+    if (!s || !who || who.role === "SHAREHOLDER") return;
+    api.approvals(s.orgId).then((l) => setPendingApprovals(l.filter((c) => c.pending).length)).catch(() => undefined);
   }, [who, path]);
 
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
@@ -165,6 +174,9 @@ export function Shell({ children }: { children: ReactNode }) {
                   >
                     <Icon name={n.icon} className={active ? "text-emerald-700" : "text-slate-400"} />
                     {t(n.key)}
+                    {n.href === "/approvals" && pendingApprovals > 0 && (
+                      <span className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800">{pendingApprovals}</span>
+                    )}
                     {isHolder && n.href === "/resolutions" && pendingVotes > 0 && (
                       <span className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800" aria-label={`${pendingVotes} ${t("portalVotes")}`}>{pendingVotes}</span>
                     )}

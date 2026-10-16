@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DownloadButton } from "@/components/DownloadButton";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -21,8 +22,9 @@ export default function UboPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl font-semibold">{t("uboTitle")}</h1>
+      <PageHeader
+        title={t("uboTitle")}
+        action={
         <div className="flex flex-wrap items-end gap-3">
           <div>
             <label className="label" htmlFor="th">{t("uboThreshold")}</label>
@@ -35,7 +37,8 @@ export default function UboPage() {
             </>
           )}
         </div>
-      </div>
+        }
+      />
       <Status state={state} />
       {state.data && state.orgId && (
         <>

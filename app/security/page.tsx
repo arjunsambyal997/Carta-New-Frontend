@@ -4,6 +4,7 @@ import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { api, getSession, saveSession } from "@/lib/api";
+import { PageHeader } from "@/components/PageHeader";
 import { useI18n } from "@/lib/i18n";
 import type { Enrollment } from "@/lib/types";
 
@@ -39,7 +40,7 @@ export default function SecurityPage() {
 
   return (
     <div className="max-w-md space-y-4">
-      <h1 className="text-2xl font-semibold">{t("securityTitle")}</h1>
+      <PageHeader title={t("securityTitle")} />
       {done ? (
         <div className="card space-y-3">
           <p className="text-emerald-800">{t("mfaEnabled")}</p>

@@ -18,7 +18,7 @@ const config: Config = {
         surface: "rgb(var(--surface) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ['"Inter"', '"Segoe UI Variable"', '"Noto Sans Arabic"', "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "var(--font-arabic)", '"Segoe UI Variable"', "system-ui", "sans-serif"],
       },
       boxShadow: {
         card: "0 1px 2px rgb(var(--shadow) / 0.06), 0 1px 3px rgb(var(--shadow) / 0.04)",

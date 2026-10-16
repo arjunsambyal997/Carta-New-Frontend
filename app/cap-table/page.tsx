@@ -2,6 +2,7 @@
 
 import { DownloadButton } from "@/components/DownloadButton";
 import { CapTableGrid } from "@/components/CapTableGrid";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -13,15 +14,18 @@ export default function CapTablePage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1>{t("navCapTable")}</h1>
-        {state.orgId && (
-          <div className="flex gap-2">
-            <DownloadButton label={t("exportCsv")} run={() => api.capTableExport(state.orgId!, "csv")} />
-            <DownloadButton label={t("exportPdf")} run={() => api.capTableExport(state.orgId!, "pdf")} />
-          </div>
-        )}
-      </div>
+      <PageHeader
+        title={t("navCapTable")}
+        subtitle={t("subCapTable")}
+        action={
+          state.orgId && (
+            <>
+              <DownloadButton label={t("exportCsv")} run={() => api.capTableExport(state.orgId!, "csv")} />
+              <DownloadButton label={t("exportPdf")} run={() => api.capTableExport(state.orgId!, "pdf")} />
+            </>
+          )
+        }
+      />
       <Status state={state} />
       {state.data && <CapTableGrid table={state.data} />}
     </div>

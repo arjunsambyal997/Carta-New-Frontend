@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useFeedback } from "@/components/Feedback";
+import { PageHeader } from "@/components/PageHeader";
 import { Status } from "@/components/Status";
 import { useRegister } from "@/components/useRegister";
 import { api } from "@/lib/api";
@@ -22,8 +24,7 @@ export default function SuccessionPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">{t("succTitle")}</h1>
-      <p className="max-w-3xl text-sm text-slate-600">{t("succIntro")}</p>
+      <PageHeader title={t("succTitle")} subtitle={t("succIntro")} />
       <Status state={state} />
       {state.data && state.orgId && (
         <>
@@ -108,6 +109,7 @@ function RuleCard({ orgId, rule, passed, onChanged, name }: {
   const [created, setCreated] = useState<Certificate[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { confirm, toast } = useFeedback();
 
   async function run(fn: () => Promise<void>) {
     setBusy(true);
@@ -144,10 +146,10 @@ function RuleCard({ orgId, rule, passed, onChanged, name }: {
             </select>
           </div>
           <button className="btn" disabled={busy || !plan || plan.length === 0 || plan.some((c) => c.problem)}
-            onClick={() => { if (window.confirm(t("succConfirm"))) run(async () => { setCreated(await api.executeSuccession(orgId, rule.id, resolutionId || undefined)); setPlan(null); onChanged(); }); }}>
+            onClick={async () => { if (await confirm({ message: t("succConfirm"), confirmLabel: t("succExecute"), danger: true })) run(async () => { setCreated(await api.executeSuccession(orgId, rule.id, resolutionId || undefined)); setPlan(null); onChanged(); }); }}>
             {t("succExecute")}
           </button>
-          <button className="btn-ghost" disabled={busy} onClick={() => run(async () => { await api.cancelSuccession(orgId, rule.id); onChanged(); })}>{t("succCancel")}</button>
+          <button className="btn-ghost" disabled={busy} onClick={async () => { if (await confirm({ message: t("confirmSuccCancel"), confirmLabel: t("succCancel"), danger: true })) run(async () => { await api.cancelSuccession(orgId, rule.id); toast(t("toastCancelled")); onChanged(); }); }}>{t("succCancel")}</button>
         </div>
       )}
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}

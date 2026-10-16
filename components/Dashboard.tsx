@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { useI18n } from "@/lib/i18n";
 import type { CapTable, Certificate, Resolution } from "@/lib/types";
+import { Avatar } from "./Avatar";
 import { Icon } from "./Icon";
 import { StatusBadge } from "./ResolutionBits";
 
@@ -161,9 +162,12 @@ function Certificates({ list }: { list: Certificate[] | null }) {
         <ul className="divide-y divide-slate-100">
           {shown.map((c) => (
             <li key={c.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-              <span className="min-w-0">
-                <span className="block truncate font-medium">{name(c.shareholderNameEn, c.shareholderNameAr)}</span>
-                <span className="text-xs text-slate-500" dir="ltr">{c.certificateNo}</span>
+              <span className="flex min-w-0 items-center gap-3">
+                <Avatar name={c.shareholderNameEn} />
+                <span className="min-w-0">
+                  <span className="block truncate font-medium">{name(c.shareholderNameEn, c.shareholderNameAr)}</span>
+                  <span className="text-xs text-slate-500" dir="ltr">{c.certificateNo}</span>
+                </span>
               </span>
               <span className="shrink-0 text-end tabular-nums">
                 <span className="block">{num(c.quantity)}</span>

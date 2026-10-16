@@ -13,7 +13,7 @@ import { useSession } from "./useSession";
 /** What a shareholder account sees: their own portal, votes, and account security. */
 const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
   { label: "groupOverview", items: [{ href: "/portal", key: "navPortal", icon: "portal" }, { href: "/resolutions", key: "navResolutions", icon: "resolutions" }] },
-  { label: "groupAdmin", items: [{ href: "/security", key: "navSecurity", icon: "security" }, { href: "/password", key: "navPassword", icon: "password" }] },
+  { label: "groupAdmin", items: [{ href: "/security", key: "navSecurity", icon: "security" }, { href: "/password", key: "navPassword", icon: "password" }, { href: "/guide", key: "navGuide", icon: "guide" }] },
 ];
 
 const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
@@ -53,6 +53,7 @@ const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] 
       { href: "/members", key: "navMembers", icon: "members" },
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
+      { href: "/guide", key: "navGuide", icon: "guide" },
     ],
   },
 ];

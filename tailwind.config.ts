@@ -1,11 +1,11 @@
 import type { Config } from "tailwindcss";
 
-/** Palette steps are CSS variables (see app/globals.css) so the whole UI re-themes for dark mode. */
+/** Palette steps are CSS variables (see src/designSystem/globals.css) so the whole UI re-themes for dark mode. */
 const scale = (name: string, steps: number[]) =>
   Object.fromEntries(steps.map((s) => [s, `rgb(var(--${name}-${s}) / <alpha-value>)`]));
 
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {

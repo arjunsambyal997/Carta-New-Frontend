@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "react",
+    "nextjs"
+  ],
+  "categories": {
+    "correctness": "error"
+  },
+  "ignorePatterns": [
+    ".next",
+    "node_modules",
+    "next-env.d.ts"
+  ],
+  "rules": {
+    "react/set-state-in-effect": "off",
+    "react/immutability": "off"
+  }
+}

@@ -265,6 +265,8 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
     fullNameAr: "",
     nationality: "",
     passportNo: "",
+    dateOfBirth: "",
+    address: "",
     registrationNo: "",
     email: "",
   });
@@ -282,6 +284,8 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
             fullNameAr: f.fullNameAr || undefined,
             nationality: f.nationality.toUpperCase() || undefined,
             passportNo: corp ? undefined : f.passportNo || undefined,
+            dateOfBirth: corp ? undefined : f.dateOfBirth || undefined,
+            address: f.address || undefined,
             registrationNo: corp ? f.registrationNo || undefined : undefined,
             email: f.email || undefined,
           }),
@@ -331,6 +335,20 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           <input id="pp" className="input" dir="ltr" value={f.passportNo} onChange={set("passportNo")} />
         </div>
       )}
+      {!corp && (
+        <div>
+          <label className="label" htmlFor="dob">
+            {t("dateOfBirth")}
+          </label>
+          <input id="dob" type="date" className="input" value={f.dateOfBirth} onChange={set("dateOfBirth")} />
+        </div>
+      )}
+      <div>
+        <label className="label" htmlFor="addr">
+          {t("holderAddress")}
+        </label>
+        <input id="addr" className="input" maxLength={1000} value={f.address} onChange={set("address")} />
+      </div>
       <div>
         <label className="label" htmlFor="em">
           {t("email")}

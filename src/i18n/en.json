@@ -772,5 +772,16 @@
   "sidebarExpand": "Expand sidebar",
   "searchPages": "Go to",
   "searchResults": "Results",
-  "searchTyping": "Type at least 2 characters to search records"
+  "searchTyping": "Type at least 2 characters to search records",
+  "kpiSince": "vs 30 days ago",
+  "controlGap": "Control vs ownership",
+  "controlGapHint": "Voting share minus economic share. Positive means a holder controls more than they own.",
+  "ownsLabel": "Owns",
+  "controlsLabel": "Controls",
+  "resQuorumReached": "Quorum reached",
+  "resNoVotes": "No votes yet",
+  "resFor": "For",
+  "resAgainst": "Against",
+  "resClosesOn": "Closes",
+  "resClosedOn": "Closed"
 }

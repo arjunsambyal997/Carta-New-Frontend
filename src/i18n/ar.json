@@ -772,5 +772,16 @@
   "sidebarExpand": "توسيع الشريط الجانبي",
   "searchPages": "انتقل إلى",
   "searchResults": "النتائج",
-  "searchTyping": "اكتب حرفين على الأقل للبحث في السجلات"
+  "searchTyping": "اكتب حرفين على الأقل للبحث في السجلات",
+  "kpiSince": "مقارنة بقبل 30 يومًا",
+  "controlGap": "السيطرة مقابل الملكية",
+  "controlGapHint": "حصة التصويت ناقص الحصة الاقتصادية. الموجب يعني أن المساهم يتحكم بأكثر مما يملك.",
+  "ownsLabel": "يملك",
+  "controlsLabel": "يتحكم",
+  "resQuorumReached": "اكتمل النصاب",
+  "resNoVotes": "لا أصوات بعد",
+  "resFor": "مع",
+  "resAgainst": "ضد",
+  "resClosesOn": "يغلق",
+  "resClosedOn": "أُغلق"
 }

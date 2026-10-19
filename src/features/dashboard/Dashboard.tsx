@@ -12,8 +12,11 @@ import type {
   Resolution,
   ComplianceItem,
 } from "@/api/types";
+import { CircleCheck, CircleX, Clock, Coins, FilePen, Gavel, Users, Vote } from "lucide-react";
 import { Avatar } from "@/components/common/Avatar";
 import { Icon } from "@/components/common/Icon";
+import { Tooltip } from "@/components/common/Tooltip";
+import { Trend } from "@/components/common/Trend";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/features/resolutions/ResolutionBits";
 import { buildAttention, type AttentionItem, type Severity } from "@/features/dashboard/attention";
@@ -22,12 +25,34 @@ import { checklistProgress, checklistSteps, type ChecklistStep } from "@/feature
 const SERIES = ["var(--series-1)", "var(--series-2)", "var(--series-3)", "var(--series-4)", "var(--series-5)"];
 const col = (i: number) => `rgb(${SERIES[i % SERIES.length]})`;
 
-function Kpi({ label, value, sub, delay }: { label: string; value: string; sub: string; delay: number }) {
+function Kpi({
+  label,
+  value,
+  sub,
+  delay,
+  icon,
+  trend,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  delay: number;
+  icon: ReactNode;
+  trend?: ReactNode;
+}) {
   return (
-    <div className="card animate-rise" style={{ animationDelay: `${delay}ms` }}>
-      <p className="label !mb-2">{label}</p>
-      <p className="text-2xl font-semibold tabular-nums tracking-tight text-slate-900">{value}</p>
-      <p className="mt-1 text-xs leading-snug text-slate-500">{sub}</p>
+    <div className="card animate-rise !p-4 sm:!p-5" style={{ animationDelay: `${delay}ms` }}>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-slate-500">{label}</p>
+        <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+          {icon}
+        </span>
+      </div>
+      <p className="mt-2 text-3xl font-semibold tabular-nums tracking-tight text-slate-900">{value}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+        {trend}
+        <span>{sub}</span>
+      </div>
     </div>
   );
 }
@@ -94,39 +119,73 @@ function EconVsVoting({ table }: { table: CapTable }) {
   const rest = table.holders.length - top.length;
   const bar = (v: number, color: string) => (
     <div className="flex items-center gap-2">
-      <div className="h-2 flex-1 rounded-e-[4px] bg-transparent">
+      <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-e-[4px] transition-[width] duration-500"
-          style={{ width: `${(v / max) * 100}%`, background: color, minWidth: v > 0 ? 3 : 0 }}
+          className="h-full rounded-full transition-[width] duration-500 group-hover:brightness-110"
+          style={{ width: `${(v / max) * 100}%`, background: color, minWidth: v > 0 ? 4 : 0 }}
         />
       </div>
       <span className="w-14 shrink-0 text-end text-xs tabular-nums text-slate-600">{pct(v)}</span>
     </div>
   );
   return (
-    <Panel title={t("econVsVoting")} hint={t("econVsVotingHint")} className="lg:col-span-2">
-      <div className="mb-4">
+    <Panel
+      title={t("econVsVoting")}
+      hint={t("econVsVotingHint")}
+      className="lg:col-span-2"
+      action={
         <Legend
           items={[
             { label: t("economic"), color: col(0) },
             { label: t("voting"), color: col(1) },
           ]}
         />
-      </div>
-      <ul className="space-y-3">
-        {top.map((h) => (
-          <li
-            key={h.shareholderId}
-            className="group grid grid-cols-[minmax(0,9rem)_1fr] items-center gap-x-4 gap-y-1 rounded-lg px-1 py-0.5 hover:bg-slate-50 sm:grid-cols-[minmax(0,12rem)_1fr]"
-            title={`${name(h.nameEn, h.nameAr)}: ${t("economic")} ${pct(h.fullyDilutedOwnershipPct)}, ${t("voting")} ${pct(h.votingPct)}`}
-          >
-            <span className="truncate text-sm text-slate-800">{name(h.nameEn, h.nameAr)}</span>
-            <div className="space-y-1">
-              {bar(h.fullyDilutedOwnershipPct, col(0))}
-              {bar(h.votingPct, col(1))}
-            </div>
-          </li>
-        ))}
+      }
+    >
+      <ul className="space-y-1">
+        {top.map((h) => {
+          const gap = h.votingPct - h.fullyDilutedOwnershipPct;
+          return (
+            <li key={h.shareholderId}>
+              <Tooltip
+                content={
+                  <dl className="space-y-1">
+                    <dt className="font-semibold text-slate-900">{name(h.nameEn, h.nameAr)}</dt>
+                    <dd className="flex justify-between gap-6 tabular-nums">
+                      <span className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-sm" style={{ background: col(0) }} />
+                        {t("economic")}
+                      </span>
+                      {pct(h.fullyDilutedOwnershipPct)}
+                    </dd>
+                    <dd className="flex justify-between gap-6 tabular-nums">
+                      <span className="flex items-center gap-1.5">
+                        <span className="size-2 rounded-sm" style={{ background: col(1) }} />
+                        {t("voting")}
+                      </span>
+                      {pct(h.votingPct)}
+                    </dd>
+                    <dd className="border-t border-slate-200 pt-1 text-slate-500">
+                      {t("controlGap")}: {gap > 0 ? "+" : ""}
+                      {num(gap, { maximumFractionDigits: 1 })} pp
+                    </dd>
+                  </dl>
+                }
+              >
+                <div
+                  tabIndex={0}
+                  className="group grid cursor-default grid-cols-[minmax(0,8rem)_1fr] items-center gap-x-4 gap-y-1 rounded-lg px-2 py-2 transition-colors hover:bg-slate-50 focus-visible:bg-slate-50 sm:grid-cols-[minmax(0,12rem)_1fr]"
+                >
+                  <span className="truncate text-sm text-slate-800">{name(h.nameEn, h.nameAr)}</span>
+                  <div className="space-y-1.5">
+                    {bar(h.fullyDilutedOwnershipPct, col(0))}
+                    {bar(h.votingPct, col(1))}
+                  </div>
+                </div>
+              </Tooltip>
+            </li>
+          );
+        })}
       </ul>
       {rest > 0 && (
         <p className="mt-3 text-xs text-slate-500">
@@ -170,6 +229,14 @@ function ClassMix({ table }: { table: CapTable }) {
   );
 }
 
+const RES_ICON = { DRAFT: FilePen, ACTIVE: Clock, PASSED: CircleCheck, REJECTED: CircleX } as const;
+const RES_ACCENT = {
+  DRAFT: "bg-slate-300",
+  ACTIVE: "bg-sky-600",
+  PASSED: "bg-emerald-600",
+  REJECTED: "bg-red-500",
+} as const;
+
 function Resolutions({ list }: { list: Resolution[] | null }) {
   const { t, num, name, date } = useI18n();
   const shown = [...(list ?? [])]
@@ -186,23 +253,48 @@ function Resolutions({ list }: { list: Resolution[] | null }) {
           action={{ label: t("navResolutions"), href: "/resolutions" }}
         />
       ) : (
-        <ul className="divide-y divide-slate-100">
-          {shown.map((r) => (
-            <li key={r.id}>
-              <Link
-                href={`/resolutions/${r.id}`}
-                className="flex items-center justify-between gap-3 py-2.5 hover:text-emerald-700"
-              >
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium">{name(r.title, r.titleAr)}</span>
-                  <span className="text-xs tabular-nums text-slate-500">
-                    {t("quorumShort")} {num(r.quorumPct)}% · {date(r.votingDeadline)}
-                  </span>
-                </span>
-                <StatusBadge status={r.status} />
-              </Link>
-            </li>
-          ))}
+        <ul className="space-y-2.5">
+          {shown.map((r) => {
+            const Ico = RES_ICON[r.status];
+            const total = r.totalVotingPower ?? 0;
+            const w = (n: number) => (total > 0 ? Math.min(100, (n / total) * 100) : 0);
+            const closed = r.status === "PASSED" || r.status === "REJECTED";
+            return (
+              <li key={r.id}>
+                <Link
+                  href={`/resolutions/${r.id}`}
+                  className="group relative block overflow-hidden rounded-xl border border-slate-200 bg-surface p-3 ps-4 transition-all hover:-translate-y-px hover:border-slate-300 hover:shadow-card"
+                >
+                  <span aria-hidden className={`absolute inset-y-0 start-0 w-1 ${RES_ACCENT[r.status]}`} />
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="min-w-0 text-sm font-medium leading-snug text-slate-900 group-hover:text-emerald-700">
+                      {name(r.title, r.titleAr)}
+                    </p>
+                    <span className="flex shrink-0 items-center gap-1">
+                      <StatusBadge status={r.status} icon={<Ico size={12} aria-hidden />} />
+                    </span>
+                  </div>
+                  <div className="mt-2 flex h-1.5 overflow-hidden rounded-full bg-slate-100" aria-hidden>
+                    <div className="bg-emerald-600" style={{ width: `${w(r.tally.forWeight)}%` }} />
+                    <div className="bg-red-500" style={{ width: `${w(r.tally.againstWeight)}%` }} />
+                  </div>
+                  <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs tabular-nums text-slate-500">
+                    <span>
+                      {t("quorumShort")} {num(r.quorumPct)}%
+                    </span>
+                    {r.status !== "DRAFT" && (
+                      <span>
+                        {t("participation")} {num(r.tally.participationPct, { maximumFractionDigits: 1 })}%
+                      </span>
+                    )}
+                    <span className="ms-auto">
+                      {closed ? t("resClosedOn") : t("resClosesOn")} {date(r.closedAt ?? r.votingDeadline)}
+                    </span>
+                  </p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </Panel>
@@ -498,6 +590,7 @@ function ActivityFeed({ entries }: { entries: AuditEntry[] | null }) {
 export function Dashboard({
   org,
   table,
+  prior,
   resolutions,
   certificates,
   setup,
@@ -507,6 +600,8 @@ export function Dashboard({
 }: {
   org: Organization;
   table: CapTable;
+  /** The register 30 days ago, for the change badges. `null` when it could not be loaded. */
+  prior?: CapTable | null;
   resolutions: Resolution[] | null;
   certificates: Certificate[] | null;
   setup: Setup;
@@ -516,32 +611,62 @@ export function Dashboard({
 }) {
   const { t, num } = useI18n();
   const open = (resolutions ?? []).filter((r) => r.status === "ACTIVE").length;
+  const pctFmt = (n: number) => num(Math.abs(n), { maximumFractionDigits: 1 });
   return (
     <div className="space-y-5">
       <Onboarding org={org} setup={setup} resolutions={resolutions} certificates={certificates} />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 2xl:gap-5">
+      <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-4 2xl:gap-5">
         <Kpi
           delay={0}
+          icon={<Coins size={16} aria-hidden />}
           label={t("issuedShares")}
           value={num(table.totalIssuedShares)}
+          trend={
+            <Trend
+              now={table.totalIssuedShares}
+              before={prior?.totalIssuedShares ?? null}
+              format={pctFmt}
+              label={t("kpiSince")}
+            />
+          }
           sub={`${t("kpiFdSub")} ${num(table.totalFullyDilutedShares)}`}
         />
         <Kpi
           delay={40}
+          icon={<Vote size={16} aria-hidden />}
           label={t("votingPower")}
           value={num(table.totalVotingPower)}
+          trend={
+            <Trend
+              now={table.totalVotingPower}
+              before={prior?.totalVotingPower ?? null}
+              format={pctFmt}
+              label={t("kpiSince")}
+            />
+          }
           sub={`${t("kpiTreasurySub")} ${num(table.treasuryShares)}`}
         />
         <Kpi
           delay={80}
+          icon={<Users size={16} aria-hidden />}
           label={t("kpiHolders")}
           value={num(table.holders.length)}
+          trend={
+            <Trend
+              now={table.holders.length}
+              before={prior?.holders.length ?? null}
+              format={pctFmt}
+              label={t("kpiSince")}
+            />
+          }
           sub={`${num(table.classes.length)} ${t("shareClasses").toLowerCase()}`}
         />
         <Kpi
           delay={120}
+          icon={<Gavel size={16} aria-hidden />}
           label={t("kpiOpenRes")}
           value={num(open)}
+          trend={open > 0 ? <span className="chip bg-sky-50 text-sky-700">{t("statusACTIVE")}</span> : undefined}
           sub={`${num((resolutions ?? []).length)} ${t("navResolutions").toLowerCase()}`}
         />
       </div>

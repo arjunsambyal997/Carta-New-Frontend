@@ -21,10 +21,11 @@ test("an option grant gets a vesting schedule and vested options are exercised i
   // a 2020 start with a 12/48 month schedule is fully vested today
   const card = page.locator("section", { hasText: grant.certificateNo });
   await expect(card.getByText("Can exercise")).toBeVisible();
-  await card.getByLabel("Quantity").fill("1200");
-  await card.getByRole("button", { name: "Exercise" }).click();
-  await expect(page.getByRole("dialog")).toContainText("Exercise these options?");
-  await page.getByRole("dialog").getByRole("button", { name: "Exercise" }).click();
+  await card.getByRole("button", { name: "Exercise options" }).click();
+  const exercise = page.getByRole("dialog");
+  await exercise.getByLabel("Quantity").fill("1200");
+  await expect(exercise).toContainText("cannot be undone");
+  await exercise.getByRole("button", { name: "Exercise", exact: true }).click();
   await expect(page.getByText("Options exercised")).toBeVisible();
 
   const certs = await get(org, "/certificates");
@@ -46,9 +47,11 @@ test("exercising more than has vested is refused", async ({ page }) => {
   await signIn(page, org);
   await page.goto("/options");
   const card = page.locator("section", { hasText: grant.certificateNo });
-  await card.getByLabel("Quantity").fill("4801");
-  await card.getByRole("button", { name: "Exercise" }).click();
-  // the browser's own number limit stops this before it is even sent
-  expect(await card.getByLabel("Quantity").evaluate((el: HTMLInputElement) => el.validity.rangeOverflow)).toBe(true);
-  await expect(page.getByRole("dialog")).toBeHidden();
+  await card.getByRole("button", { name: "Exercise options" }).click();
+  const exercise = page.getByRole("dialog");
+  await exercise.getByLabel("Quantity").fill("4801");
+  // more than has vested cannot be submitted: the button stays disabled and nothing is sent
+  await expect(exercise.getByRole("button", { name: "Exercise", exact: true })).toBeDisabled();
+  await exercise.getByRole("button", { name: "Max" }).click();
+  await expect(exercise.getByLabel("Quantity")).toHaveValue("4800");
 });

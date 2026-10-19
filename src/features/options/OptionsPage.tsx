@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Avatar } from "@/components/common/Avatar";
 import { useFeedback } from "@/components/common/Feedback";
+import { ExerciseDialog } from "@/features/options/ExerciseDialog";
+import { VestingBar } from "@/features/options/VestingBar";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
-import { api, isPendingChange } from "@/api";
+import { api } from "@/api";
 import { useI18n } from "@/context/I18nContext";
 import type { VestingStatus } from "@/api/types";
 
@@ -61,6 +64,33 @@ export default function OptionsPage() {
   );
 }
 
+function Metric({
+  label,
+  value,
+  hint,
+  tone,
+  small,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  tone?: string;
+  small?: boolean;
+}) {
+  return (
+    <div className="min-w-0 rounded-xl bg-slate-50 px-3 py-2.5">
+      <dt className="truncate text-xs text-slate-500">{label}</dt>
+      <dd
+        className={`mt-0.5 font-semibold tabular-nums ${small ? "pt-1 text-sm leading-6" : "text-lg"} ${tone ?? "text-slate-900"}`}
+      >
+        {value}
+      </dd>
+      {hint && <p className="truncate text-[11px] text-slate-500">{hint}</p>}
+    </div>
+  );
+}
+
+/** What the grant is, never an input: the numbers and the vesting bar. The one action is the Exercise dialog. */
 function Grant({
   s,
   orgId,
@@ -72,128 +102,42 @@ function Grant({
   classes: { id: string; name: string; nameAr: string | null; classType: string }[];
   onDone: () => void;
 }) {
-  const { t, num, name } = useI18n();
-  const { confirm, toast } = useFeedback();
-  const [qty, setQty] = useState("");
-  const [cls, setCls] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const w = (n: number) => `${(n / s.granted) * 100}%`;
-
-  async function exercise(e: FormEvent) {
-    e.preventDefault();
-    const into = classes.find((c) => c.id === cls);
-    const ok = await confirm({
-      message: t("confirmExerciseTitle"),
-      detail: `${num(Number(qty))} × ${into ? name(into.name, into.nameAr) : s.shareClassName} → ${name(s.holderNameEn, s.holderNameAr)} · ${t("optionsStrike")} ${s.currency} ${num(s.strikePrice, { maximumFractionDigits: 4 })}
-
-${t("confirmExerciseDetail")}`,
-      confirmLabel: t("optionsExercise"),
-      danger: true,
-    });
-    if (!ok) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await api.exerciseOptions(orgId, s.certificateNo, {
-        quantity: Number(qty),
-        shareClassId: cls || undefined,
-      });
-      toast(isPendingChange(res) ? t("toastSentForApproval") : t("optionsExerciseDone"));
-      setQty("");
-      onDone();
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
+  const { t, num, name, date } = useI18n();
   return (
-    <section className="card min-w-0 space-y-3">
+    <section className="card min-w-0 space-y-4">
       <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="truncate text-sm font-semibold">{name(s.holderNameEn, s.holderNameAr)}</h2>
-          <p className="text-xs text-slate-500">
-            <span dir="ltr" className="font-mono">
-              {s.certificateNo}
-            </span>{" "}
-            · {s.shareClassName} · {t("optionsStrike")} {s.currency} {num(s.strikePrice, { maximumFractionDigits: 4 })}
-          </p>
+        <div className="flex min-w-0 items-center gap-3">
+          <Avatar name={s.holderNameEn} size={36} />
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold">{name(s.holderNameEn, s.holderNameAr)}</h2>
+            <p className="truncate text-xs text-slate-500">
+              <span dir="ltr" className="font-mono">
+                {s.certificateNo}
+              </span>{" "}
+              · {s.shareClassName} · {t("optionsStrike")} {s.currency}{" "}
+              {num(s.strikePrice, { maximumFractionDigits: 4 })}
+            </p>
+          </div>
         </div>
-        <p className="shrink-0 text-end text-lg font-semibold tabular-nums">{num(s.granted)}</p>
+        <ExerciseDialog s={s} orgId={orgId} classes={classes} onDone={onDone} />
       </header>
-      <div
-        className="flex h-2.5 overflow-hidden rounded-full bg-slate-100"
-        role="img"
-        aria-label={`${t("optionsVested")} ${num(s.vested)} / ${num(s.granted)}`}
-      >
-        <div style={{ width: w(s.exercised), background: "rgb(var(--series-3))" }} />
-        <div style={{ width: w(s.exercisable), background: "rgb(var(--series-1))" }} />
-      </div>
-      <dl className="grid grid-cols-3 gap-2 text-xs">
-        <Stat k={t("optionsExercised")} v={num(s.exercised)} />
-        <Stat k={t("optionsExercisable")} v={num(s.exercisable)} />
-        <Stat k={t("optionsUnvested")} v={num(s.unvested)} />
+      <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Metric label={t("optGranted")} value={num(s.granted)} />
+        <Metric
+          label={t("optVestedLabel")}
+          value={num(s.vested)}
+          tone="text-emerald-700"
+          hint={`${num(s.exercised)} ${t("optionsExercised").toLowerCase()}`}
+        />
+        <Metric label={t("optUnvestedLabel")} value={num(s.unvested)} />
+        <Metric small label={t("optNextVest")} value={s.nextVestDate ? date(s.nextVestDate) : t("optNoNext")} />
       </dl>
+      <VestingBar s={s} />
       <p className="text-xs text-slate-500">
-        {t("optionsSchedule")}: {s.startDate} · {s.cliffMonths} / {s.vestingMonths} {t("optionsMonths")}
-        {s.nextVestDate && ` · ${t("optionsNext")} ${s.nextVestDate}`}
+        {t("optionsSchedule")}: {t("optStarted")} {date(s.startDate)} · {s.cliffMonths} / {s.vestingMonths}{" "}
+        {t("optionsMonths")} · {t("optFullyVested")} {date(s.fullyVestedDate)}
       </p>
-      {s.exercisable > 0 && (
-        <form onSubmit={exercise} className="flex flex-wrap items-end gap-2 border-t border-slate-200 pt-3">
-          <div className="w-28">
-            <label className="label" htmlFor={`q-${s.id}`}>
-              {t("quantity")}
-            </label>
-            <input
-              id={`q-${s.id}`}
-              required
-              type="number"
-              min={1}
-              max={s.exercisable}
-              step={1}
-              className="input"
-              dir="ltr"
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-            />
-          </div>
-          <div className="min-w-32 flex-1">
-            <label className="label" htmlFor={`c-${s.id}`}>
-              {t("optionsInto")}
-            </label>
-            <select id={`c-${s.id}`} className="input" value={cls} onChange={(e) => setCls(e.target.value)}>
-              <option value="">{s.shareClassName}</option>
-              {classes
-                .filter((c) => c.classType !== "TREASURY")
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {name(c.name, c.nameAr)}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <button className="btn" disabled={busy} type="submit">
-            {busy ? t("loading") : t("optionsExercise")}
-          </button>
-        </form>
-      )}
-      {error && (
-        <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-800">
-          {error}
-        </div>
-      )}
     </section>
-  );
-}
-
-function Stat({ k, v }: { k: string; v: string }) {
-  return (
-    <div>
-      <dt className="text-slate-500">{k}</dt>
-      <dd className="font-medium tabular-nums">{v}</dd>
-    </div>
   );
 }
 

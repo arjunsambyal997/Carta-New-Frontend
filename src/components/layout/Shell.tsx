@@ -10,6 +10,7 @@ import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { SearchPalette } from "@/components/layout/SearchPalette";
 import { useSession } from "@/hooks/useSession";
+import { useTableLabels } from "@/hooks/useTableLabels";
 
 /** What a shareholder account sees: their own portal, votes, and account security. */
 const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
@@ -146,7 +147,7 @@ function Toggles() {
       </button>
       <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
         <Icon name="globe" size={16} />
-        {t("switchLang")}
+        <span className="max-sm:sr-only">{t("switchLang")}</span>
       </button>
     </>
   );
@@ -162,6 +163,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [pendingVotes, setPendingVotes] = useState(0);
   const [pendingApprovals, setPendingApprovals] = useState(0);
 
+  useTableLabels();
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
     const s = getSession();
@@ -199,7 +201,7 @@ export function Shell({ children }: { children: ReactNode }) {
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
     return (
       <div
-        className="flex min-h-screen flex-col"
+        className="flex min-h-dvh flex-col"
         style={{
           backgroundImage: "radial-gradient(60rem 28rem at 50% -8rem, rgb(var(--brand-100) / .65), transparent)",
         }}
@@ -276,13 +278,13 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen lg:ps-64">
+    <div className="min-h-dvh lg:ps-64">
       <a href="#main" className="skip-link">
         {t("skipToContent")}
       </a>
       {/* sidebar: fixed on desktop, drawer on small screens */}
       <aside
-        className={`fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e border-slate-200 bg-surface transition-transform duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${
+        className={`fixed inset-y-0 start-0 z-40 flex h-dvh w-[min(16rem,85vw)] flex-col border-e border-slate-200 bg-surface transition-transform duration-200 lg:w-64 lg:translate-x-0 rtl:lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
         }`}
       >
@@ -322,8 +324,8 @@ export function Shell({ children }: { children: ReactNode }) {
         />
       )}
 
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-surface/85 px-4 backdrop-blur sm:px-8">
+      <div className="flex min-h-dvh min-w-0 flex-col">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-slate-200 bg-surface/85 px-3 backdrop-blur sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
           <button
             type="button"
             className="btn-ghost size-9 !p-0 lg:hidden"

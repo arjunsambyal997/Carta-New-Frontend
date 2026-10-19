@@ -686,5 +686,6 @@
   "changelogTitle": "ما الجديد",
   "changelogIntro": "كل إصدار بلغة واضحة، الأحدث أولاً.",
   "changelogVersion": "الإصدار",
-  "changelogEmpty": "لا توجد إصدارات بعد."
+  "changelogEmpty": "لا توجد إصدارات بعد.",
+  "thresholdTwoThirds": "الثلثان (66.7٪ أو أكثر، الجمعية غير العادية في السعودية)"
 }

@@ -686,5 +686,6 @@
   "changelogTitle": "What's new",
   "changelogIntro": "Every release in plain language, newest first.",
   "changelogVersion": "Version",
-  "changelogEmpty": "No releases yet."
+  "changelogEmpty": "No releases yet.",
+  "thresholdTwoThirds": "Two-thirds (66.7% or more, Saudi extraordinary assembly)"
 }

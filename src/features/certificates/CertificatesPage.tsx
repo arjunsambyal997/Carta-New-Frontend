@@ -5,6 +5,7 @@ import { Fragment, useState } from "react";
 import { SignaturesPanel } from "@/features/signatures/SignaturesPanel";
 import { useMe } from "@/hooks/useMe";
 import { DownloadButton } from "@/components/common/DownloadButton";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -92,7 +93,14 @@ export default function CertificatesPage() {
               ))}
             </tbody>
           </table>
-          {state.data.length === 0 && <p className="py-4 text-slate-500">{t("noCertificates")}</p>}
+          {state.data.length === 0 && (
+            <EmptyState
+              icon="certificates"
+              title={t("noCertificates")}
+              hint={t("noCertificatesHint")}
+              action={{ label: t("navIssue"), href: "/certificates/new" }}
+            />
+          )}
         </div>
       )}
     </div>

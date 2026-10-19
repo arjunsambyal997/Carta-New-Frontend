@@ -24,21 +24,33 @@ export default function DashboardPage() {
 
 function StaffDashboard() {
   const { t, name } = useI18n();
+  const role = useMe()?.role;
+  // Only request panels this role may read, so restricted roles do not trigger 403s.
+  const canMembers = role === "FOUNDER";
+  const canAudit = role === "FOUNDER" || role === "CORPORATE_SECRETARY" || role === "LEGAL_AUDITOR";
   const state = useRegister(async (orgId) => {
-    const [org, table, resolutions, certificates, classes, holders] = await Promise.all([
-      api.organization(orgId),
-      api.capTable(orgId),
-      api.resolutions(orgId).catch(() => null),
-      api.certificates(orgId).catch(() => null),
-      api.shareClasses(orgId).catch(() => null),
-      api.shareholders(orgId).catch(() => null),
-    ]);
+    const [org, table, resolutions, certificates, classes, holders, members, approvals, compliance, audit] =
+      await Promise.all([
+        api.organization(orgId),
+        api.capTable(orgId),
+        api.resolutions(orgId).catch(() => null),
+        api.certificates(orgId).catch(() => null),
+        api.shareClasses(orgId).catch(() => null),
+        api.shareholders(orgId).catch(() => null),
+        canMembers ? api.members(orgId).catch(() => null) : Promise.resolve(null),
+        api.approvals(orgId).catch(() => null),
+        api.compliance(orgId).catch(() => null),
+        canAudit ? api.audit(orgId).catch(() => null) : Promise.resolve(null),
+      ]);
     return {
       org,
       table,
       resolutions,
       certificates,
-      setup: { classes: classes?.length ?? 0, holders: holders?.length ?? 0 },
+      setup: { classes: classes?.length ?? 0, holders: holders?.length ?? 0, members: members?.length ?? 0 },
+      approvals,
+      filings: compliance?.items ?? null,
+      audit: audit?.entries ?? null,
     };
   });
 
@@ -51,6 +63,10 @@ function StaffDashboard() {
       <Status state={state} />
       {state.data && (
         <Dashboard
+          org={state.data.org}
+          approvals={state.data.approvals}
+          filings={state.data.filings}
+          audit={state.data.audit}
           table={state.data.table}
           resolutions={state.data.resolutions}
           certificates={state.data.certificates}

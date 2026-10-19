@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
+import { useMe } from "@/hooks/useMe";
 import { api, getSession, saveSession } from "@/api";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useI18n } from "@/context/I18nContext";
@@ -16,14 +17,21 @@ export default function SecurityPage() {
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
+  const me = useMe();
+
   useEffect(() => {
     setReady(true);
-    if (!getSession()) return;
+    if (!getSession() || me === undefined) return;
+    // Already enrolled: show that it is on instead of asking the server for a second enrollment (it refuses with 422).
+    if (me?.mfaVerified) {
+      setDone(true);
+      return;
+    }
     api
       .mfaEnroll()
       .then(setEnr)
       .catch((e: Error) => setError(e.message));
-  }, []);
+  }, [me]);
 
   async function confirm(e: React.FormEvent) {
     e.preventDefault();

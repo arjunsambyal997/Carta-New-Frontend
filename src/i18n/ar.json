@@ -1,5 +1,5 @@
 {
-  "appName": "إكوي جي سي سي",
+  "appName": "سجل",
   "navCapTable": "جدول الملكية",
   "navOwnership": "شجرة الملكية",
   "navIssue": "إصدار شهادة",
@@ -316,7 +316,7 @@
   "navTransfers": "التحويلات",
   "searchOpen": "بحث",
   "searchPlaceholder": "ابحث في المساهمين والشهادات والقرارات والمستندات…",
-  "searchHint": "اكتب حرفين على الأقل",
+  "searchHint": "بحث",
   "searchNone": "لا توجد نتائج",
   "hitShareholder": "مساهم",
   "hitCertificate": "شهادة",
@@ -687,5 +687,19 @@
   "changelogIntro": "كل إصدار بلغة واضحة، الأحدث أولاً.",
   "changelogVersion": "الإصدار",
   "changelogEmpty": "لا توجد إصدارات بعد.",
-  "thresholdTwoThirds": "الثلثان (66.7٪ أو أكثر، الجمعية غير العادية في السعودية)"
+  "thresholdTwoThirds": "الثلثان (66.7٪ أو أكثر، الجمعية غير العادية في السعودية)",
+  "logoTitle": "شعار الشركة",
+  "logoHint": "يظهر في القائمة والشريط العلوي لكل من في هذه الشركة. صورة PNG أو JPEG أو WEBP حتى 512 كيلوبايت، والمربعة أفضل.",
+  "logoChoose": "اختر الشعار",
+  "logoReplace": "استبدال الشعار",
+  "logoUse": "استخدم هذا الشعار",
+  "logoSaving": "جارٍ الحفظ…",
+  "logoRemove": "إزالة الشعار",
+  "logoRemoveConfirm": "هل تريد إزالة الشعار؟ ستعود الشركة إلى الأحرف الأولى من اسمها.",
+  "logoSaved": "تم تحديث الشعار.",
+  "logoRemoved": "تمت إزالة الشعار.",
+  "logoBadType": "استخدم صورة PNG أو JPEG أو WEBP.",
+  "logoTooBig": "يجب ألا يتجاوز الشعار 512 كيلوبايت.",
+  "menuCollapse": "طي",
+  "menuExpand": "توسيع"
 }

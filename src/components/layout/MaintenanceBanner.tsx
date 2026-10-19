@@ -8,7 +8,7 @@ import { useSystemStatus } from "@/hooks/useSystemStatus";
 export function MaintenanceBanner() {
   const { t, locale, date } = useI18n();
   const status = useSystemStatus();
-  const next = status?.maintenance[0];
+  const next = status?.maintenance?.[0];
   if (!next) return null;
   const message = locale === "ar" ? next.messageAr : next.messageEn;
   return (

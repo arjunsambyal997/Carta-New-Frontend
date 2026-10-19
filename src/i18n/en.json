@@ -1,5 +1,5 @@
 {
-  "appName": "EquiGCC",
+  "appName": "Sijill",
   "navCapTable": "Cap table",
   "navOwnership": "Ownership tree",
   "navIssue": "Issue certificate",
@@ -316,7 +316,7 @@
   "navTransfers": "Transfers",
   "searchOpen": "Search",
   "searchPlaceholder": "Search holders, certificates, resolutions, documents…",
-  "searchHint": "Type at least two characters",
+  "searchHint": "Search",
   "searchNone": "No matches",
   "hitShareholder": "Shareholder",
   "hitCertificate": "Certificate",
@@ -687,5 +687,19 @@
   "changelogIntro": "Every release in plain language, newest first.",
   "changelogVersion": "Version",
   "changelogEmpty": "No releases yet.",
-  "thresholdTwoThirds": "Two-thirds (66.7% or more, Saudi extraordinary assembly)"
+  "thresholdTwoThirds": "Two-thirds (66.7% or more, Saudi extraordinary assembly)",
+  "logoTitle": "Company logo",
+  "logoHint": "Shown in the menu and top bar for everyone in this company. PNG, JPEG or WEBP, up to 512 KB, square works best.",
+  "logoChoose": "Choose logo",
+  "logoReplace": "Replace logo",
+  "logoUse": "Use this logo",
+  "logoSaving": "Saving…",
+  "logoRemove": "Remove logo",
+  "logoRemoveConfirm": "Remove the logo? The company goes back to its initials.",
+  "logoSaved": "Logo updated.",
+  "logoRemoved": "Logo removed.",
+  "logoBadType": "Use a PNG, JPEG or WEBP image.",
+  "logoTooBig": "The logo must be 512 KB or smaller.",
+  "menuCollapse": "Collapse",
+  "menuExpand": "Expand"
 }

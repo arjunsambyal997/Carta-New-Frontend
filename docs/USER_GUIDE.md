@@ -1,6 +1,6 @@
-# EquiGCC user guide
+# Sijill user guide
 
-EquiGCC is a share register for GCC companies. It keeps your cap table, issues numbered share certificates, runs board votes, traces beneficial owners and keeps an audit trail that cannot be edited.
+Sijill is a share register for GCC companies. It keeps your cap table, issues numbered share certificates, runs board votes, traces beneficial owners and keeps an audit trail that cannot be edited.
 
 This guide follows the order you'll use it in: start the app, sign in, then do each job step by step. The app has a short version under **Guide** in the sidebar.
 

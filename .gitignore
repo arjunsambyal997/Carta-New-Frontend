@@ -4,7 +4,7 @@ out/
 next-env.d.ts
 *.tsbuildinfo
 .env*.local
-playwright-report/
 test-results/
+playwright-report/
+coverage/
 e2e/.shots/
-.claude/

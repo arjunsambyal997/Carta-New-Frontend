@@ -701,5 +701,20 @@
   "logoBadType": "استخدم صورة PNG أو JPEG أو WEBP.",
   "logoTooBig": "يجب ألا يتجاوز الشعار 512 كيلوبايت.",
   "menuCollapse": "طي",
-  "menuExpand": "توسيع"
+  "menuExpand": "توسيع",
+  "navCompliance": "مواعيد الإيداع",
+  "subCompliance": "ما يجب إبلاغ الجهات به وموعده.",
+  "compUpToDate": "محدّث",
+  "compPending": "قيد الانتظار",
+  "compDueSoon": "يستحق قريبًا",
+  "compOverdue": "متأخر",
+  "compDue": "الاستحقاق",
+  "compLastFiled": "آخر إيداع",
+  "compNone": "لا يوجد ما يجب إيداعه لهذه الولاية.",
+  "compMarkFiled": "تسجيل الإيداع",
+  "compFiledOn": "تاريخ الإيداع",
+  "compReference": "المرجع (اختياري)",
+  "compSave": "حفظ",
+  "compBasis": "الأساس",
+  "toastFiled": "تم تسجيل الإيداع."
 }

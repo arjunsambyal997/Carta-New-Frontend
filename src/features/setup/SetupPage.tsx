@@ -5,7 +5,10 @@ import { Avatar } from "@/components/common/Avatar";
 import { useFeedback } from "@/components/common/Feedback";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
+import { EmptyState } from "@/components/common/EmptyState";
+import { FieldError } from "@/components/common/FieldError";
 import { LogoCard } from "@/features/setup/LogoCard";
+import { validateClass, validateHolder } from "@/features/setup/validate";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
 import { useI18n } from "@/context/I18nContext";
@@ -28,37 +31,57 @@ export default function SetupPage() {
       <Status state={state} />
       {state.orgId && <LogoCard orgId={state.orgId} />}
       {state.data && state.orgId && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section className="space-y-3">
             <ClassForm orgId={state.orgId} onDone={() => setRefresh((n) => n + 1)} />
-            <ul className="card divide-y divide-slate-100 text-sm">
-              {state.data.classes.map((c) => (
-                <li key={c.id} className="flex justify-between gap-3 py-2.5">
-                  <span>{name(c.name, c.nameAr)}</span>
-                  <span className="text-slate-500">
-                    {t(`class${c.classType}` as never)} · {num(c.parValue)} {c.currency}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <h2 className="text-sm font-semibold text-slate-700">{t("classesHeading")}</h2>
+            {state.data.classes.length === 0 ? (
+              <div className="card">
+                <EmptyState compact icon="captable" title={t("noClassesYet")} hint={t("noClassesYetHint")} />
+              </div>
+            ) : (
+              <ul className="card divide-y divide-slate-100 text-sm">
+                {state.data.classes.map((c) => (
+                  <li key={c.id} className="flex justify-between gap-3 py-2.5">
+                    <span>{name(c.name, c.nameAr)}</span>
+                    <span className="text-slate-500">
+                      {t(`class${c.classType}` as never)} · {num(c.parValue)} {c.currency}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
           <section className="space-y-3">
             <HolderForm orgId={state.orgId} onDone={() => setRefresh((n) => n + 1)} />
-            <ul className="card divide-y divide-slate-100 text-sm">
-              {state.data.holders.map((h) => (
-                <li key={h.id} className="flex items-center justify-between gap-3 py-2.5">
-                  <span className="flex min-w-0 items-center gap-3">
-                    <Avatar name={h.fullNameEn} size={28} />
-                    <span className="truncate">{name(h.fullNameEn, h.fullNameAr)}</span>
-                  </span>
-                  <span
-                    className={`chip shrink-0 ${h.holderType === "CORPORATE" ? "bg-sky-50 text-sky-700" : "bg-slate-100 text-slate-600"}`}
-                  >
-                    {h.holderType === "CORPORATE" ? t("corporate") : t("individual")}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <h2 className="text-sm font-semibold text-slate-700">{t("holdersHeading")}</h2>
+            {state.data.holders.length === 0 ? (
+              <div className="card">
+                <EmptyState
+                  compact
+                  icon="members"
+                  title={t("noHoldersYet")}
+                  hint={t("noHoldersYetHint")}
+                  action={{ label: t("navImport"), href: "/import" }}
+                />
+              </div>
+            ) : (
+              <ul className="card divide-y divide-slate-100 text-sm">
+                {state.data.holders.map((h) => (
+                  <li key={h.id} className="flex items-center justify-between gap-3 py-2.5">
+                    <span className="flex min-w-0 items-center gap-3">
+                      <Avatar name={h.fullNameEn} size={28} />
+                      <span className="truncate">{name(h.fullNameEn, h.fullNameAr)}</span>
+                    </span>
+                    <span
+                      className={`chip shrink-0 ${h.holderType === "CORPORATE" ? "bg-sky-50 text-sky-700" : "bg-slate-100 text-slate-600"}`}
+                    >
+                      {h.holderType === "CORPORATE" ? t("corporate") : t("individual")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
       )}
@@ -93,6 +116,7 @@ function useSubmit(onDone: () => void) {
 function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
   const { t } = useI18n();
   const s = useSubmit(onDone);
+  const [tried, setTried] = useState(false);
   const [f, setF] = useState({
     name: "",
     nameAr: "",
@@ -105,12 +129,16 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
     seniorityRank: "1",
     authorizedShares: "",
   });
+  const ce = validateClass(f);
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
   return (
     <form
-      className="card grid gap-3 sm:grid-cols-2"
+      className="card grid grid-cols-1 gap-3 sm:grid-cols-2"
+      noValidate
       onSubmit={(e) => {
         e.preventDefault();
+        setTried(true);
+        if (Object.keys(ce).length) return;
         s.run(() =>
           api.createShareClass(orgId, {
             name: f.name,
@@ -130,9 +158,21 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
       <h2 className="text-sm font-semibold sm:col-span-2">{t("addShareClass")}</h2>
       <div>
         <label className="label" htmlFor="cn">
-          {t("className")}
+          {t("className")}{" "}
+          <span aria-hidden className="text-red-600">
+            *
+          </span>
         </label>
-        <input id="cn" className="input" required value={f.name} onChange={set("name")} />
+        <input
+          id="cn"
+          className="input"
+          required
+          value={f.name}
+          onChange={set("name")}
+          aria-invalid={!!(tried && ce.name)}
+          aria-describedby="e-cn"
+        />
+        <FieldError id="e-cn">{tried && ce.name && t(ce.name)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="cna">
@@ -164,7 +204,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
       </div>
       <div>
         <label className="label" htmlFor="pv">
-          {t("parValue")}
+          {t("parValue")}{" "}
+          <span aria-hidden className="text-red-600">
+            *
+          </span>
         </label>
         <input
           id="pv"
@@ -176,7 +219,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           required
           value={f.parValue}
           onChange={set("parValue")}
+          aria-invalid={!!(tried && ce.parValue)}
+          aria-describedby="e-pv"
         />
+        <FieldError id="e-pv">{tried && ce.parValue && t(ce.parValue)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="vm">
@@ -191,7 +237,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           dir="ltr"
           value={f.votingMultiplier}
           onChange={set("votingMultiplier")}
+          aria-invalid={!!(tried && ce.votingMultiplier)}
+          aria-describedby="e-vm"
         />
+        <FieldError id="e-vm">{tried && ce.votingMultiplier && t(ce.votingMultiplier)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="lm">
@@ -206,7 +255,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           dir="ltr"
           value={f.liquidationMultiple}
           onChange={set("liquidationMultiple")}
+          aria-invalid={!!(tried && ce.liquidationMultiple)}
+          aria-describedby="e-lm"
         />
+        <FieldError id="e-lm">{tried && ce.liquidationMultiple && t(ce.liquidationMultiple)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="sr">
@@ -220,7 +272,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           dir="ltr"
           value={f.seniorityRank}
           onChange={set("seniorityRank")}
+          aria-invalid={!!(tried && ce.seniorityRank)}
+          aria-describedby="e-sr"
         />
+        <FieldError id="e-sr">{tried && ce.seniorityRank && t(ce.seniorityRank)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="au">
@@ -234,7 +289,10 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           dir="ltr"
           value={f.authorizedShares}
           onChange={set("authorizedShares")}
+          aria-invalid={!!(tried && ce.authorizedShares)}
+          aria-describedby="e-au"
         />
+        <FieldError id="e-au">{tried && ce.authorizedShares && t(ce.authorizedShares)}</FieldError>
       </div>
       <label className="flex items-center gap-2 self-end text-sm">
         <input
@@ -259,6 +317,7 @@ function ClassForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
 function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
   const { t } = useI18n();
   const s = useSubmit(onDone);
+  const [tried, setTried] = useState(false);
   const [f, setF] = useState({
     holderType: "INDIVIDUAL" as "INDIVIDUAL" | "CORPORATE",
     fullNameEn: "",
@@ -271,12 +330,16 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
     email: "",
   });
   const set = (k: keyof typeof f) => (e: { target: { value: string } }) => setF({ ...f, [k]: e.target.value });
+  const he = validateHolder(f);
   const corp = f.holderType === "CORPORATE";
   return (
     <form
-      className="card grid gap-3 sm:grid-cols-2"
+      className="card grid grid-cols-1 gap-3 sm:grid-cols-2"
+      noValidate
       onSubmit={(e) => {
         e.preventDefault();
+        setTried(true);
+        if (Object.keys(he).length) return;
         s.run(() =>
           api.createShareholder(orgId, {
             holderType: f.holderType,
@@ -306,13 +369,35 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
         <label className="label" htmlFor="nat">
           {t("nationality")}
         </label>
-        <input id="nat" className="input" dir="ltr" maxLength={2} value={f.nationality} onChange={set("nationality")} />
+        <input
+          id="nat"
+          className="input"
+          dir="ltr"
+          maxLength={2}
+          value={f.nationality}
+          onChange={set("nationality")}
+          aria-invalid={!!(tried && he.nationality)}
+          aria-describedby="e-nat"
+        />
+        <FieldError id="e-nat">{tried && he.nationality && t(he.nationality)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="fn">
-          {t("fullNameEn")}
+          {t("fullNameEn")}{" "}
+          <span aria-hidden className="text-red-600">
+            *
+          </span>
         </label>
-        <input id="fn" className="input" required value={f.fullNameEn} onChange={set("fullNameEn")} />
+        <input
+          id="fn"
+          className="input"
+          required
+          value={f.fullNameEn}
+          onChange={set("fullNameEn")}
+          aria-invalid={!!(tried && he.fullNameEn)}
+          aria-describedby="e-fn"
+        />
+        <FieldError id="e-fn">{tried && he.fullNameEn && t(he.fullNameEn)}</FieldError>
       </div>
       <div>
         <label className="label" htmlFor="fna">
@@ -340,7 +425,16 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
           <label className="label" htmlFor="dob">
             {t("dateOfBirth")}
           </label>
-          <input id="dob" type="date" className="input" value={f.dateOfBirth} onChange={set("dateOfBirth")} />
+          <input
+            id="dob"
+            type="date"
+            className="input"
+            value={f.dateOfBirth}
+            onChange={set("dateOfBirth")}
+            aria-invalid={!!(tried && he.dateOfBirth)}
+            aria-describedby="e-dob"
+          />
+          <FieldError id="e-dob">{tried && he.dateOfBirth && t(he.dateOfBirth)}</FieldError>
         </div>
       )}
       <div>
@@ -353,7 +447,17 @@ function HolderForm({ orgId, onDone }: { orgId: string; onDone: () => void }) {
         <label className="label" htmlFor="em">
           {t("email")}
         </label>
-        <input id="em" type="email" className="input" dir="ltr" value={f.email} onChange={set("email")} />
+        <input
+          id="em"
+          type="email"
+          className="input"
+          dir="ltr"
+          value={f.email}
+          onChange={set("email")}
+          aria-invalid={!!(tried && he.email)}
+          aria-describedby="e-em"
+        />
+        <FieldError id="e-em">{tried && he.email && t(he.email)}</FieldError>
       </div>
       {s.error && (
         <p role="alert" className="text-sm text-red-700 sm:col-span-2">

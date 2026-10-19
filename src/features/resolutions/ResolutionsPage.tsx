@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { StatusBadge, TallyBar, THRESHOLD_LABEL } from "@/features/resolutions/ResolutionBits";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -163,7 +164,11 @@ export default function ResolutionsPage() {
         </form>
       )}
 
-      {state.data && state.data.length === 0 && <p className="text-slate-500">{t("noResolutions")}</p>}
+      {state.data && state.data.length === 0 && (
+        <div className="card">
+          <EmptyState icon="resolutions" title={t("noResolutions")} hint={t("noResolutionsHint")} />
+        </div>
+      )}
       <ul className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3 [&>li]:content-start">
         {state.data?.map((r) => (
           <li key={r.id} className="card space-y-2">

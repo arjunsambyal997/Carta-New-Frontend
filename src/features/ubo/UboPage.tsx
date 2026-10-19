@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DownloadButton } from "@/components/common/DownloadButton";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -122,7 +123,12 @@ export default function UboPage() {
 
 function PeopleTable({ people, ubo = false }: { people: UboPerson[]; ubo?: boolean }) {
   const { t, name } = useI18n();
-  if (people.length === 0) return <p className="card text-sm text-slate-500">{t("none")}</p>;
+  if (people.length === 0)
+    return (
+      <div className="card">
+        <EmptyState compact icon="ubo" title={t("none")} hint={t("uboNoneHint")} />
+      </div>
+    );
   return (
     <div className="card overflow-x-auto">
       <table className="w-full min-w-[760px] text-sm">

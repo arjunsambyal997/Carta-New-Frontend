@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useState } from "react";
 import { DownloadButton } from "@/components/common/DownloadButton";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SignaturesPanel } from "@/features/signatures/SignaturesPanel";
 import { Status } from "@/components/common/Status";
@@ -132,7 +133,9 @@ export default function PortalPage() {
                 ))}
               </tbody>
             </table>
-            {d.certificates.length === 0 && <p className="py-4 text-slate-500">{t("noCertificates")}</p>}
+            {d.certificates.length === 0 && (
+              <EmptyState compact icon="certificates" title={t("noCertificates")} hint={t("portalNoCertsHint")} />
+            )}
           </section>
         </>
       )}

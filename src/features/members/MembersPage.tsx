@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Avatar, RoleChip } from "@/components/common/Avatar";
 import { useFeedback } from "@/components/common/Feedback";
 import { Icon } from "@/components/common/Icon";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -64,14 +65,14 @@ export default function MembersPage() {
       <PageHeader title={t("membersTitle")} subtitle={t("subMembers")} />
       <Status state={state} />
       {state.data && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section className="card self-start !p-0">
             <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <h2 className="text-sm font-semibold">{t("navMembers")}</h2>
               <span className="chip bg-slate-100 tabular-nums text-slate-600">{state.data.members.length}</span>
             </header>
             {state.data.members.length === 0 ? (
-              <p className="py-10 text-center text-sm text-slate-400">{t("noMembers")}</p>
+              <EmptyState icon="members" title={t("noMembers")} hint={t("noMembersHint")} />
             ) : (
               <ul className="divide-y divide-slate-100">
                 {state.data.members.map((m) => (

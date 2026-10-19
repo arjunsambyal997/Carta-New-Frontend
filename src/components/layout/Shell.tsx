@@ -3,112 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { api, getSession, signOut } from "@/api";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { api, getSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
-import { Avatar } from "@/components/common/Avatar";
-import { SijillWordmark } from "@/components/brand/SijillLogo";
+import { SijillMark, SijillWordmark } from "@/components/brand/SijillLogo";
 import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { MaintenanceBanner } from "@/components/layout/MaintenanceBanner";
 import { SearchPalette } from "@/components/layout/SearchPalette";
+import { GROUPS, HOLDER_GROUPS, type Role } from "@/components/layout/nav";
+import { ProfileMenu, ToggleGroup } from "@/components/layout/Toolbar";
 import { LOGO_CHANGED } from "@/hooks/useCompanyLogo";
 import { useSession } from "@/hooks/useSession";
 import { useTableLabels } from "@/hooks/useTableLabels";
 
-/** What a shareholder account sees: their own portal, votes, and account security. */
-const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
-  {
-    label: "groupOverview",
-    items: [
-      { href: "/portal", key: "navPortal", icon: "portal" },
-      { href: "/resolutions", key: "navResolutions", icon: "resolutions" },
-    ],
-  },
-  {
-    label: "groupAdmin",
-    items: [
-      { href: "/security", key: "navSecurity", icon: "security" },
-      { href: "/password", key: "navPassword", icon: "password" },
-      { href: "/guide", key: "navGuide", icon: "guide" },
-      { href: "/changelog", key: "navChangelog", icon: "guide" },
-    ],
-  },
-];
-
-type Role = "FOUNDER" | "CORPORATE_SECRETARY" | "BOARD_MEMBER" | "LEGAL_AUDITOR" | "SHAREHOLDER";
-type NavItem = { href: string; key: Key; icon: IconName; roles?: Role[] };
-
-/** Who may open each page: the same rules the server enforces, so nobody is shown a page that would only refuse them. */
-const STAFF: Role[] = ["FOUNDER", "CORPORATE_SECRETARY"];
-const READERS: Role[] = [...STAFF, "BOARD_MEMBER", "LEGAL_AUDITOR"];
-const COMPLIANCE: Role[] = [...STAFF, "LEGAL_AUDITOR"];
-
-const GROUPS: { label: Key; items: NavItem[] }[] = [
-  {
-    label: "groupOverview",
-    items: [
-      { href: "/", key: "navDashboard", icon: "dashboard", roles: READERS },
-      { href: "/cap-table", key: "navCapTable", icon: "captable", roles: READERS },
-      { href: "/ownership", key: "navOwnership", icon: "ownership", roles: READERS },
-      { href: "/waterfall", key: "navWaterfall", icon: "waterfall", roles: READERS },
-      { href: "/transfers", key: "navTransfers", icon: "transfer", roles: STAFF },
-      { href: "/options", key: "navOptions", icon: "options", roles: READERS },
-      { href: "/rounds", key: "navRounds", icon: "rounds", roles: READERS },
-    ],
-  },
-  {
-    label: "groupGovernance",
-    items: [
-      { href: "/resolutions", key: "navResolutions", icon: "resolutions", roles: READERS },
-      { href: "/approvals", key: "navApprovals", icon: "approvals", roles: READERS },
-      { href: "/succession", key: "navSuccession", icon: "succession", roles: READERS },
-    ],
-  },
-  {
-    label: "groupCompliance",
-    items: [
-      { href: "/compliance", key: "navCompliance", icon: "alert", roles: COMPLIANCE },
-      { href: "/ubo", key: "navUbo", icon: "ubo", roles: COMPLIANCE },
-      { href: "/certificates", key: "navCertificates", icon: "certificates", roles: READERS },
-      { href: "/vault", key: "navVault", icon: "vault", roles: READERS },
-      { href: "/audit", key: "navAudit", icon: "audit", roles: COMPLIANCE },
-    ],
-  },
-  {
-    label: "groupAdmin",
-    items: [
-      { href: "/setup", key: "navSetup", icon: "setup", roles: STAFF },
-      { href: "/import", key: "navImport", icon: "import", roles: STAFF },
-      { href: "/members", key: "navMembers", icon: "members", roles: ["FOUNDER"] },
-      { href: "/integrations", key: "navIntegrations", icon: "plug", roles: ["FOUNDER"] },
-      { href: "/security", key: "navSecurity", icon: "security" },
-      { href: "/password", key: "navPassword", icon: "password" },
-      { href: "/guide", key: "navGuide", icon: "guide" },
-      { href: "/changelog", key: "navChangelog", icon: "guide" },
-    ],
-  },
-];
-
 /** Pages that are reachable signed out get a bare, centred layout without the sidebar. */
 const BARE = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify"];
-
-function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === "dark" ? "dark" : "light");
-  }, []);
-  const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem("equigcc.theme", next);
-    } catch {
-      /* storage unavailable */
-    }
-    setTheme(next);
-  };
-  return { theme, toggle };
-}
 
 function Brand() {
   const { t } = useI18n();
@@ -119,45 +29,12 @@ function Brand() {
   );
 }
 
-function Toggles() {
-  const { t, toggle: toggleLang, hijri, toggleHijri } = useI18n();
-  const { theme, toggle } = useTheme();
-  return (
-    <>
-      <button
-        type="button"
-        onClick={toggle}
-        className="btn-ghost size-9 !p-0"
-        aria-label={t("themeToggle")}
-        title={t("themeToggle")}
-      >
-        <Icon name={theme === "dark" ? "sun" : "moon"} />
-      </button>
-      <button
-        type="button"
-        onClick={toggleHijri}
-        aria-pressed={hijri}
-        title={t("hijriToggle")}
-        className={`btn-ghost h-9 ${hijri ? "!border-emerald-600 !text-emerald-800" : ""}`}
-      >
-        <span className="hidden sm:inline">{t("hijriShort")}</span>
-        <span className="sm:hidden" aria-label={t("hijriToggle")}>
-          H
-        </span>
-      </button>
-      <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
-        <Icon name="globe" size={16} />
-        <span className="max-sm:sr-only">{t("switchLang")}</span>
-      </button>
-    </>
-  );
-}
-
 export function Shell({ children }: { children: ReactNode }) {
   const { t, name } = useI18n();
   const path = usePathname();
   const session = useSession();
   const [open, setOpen] = useState(false);
+  const [rail, setRail] = useState(false);
   const [org, setOrg] = useState<string | null>(null);
   const [logoVersion, setLogoVersion] = useState<string | null>(null);
   const [logoTick, setLogoTick] = useState(0);
@@ -190,6 +67,22 @@ export function Shell({ children }: { children: ReactNode }) {
     window.addEventListener(LOGO_CHANGED, bump);
     return () => window.removeEventListener(LOGO_CHANGED, bump);
   }, []);
+  useEffect(() => {
+    try {
+      setRail(localStorage.getItem("equigcc.sidebar") === "rail");
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+  const toggleRail = () =>
+    setRail((r) => {
+      try {
+        localStorage.setItem("equigcc.sidebar", r ? "full" : "rail");
+      } catch {
+        /* ignore */
+      }
+      return !r;
+    });
   useEffect(() => {
     try {
       setClosed(JSON.parse(localStorage.getItem("equigcc.navClosed") ?? "[]"));
@@ -242,7 +135,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <header className="flex items-center justify-between px-4 py-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
-            <Toggles />
+            <ToggleGroup />
           </div>
         </header>
         <main
@@ -265,8 +158,8 @@ export function Shell({ children }: { children: ReactNode }) {
       })).filter((g) => g.items.length > 0);
   const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   const nav = (
-    <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-3" aria-label="Main">
-      {groups.map((g) => {
+    <nav className={`flex-1 space-y-4 overflow-y-auto py-3 ${rail ? "px-2 max-lg:px-3" : "px-3"}`} aria-label="Main">
+      {groups.map((g, gi) => {
         const hasActive = g.items.some((n) => isActive(n.href));
         const collapsed = closed.includes(g.label) && !hasActive;
         return (
@@ -275,7 +168,7 @@ export function Shell({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => toggleGroup(g.label)}
               aria-expanded={!collapsed}
-              className="mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 hover:text-slate-600"
+              className={`mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition-colors hover:text-slate-600 ${rail ? "lg:hidden" : ""}`}
             >
               {t(g.label)}
               <Icon
@@ -284,43 +177,44 @@ export function Shell({ children }: { children: ReactNode }) {
                 className={`transition-transform ${collapsed ? "-rotate-90 rtl:rotate-90" : ""}`}
               />
             </button>
-            {!collapsed && (
+            {rail && gi > 0 && <div className="mx-3 mb-2 hidden border-t border-slate-200 lg:block" />}
+            {(!collapsed || rail) && (
               <ul className="space-y-0.5">
                 {g.items.map((n) => {
                   const active = isActive(n.href);
+                  const badge =
+                    n.href === "/approvals"
+                      ? pendingApprovals
+                      : isHolder && n.href === "/resolutions"
+                        ? pendingVotes
+                        : 0;
                   return (
                     <li key={n.href}>
                       <Link
                         href={n.href}
                         aria-current={active ? "page" : undefined}
-                        className={`group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                        title={rail ? t(n.key) : undefined}
+                        className={`group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-150 ${
+                          rail ? "lg:justify-center lg:px-0" : ""
+                        } ${
                           active
-                            ? "bg-emerald-50 font-medium text-emerald-800"
-                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                            ? "bg-emerald-600/10 font-medium text-emerald-800 ring-1 ring-inset ring-emerald-600/15"
+                            : "text-slate-600 hover:bg-slate-900/[0.04] hover:text-slate-900"
                         }`}
                       >
-                        {active && (
-                          <span
-                            aria-hidden
-                            className="absolute inset-y-1.5 start-0 w-[3px] rounded-full bg-emerald-600"
-                          />
-                        )}
                         <Icon
                           name={n.icon}
-                          className={active ? "text-emerald-700" : "text-slate-400 group-hover:text-slate-600"}
+                          className={`shrink-0 transition-colors ${active ? "text-emerald-700" : "text-slate-400 group-hover:text-slate-600"}`}
                         />
-                        {t(n.key)}
-                        {n.href === "/approvals" && pendingApprovals > 0 && (
-                          <span className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800">
-                            {pendingApprovals}
-                          </span>
-                        )}
-                        {isHolder && n.href === "/resolutions" && pendingVotes > 0 && (
+                        <span className={rail ? "lg:sr-only" : ""}>{t(n.key)}</span>
+                        {badge > 0 && (
                           <span
-                            className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800"
-                            aria-label={`${pendingVotes} ${t("portalVotes")}`}
+                            className={`rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800 ${
+                              rail ? "ms-auto lg:absolute lg:end-1 lg:top-0.5 lg:ms-0 lg:px-1 lg:text-[9px]" : "ms-auto"
+                            }`}
+                            aria-label={`${badge} ${t(isHolder ? "portalVotes" : "navApprovals")}`}
                           >
-                            {pendingVotes}
+                            {badge}
                           </span>
                         )}
                       </Link>
@@ -346,18 +240,25 @@ export function Shell({ children }: { children: ReactNode }) {
       ];
 
   return (
-    <div className="min-h-dvh lg:ps-64">
+    <div className={`min-h-dvh transition-[padding] duration-200 ${rail ? "lg:ps-[4.5rem]" : "lg:ps-64"}`}>
       <a href="#main" className="skip-link">
         {t("skipToContent")}
       </a>
       {/* sidebar: fixed on desktop, drawer on small screens */}
       <aside
-        className={`fixed inset-y-0 start-0 z-40 flex h-dvh w-[min(16rem,85vw)] flex-col border-e border-slate-200/80 bg-surface transition-transform duration-200 lg:w-64 lg:translate-x-0 rtl:lg:translate-x-0 ${
+        className={`fixed inset-y-0 start-0 z-40 flex h-dvh w-[min(16rem,85vw)] flex-col border-e border-slate-200/80 bg-surface transition-[transform,width] duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${rail ? "lg:w-[4.5rem]" : "lg:w-64"} ${
           open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
         }`}
       >
-        <div className="flex h-16 items-center justify-between px-5">
-          <Brand />
+        <div className={`flex h-16 items-center justify-between px-5 ${rail ? "lg:justify-center lg:px-0" : ""}`}>
+          <span className={rail ? "lg:hidden" : ""}>
+            <Brand />
+          </span>
+          {rail && (
+            <Link href="/" className="hidden rounded-lg lg:block" aria-label={t("appName")}>
+              <SijillMark size={32} />
+            </Link>
+          )}
           <button
             type="button"
             className="btn-ghost size-8 !p-0 lg:hidden"
@@ -368,20 +269,24 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
         </div>
         {nav}
-        {who && (
-          <div
-            className="flex items-center gap-3 border-t border-slate-200 p-4"
-            title={`${t("signedInAs")} ${who.email}`}
+        <div className="hidden border-t border-slate-200 p-3 lg:block">
+          <button
+            type="button"
+            onClick={toggleRail}
+            aria-label={rail ? t("sidebarExpand") : t("sidebarCollapse")}
+            title={rail ? t("sidebarExpand") : t("sidebarCollapse")}
+            className={`flex h-9 w-full items-center gap-3 rounded-xl px-3 text-sm text-slate-500 transition-colors hover:bg-slate-900/[0.04] hover:text-slate-900 ${rail ? "justify-center px-0" : ""}`}
           >
-            <Avatar name={who.email} size={36} />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-800" dir="ltr">
-                {who.email}
-              </p>
-              <p className="text-xs text-slate-500">{t(`role${who.role}` as Key)}</p>
-            </div>
-          </div>
-        )}
+            {rail ? (
+              <PanelLeftOpen size={18} className="rtl:-scale-x-100" aria-hidden />
+            ) : (
+              <>
+                <PanelLeftClose size={18} className="rtl:-scale-x-100" aria-hidden />
+                {t("sidebarCollapse")}
+              </>
+            )}
+          </button>
+        </div>
       </aside>
       {open && (
         <button
@@ -410,27 +315,19 @@ export function Shell({ children }: { children: ReactNode }) {
               <p className="truncate text-sm font-medium text-slate-600">{org}</p>
             )}
           </div>
-          {session && !isHolder && <SearchPalette />}
-          <Toggles />
-          {session ? (
-            <button
-              type="button"
-              className="btn-ghost h-9"
-              onClick={async () => {
-                await signOut();
-                window.location.assign("/login");
-              }}
-            >
-              <Icon name="logout" size={16} />
-              <span className="hidden sm:inline">{t("signOut")}</span>
-            </button>
-          ) : (
-            session === null && (
-              <Link href="/login" className="btn h-9">
-                {t("signIn")}
-              </Link>
-            )
-          )}
+          <div className="flex items-center gap-2">
+            {session && !isHolder && <SearchPalette role={who?.role} />}
+            <ToggleGroup />
+            {session ? (
+              <ProfileMenu email={who?.email ?? null} role={who?.role ?? null} />
+            ) : (
+              session === null && (
+                <Link href="/login" className="btn h-9">
+                  {t("signIn")}
+                </Link>
+              )
+            )}
+          </div>
         </header>
         <main
           id="main"

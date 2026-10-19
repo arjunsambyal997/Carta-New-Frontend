@@ -766,5 +766,11 @@
   "noHoldersYetHint": "Add them one by one, or import a spreadsheet from Import data.",
   "noMembersHint": "Invite your team from the form to give them access.",
   "uboNoneHint": "No one reaches the ownership threshold yet. This fills in as shares are issued.",
-  "portalNoCertsHint": "Certificates issued to you will appear here."
+  "portalNoCertsHint": "Certificates issued to you will appear here.",
+  "profileMenu": "Account menu",
+  "sidebarCollapse": "Collapse sidebar",
+  "sidebarExpand": "Expand sidebar",
+  "searchPages": "Go to",
+  "searchResults": "Results",
+  "searchTyping": "Type at least 2 characters to search records"
 }

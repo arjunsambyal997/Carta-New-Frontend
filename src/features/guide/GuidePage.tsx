@@ -16,6 +16,7 @@ const SECTIONS: { title: Key; steps: Step[] }[] = [
       { href: "/setup", title: "guideClassT", body: "guideClassB" },
       { href: "/import", title: "guideHoldersT", body: "guideHoldersB" },
       { href: "/certificates/new", title: "guideIssueT", body: "guideIssueB" },
+      { href: "/companies/new", title: "guideCompaniesT", body: "guideCompaniesB" },
       { href: "/members", title: "guideMembersT", body: "guideMembersB" },
     ],
   },
@@ -34,6 +35,7 @@ const SECTIONS: { title: Key; steps: Step[] }[] = [
     steps: [
       { href: "/resolutions", title: "guideResT", body: "guideResB" },
       { href: "/resolutions", title: "guideVoteT", body: "guideVoteB" },
+      { href: "/approvals", title: "guideApprT", body: "guideApprB" },
       { href: "/succession", title: "guideSuccT", body: "guideSuccB" },
     ],
   },

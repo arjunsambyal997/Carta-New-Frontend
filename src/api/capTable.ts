@@ -1,8 +1,13 @@
 import { downloadFile, org, request } from "./client";
-import type { CapTable, SearchHit, Waterfall } from "./types";
+import type { CapTable, Ledger, LineageNode, SearchHit, Waterfall } from "./types";
 
 export const capTableApi = {
-  capTable: (orgId: string) => request<CapTable>(`${org(orgId)}/cap-table`),
+  capTable: (orgId: string, asOf?: string) =>
+    request<CapTable>(`${org(orgId)}/cap-table${asOf ? `?asOf=${encodeURIComponent(asOf)}` : ""}`),
+  ledger: (orgId: string, shareholderId: string) =>
+    request<Ledger>(`${org(orgId)}/shareholders/${shareholderId}/ledger`),
+  lineage: (orgId: string, certificateNo: string) =>
+    request<LineageNode[]>(`${org(orgId)}/certificates/${encodeURIComponent(certificateNo)}/lineage`),
   waterfall: (orgId: string, exitValue: number) =>
     request<Waterfall>(`${org(orgId)}/waterfall?exitValue=${encodeURIComponent(exitValue)}`),
   search: (orgId: string, q: string) =>

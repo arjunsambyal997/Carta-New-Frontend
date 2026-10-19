@@ -47,7 +47,7 @@ export default function SignupPage() {
         },
       });
       saveSession(r.accessToken!, r.organizationId!, r.refreshToken);
-      router.push("/security");
+      router.push(r.mfaEnrollmentRequired ? "/security" : "/");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -165,7 +165,7 @@ export default function SignupPage() {
           </p>
         )}
         <button className="btn sm:col-span-2" disabled={busy}>
-          {t("create")}
+          {busy ? t("creating") : t("signupSubmit")}
         </button>
       </form>
       <p className="text-sm text-slate-600">

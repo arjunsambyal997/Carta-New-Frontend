@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useI18n } from "@/context/I18nContext";
 import type { CapTable } from "@/api/types";
 
@@ -21,13 +22,13 @@ function Bar({ pct }: { pct: number }) {
 }
 
 export function CapTableGrid({ table }: { table: CapTable }) {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const pct = (n: number) => `${num(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
   return (
     <div className="space-y-6">
       <p className="text-sm text-slate-500">
-        {t("asOf")} {new Date(table.asOf).toLocaleString()}
+        {t("asOf")} {date(table.asOf, true)}
       </p>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Stat label={t("issuedShares")} value={num(table.totalIssuedShares)} />
@@ -52,7 +53,11 @@ export function CapTableGrid({ table }: { table: CapTable }) {
           <tbody className="divide-y divide-slate-100 tabular-nums">
             {table.holders.map((h) => (
               <tr key={h.shareholderId} className="hover:bg-slate-50">
-                <td className="px-3 py-2 text-start font-medium">{name(h.nameEn, h.nameAr)}</td>
+                <td className="px-3 py-2 text-start font-medium">
+                  <Link className="hover:underline" href={`/holders/${h.shareholderId}`} title={t("ledgerTitle")}>
+                    {name(h.nameEn, h.nameAr)}
+                  </Link>
+                </td>
                 <td className="px-3 py-2 text-end">{num(h.issuedShares)}</td>
                 <td className="px-3 py-2 text-end">{pct(h.issuedOwnershipPct)}</td>
                 <td className="px-3 py-2">

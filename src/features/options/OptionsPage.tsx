@@ -5,7 +5,7 @@ import { useFeedback } from "@/components/common/Feedback";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
-import { api } from "@/api";
+import { api, isPendingChange } from "@/api";
 import { useI18n } from "@/context/I18nContext";
 import type { VestingStatus } from "@/api/types";
 
@@ -27,7 +27,7 @@ export default function OptionsPage() {
   const reload = () => setRefresh((n) => n + 1);
 
   return (
-    <div className="max-w-5xl space-y-5">
+    <div className="space-y-5">
       <PageHeader title={t("navOptions")} subtitle={t("optionsIntro")} />
       <Status state={state} />
       {state.data && state.orgId && (
@@ -95,8 +95,11 @@ ${t("confirmExerciseDetail")}`,
     setBusy(true);
     setError(null);
     try {
-      await api.exerciseOptions(orgId, s.certificateNo, { quantity: Number(qty), shareClassId: cls || undefined });
-      toast(t("optionsExerciseDone"));
+      const res = await api.exerciseOptions(orgId, s.certificateNo, {
+        quantity: Number(qty),
+        shareClassId: cls || undefined,
+      });
+      toast(isPendingChange(res) ? t("toastSentForApproval") : t("optionsExerciseDone"));
       setQty("");
       onDone();
     } catch (err) {

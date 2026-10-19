@@ -96,6 +96,27 @@
   --series-5: 213 81 129;
 }
 
+/* Scale the whole interface up on big monitors so text and controls stay a comfortable size and the layout fills the screen. */
+html {
+  scroll-padding-top: 5rem;
+  scroll-behavior: smooth;
+}
+@media (min-width: 1920px) {
+  html {
+    font-size: 112.5%;
+  }
+}
+@media (min-width: 2400px) {
+  html {
+    font-size: 125%;
+  }
+}
+@media (min-width: 3200px) {
+  html {
+    font-size: 150%;
+  }
+}
+
 @layer base {
   html {
     @apply bg-slate-50 font-sans text-slate-900 antialiased;
@@ -109,9 +130,27 @@
   }
   main h1 {
     @apply text-2xl font-semibold tracking-tight text-slate-900;
+    text-wrap: balance;
   }
   main h2 {
     @apply text-slate-800;
+    text-wrap: balance;
+  }
+  a,
+  button,
+  select,
+  summary,
+  label,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+  button,
+  [role="button"],
+  select {
+    @apply cursor-pointer disabled:cursor-not-allowed;
+  }
+  .skip-link {
+    @apply fixed start-3 top-3 z-50 -translate-y-20 rounded-lg bg-surface px-4 py-2 text-sm font-medium text-slate-900 shadow-pop transition-transform focus:translate-y-0;
   }
   ::selection {
     background: rgb(var(--brand-600) / 0.25);

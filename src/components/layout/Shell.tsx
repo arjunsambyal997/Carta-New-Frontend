@@ -7,6 +7,7 @@ import { api, getSession, signOut } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
 import { Avatar } from "@/components/common/Avatar";
 import { Icon, type IconName } from "@/components/common/Icon";
+import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { SearchPalette } from "@/components/layout/SearchPalette";
 import { useSession } from "@/hooks/useSession";
 
@@ -29,42 +30,51 @@ const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconNa
   },
 ];
 
-const GROUPS: { label: Key; items: { href: string; key: Key; icon: IconName }[] }[] = [
+type Role = "FOUNDER" | "CORPORATE_SECRETARY" | "BOARD_MEMBER" | "LEGAL_AUDITOR" | "SHAREHOLDER";
+type NavItem = { href: string; key: Key; icon: IconName; roles?: Role[] };
+
+/** Who may open each page: the same rules the server enforces, so nobody is shown a page that would only refuse them. */
+const STAFF: Role[] = ["FOUNDER", "CORPORATE_SECRETARY"];
+const READERS: Role[] = [...STAFF, "BOARD_MEMBER", "LEGAL_AUDITOR"];
+const COMPLIANCE: Role[] = [...STAFF, "LEGAL_AUDITOR"];
+
+const GROUPS: { label: Key; items: NavItem[] }[] = [
   {
     label: "groupOverview",
     items: [
-      { href: "/", key: "navDashboard", icon: "dashboard" },
-      { href: "/cap-table", key: "navCapTable", icon: "captable" },
-      { href: "/ownership", key: "navOwnership", icon: "ownership" },
-      { href: "/waterfall", key: "navWaterfall", icon: "waterfall" },
-      { href: "/transfers", key: "navTransfers", icon: "transfer" },
-      { href: "/options", key: "navOptions", icon: "options" },
-      { href: "/rounds", key: "navRounds", icon: "rounds" },
+      { href: "/", key: "navDashboard", icon: "dashboard", roles: READERS },
+      { href: "/cap-table", key: "navCapTable", icon: "captable", roles: READERS },
+      { href: "/ownership", key: "navOwnership", icon: "ownership", roles: READERS },
+      { href: "/waterfall", key: "navWaterfall", icon: "waterfall", roles: READERS },
+      { href: "/transfers", key: "navTransfers", icon: "transfer", roles: STAFF },
+      { href: "/options", key: "navOptions", icon: "options", roles: READERS },
+      { href: "/rounds", key: "navRounds", icon: "rounds", roles: READERS },
     ],
   },
   {
     label: "groupGovernance",
     items: [
-      { href: "/resolutions", key: "navResolutions", icon: "resolutions" },
-      { href: "/succession", key: "navSuccession", icon: "succession" },
+      { href: "/resolutions", key: "navResolutions", icon: "resolutions", roles: READERS },
+      { href: "/approvals", key: "navApprovals", icon: "approvals", roles: READERS },
+      { href: "/succession", key: "navSuccession", icon: "succession", roles: READERS },
     ],
   },
   {
     label: "groupCompliance",
     items: [
-      { href: "/ubo", key: "navUbo", icon: "ubo" },
-      { href: "/certificates", key: "navCertificates", icon: "certificates" },
-      { href: "/vault", key: "navVault", icon: "vault" },
-      { href: "/audit", key: "navAudit", icon: "audit" },
+      { href: "/ubo", key: "navUbo", icon: "ubo", roles: COMPLIANCE },
+      { href: "/certificates", key: "navCertificates", icon: "certificates", roles: READERS },
+      { href: "/vault", key: "navVault", icon: "vault", roles: READERS },
+      { href: "/audit", key: "navAudit", icon: "audit", roles: COMPLIANCE },
     ],
   },
   {
     label: "groupAdmin",
     items: [
-      { href: "/setup", key: "navSetup", icon: "setup" },
-      { href: "/import", key: "navImport", icon: "import" },
-      { href: "/members", key: "navMembers", icon: "members" },
-      { href: "/integrations", key: "navIntegrations", icon: "plug" },
+      { href: "/setup", key: "navSetup", icon: "setup", roles: STAFF },
+      { href: "/import", key: "navImport", icon: "import", roles: STAFF },
+      { href: "/members", key: "navMembers", icon: "members", roles: ["FOUNDER"] },
+      { href: "/integrations", key: "navIntegrations", icon: "plug", roles: ["FOUNDER"] },
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
       { href: "/guide", key: "navGuide", icon: "guide" },
@@ -109,7 +119,7 @@ function Brand() {
 }
 
 function Toggles() {
-  const { t, toggle: toggleLang } = useI18n();
+  const { t, toggle: toggleLang, hijri, toggleHijri } = useI18n();
   const { theme, toggle } = useTheme();
   return (
     <>
@@ -121,6 +131,18 @@ function Toggles() {
         title={t("themeToggle")}
       >
         <Icon name={theme === "dark" ? "sun" : "moon"} />
+      </button>
+      <button
+        type="button"
+        onClick={toggleHijri}
+        aria-pressed={hijri}
+        title={t("hijriToggle")}
+        className={`btn-ghost h-9 ${hijri ? "!border-emerald-600 !text-emerald-800" : ""}`}
+      >
+        <span className="hidden sm:inline">{t("hijriShort")}</span>
+        <span className="sm:hidden" aria-label={t("hijriToggle")}>
+          H
+        </span>
       </button>
       <button type="button" onClick={toggleLang} className="btn-ghost h-9" aria-label="Toggle language">
         <Icon name="globe" size={16} />
@@ -138,6 +160,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [org, setOrg] = useState<string | null>(null);
   const [who, setWho] = useState<{ email: string; role: string } | null>(null);
   const [pendingVotes, setPendingVotes] = useState(0);
+  const [pendingApprovals, setPendingApprovals] = useState(0);
 
   useEffect(() => setOpen(false), [path]);
   useEffect(() => {
@@ -163,6 +186,16 @@ export function Shell({ children }: { children: ReactNode }) {
       .catch(() => undefined);
   }, [who, path]);
 
+  // Staff see how many register changes wait for a second person.
+  useEffect(() => {
+    const s = getSession();
+    if (!s || !who || who.role === "SHAREHOLDER") return;
+    api
+      .approvals(s.orgId)
+      .then((l) => setPendingApprovals(l.filter((c) => c.pending).length))
+      .catch(() => undefined);
+  }, [who, path]);
+
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
     return (
       <div
@@ -171,13 +204,20 @@ export function Shell({ children }: { children: ReactNode }) {
           backgroundImage: "radial-gradient(60rem 28rem at 50% -8rem, rgb(var(--brand-100) / .65), transparent)",
         }}
       >
+        <a href="#main" className="skip-link">
+          {t("skipToContent")}
+        </a>
         <header className="flex items-center justify-between px-4 py-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
             <Toggles />
           </div>
         </header>
-        <main className="page mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-16 pt-6 [&>*]:w-full [&>div:not([class*=max-w])]:max-w-md">
+        <main
+          id="main"
+          tabIndex={-1}
+          className="page mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 pb-16 pt-6 outline-none [&>*]:w-full [&>div:not([class*=max-w])]:max-w-md"
+        >
           {children}
         </main>
       </div>
@@ -187,39 +227,48 @@ export function Shell({ children }: { children: ReactNode }) {
   const isHolder = who?.role === "SHAREHOLDER";
   const nav = (
     <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4" aria-label="Main">
-      {(isHolder ? HOLDER_GROUPS : GROUPS).map((g) => (
+      {(isHolder
+        ? HOLDER_GROUPS
+        : GROUPS.map((g) => ({
+            ...g,
+            items: g.items.filter((n) => !n.roles || !who || n.roles.includes(who.role as Role)),
+          })).filter((g) => g.items.length > 0)
+      ).map((g) => (
         <div key={g.label}>
           <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">{t(g.label)}</p>
           <ul className="space-y-0.5">
-            {g.items
-              .filter((n) => n.href !== "/integrations" || who?.role === "FOUNDER")
-              .map((n) => {
-                const active = n.href === "/" ? path === "/" : path.startsWith(n.href);
-                return (
-                  <li key={n.href}>
-                    <Link
-                      href={n.href}
-                      aria-current={active ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-                        active
-                          ? "bg-emerald-50 font-medium text-emerald-800"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                      }`}
-                    >
-                      <Icon name={n.icon} className={active ? "text-emerald-700" : "text-slate-400"} />
-                      {t(n.key)}
-                      {isHolder && n.href === "/resolutions" && pendingVotes > 0 && (
-                        <span
-                          className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800"
-                          aria-label={`${pendingVotes} ${t("portalVotes")}`}
-                        >
-                          {pendingVotes}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
+            {g.items.map((n) => {
+              const active = n.href === "/" ? path === "/" : path.startsWith(n.href);
+              return (
+                <li key={n.href}>
+                  <Link
+                    href={n.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      active
+                        ? "bg-emerald-50 font-medium text-emerald-800"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon name={n.icon} className={active ? "text-emerald-700" : "text-slate-400"} />
+                    {t(n.key)}
+                    {n.href === "/approvals" && pendingApprovals > 0 && (
+                      <span className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800">
+                        {pendingApprovals}
+                      </span>
+                    )}
+                    {isHolder && n.href === "/resolutions" && pendingVotes > 0 && (
+                      <span
+                        className="ms-auto rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800"
+                        aria-label={`${pendingVotes} ${t("portalVotes")}`}
+                      >
+                        {pendingVotes}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}
@@ -228,6 +277,9 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen lg:ps-64">
+      <a href="#main" className="skip-link">
+        {t("skipToContent")}
+      </a>
       {/* sidebar: fixed on desktop, drawer on small screens */}
       <aside
         className={`fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e border-slate-200 bg-surface transition-transform duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${
@@ -280,7 +332,13 @@ export function Shell({ children }: { children: ReactNode }) {
           >
             <Icon name="menu" />
           </button>
-          <p className="min-w-0 flex-1 truncate text-sm font-medium text-slate-600">{org}</p>
+          <div className="min-w-0 flex-1">
+            {session ? (
+              <CompanySwitcher current={org} orgId={session.orgId} canAdd={!isHolder} />
+            ) : (
+              <p className="truncate text-sm font-medium text-slate-600">{org}</p>
+            )}
+          </div>
           {session && !isHolder && <SearchPalette />}
           <Toggles />
           {session ? (
@@ -303,7 +361,13 @@ export function Shell({ children }: { children: ReactNode }) {
             )
           )}
         </header>
-        <main className="page mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">{children}</main>
+        <main
+          id="main"
+          tabIndex={-1}
+          className="page w-full flex-1 px-4 py-6 outline-none sm:px-6 sm:py-8 lg:px-8 2xl:px-12"
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

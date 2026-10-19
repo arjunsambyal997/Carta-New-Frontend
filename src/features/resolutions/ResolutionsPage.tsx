@@ -11,7 +11,7 @@ import { useI18n } from "@/context/I18nContext";
 import type { ResolutionThreshold } from "@/api/types";
 
 export default function ResolutionsPage() {
-  const { t, name } = useI18n();
+  const { t, name, date } = useI18n();
   const [version, setVersion] = useState(0);
   const state = useRegister((orgId) => api.resolutions(orgId), version);
   const [showForm, setShowForm] = useState(false);
@@ -163,7 +163,7 @@ export default function ResolutionsPage() {
       )}
 
       {state.data && state.data.length === 0 && <p className="text-slate-500">{t("noResolutions")}</p>}
-      <ul className="space-y-3">
+      <ul className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3 [&>li]:content-start">
         {state.data?.map((r) => (
           <li key={r.id} className="card space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -173,7 +173,7 @@ export default function ResolutionsPage() {
               <StatusBadge status={r.status} />
             </div>
             <p className="text-xs text-slate-500">
-              {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} ·{" "}
+              {t("deadline")}: {date(r.votingDeadline, true)} ·{" "}
               {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
             </p>
             {r.status !== "DRAFT" && <TallyBar r={r} />}

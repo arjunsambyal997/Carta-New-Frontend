@@ -4,10 +4,11 @@ import { QRCodeSVG } from "qrcode.react";
 import { useState, type FormEvent } from "react";
 import { DownloadButton } from "@/components/common/DownloadButton";
 import { useFeedback } from "@/components/common/Feedback";
+import { HelpPanel } from "@/components/common/HelpPanel";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
-import { api } from "@/api";
+import { api, isPendingChange } from "@/api";
 import { useI18n } from "@/context/I18nContext";
 import type { Certificate, Currency, InstrumentType } from "@/api/types";
 
@@ -33,7 +34,7 @@ export default function IssueCertificatePage() {
   const [issued, setIssued] = useState<Certificate | null>(null);
 
   const selectedClass = state.data?.classes.find((c) => c.id === classId);
-  const { confirm } = useFeedback();
+  const { confirm, toast } = useFeedback();
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -61,7 +62,12 @@ ${t("confirmIssueDetail")}`,
         currency: currency || undefined,
         dateIssued: date || undefined,
       });
-      setIssued(cert);
+      if (isPendingChange(cert)) {
+        toast(t("toastSentForApproval"));
+        setQuantity("");
+      } else {
+        setIssued(cert);
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -110,140 +116,149 @@ ${t("confirmIssueDetail")}`,
   }
 
   return (
-    <div className="max-w-xl space-y-4">
-      <PageHeader title={t("navIssue")} />
+    <div className="space-y-4">
+      <PageHeader title={t("navIssue")} subtitle={t("subIssue")} />
       <Status state={state} />
-      {state.data && (
-        <form onSubmit={submit} className="card space-y-4">
-          <div>
-            <label className="label" htmlFor="holder">
-              {t("shareholderLabel")}
-            </label>
-            <select
-              id="holder"
-              required
-              className="input"
-              value={holderId}
-              onChange={(e) => setHolderId(e.target.value)}
-            >
-              <option value="">{t("select")}</option>
-              {state.data.holders.map((h) => (
-                <option key={h.id} value={h.id}>
-                  {name(h.fullNameEn, h.fullNameAr)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="label" htmlFor="cls">
-              {t("classLabel")}
-            </label>
-            <select id="cls" required className="input" value={classId} onChange={(e) => setClassId(e.target.value)}>
-              <option value="">{t("select")}</option>
-              {state.data.classes
-                .filter((c) => c.classType !== "TREASURY")
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {name(c.name, c.nameAr)}
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        {state.data && (
+          <form onSubmit={submit} className="card grid max-w-5xl gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+            <div>
+              <label className="label" htmlFor="holder">
+                {t("shareholderLabel")}
+              </label>
+              <select
+                id="holder"
+                required
+                className="input"
+                value={holderId}
+                onChange={(e) => setHolderId(e.target.value)}
+              >
+                <option value="">{t("select")}</option>
+                {state.data.holders.map((h) => (
+                  <option key={h.id} value={h.id}>
+                    {name(h.fullNameEn, h.fullNameAr)}
                   </option>
                 ))}
-            </select>
-            {selectedClass && (
-              <p className="mt-1 text-xs text-slate-500">
-                {t("parValueHint")}: {selectedClass.currency} {num(selectedClass.parValue)}
-                {selectedClass.authorizedShares != null &&
-                  ` · ${t("authorized")}: ${num(selectedClass.authorizedShares)}`}
-              </p>
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="cls">
+                {t("classLabel")}
+              </label>
+              <select id="cls" required className="input" value={classId} onChange={(e) => setClassId(e.target.value)}>
+                <option value="">{t("select")}</option>
+                {state.data.classes
+                  .filter((c) => c.classType !== "TREASURY")
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {name(c.name, c.nameAr)}
+                    </option>
+                  ))}
+              </select>
+              {selectedClass && (
+                <p className="mt-1 text-xs text-slate-500">
+                  {t("parValueHint")}: {selectedClass.currency} {num(selectedClass.parValue)}
+                  {selectedClass.authorizedShares != null &&
+                    ` · ${t("authorized")}: ${num(selectedClass.authorizedShares)}`}
+                </p>
+              )}
+            </div>
+            <div className="contents">
+              <div>
+                <label className="label" htmlFor="qty">
+                  {t("quantity")}
+                </label>
+                <input
+                  id="qty"
+                  required
+                  type="number"
+                  min={1}
+                  step={1}
+                  className="input"
+                  dir="ltr"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label" htmlFor="price">
+                  {t("pricePerShare")}
+                </label>
+                <input
+                  id="price"
+                  required
+                  type="number"
+                  min={0}
+                  step="0.000001"
+                  className="input"
+                  dir="ltr"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label" htmlFor="instr">
+                  {t("instrument")}
+                </label>
+                <select
+                  id="instr"
+                  className="input"
+                  value={instrument}
+                  onChange={(e) => setInstrument(e.target.value as InstrumentType)}
+                >
+                  {INSTRUMENTS.map((i) => (
+                    <option key={i}>{i}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label" htmlFor="cur">
+                  {t("currency")} ({t("optionalDefault")})
+                </label>
+                <select
+                  id="cur"
+                  className="input"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value as Currency | "")}
+                >
+                  <option value="">{selectedClass?.currency ?? "—"}</option>
+                  {CURRENCIES.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label" htmlFor="date">
+                  {t("dateIssued")} ({t("optionalDefault")})
+                </label>
+                <input
+                  id="date"
+                  type="date"
+                  className="input"
+                  dir="ltr"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+            </div>
+            {error && (
+              <div
+                role="alert"
+                className="col-span-full rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+              >
+                {error}
+              </div>
             )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label" htmlFor="qty">
-                {t("quantity")}
-              </label>
-              <input
-                id="qty"
-                required
-                type="number"
-                min={1}
-                step={1}
-                className="input"
-                dir="ltr"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="label" htmlFor="price">
-                {t("pricePerShare")}
-              </label>
-              <input
-                id="price"
-                required
-                type="number"
-                min={0}
-                step="0.000001"
-                className="input"
-                dir="ltr"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="label" htmlFor="instr">
-                {t("instrument")}
-              </label>
-              <select
-                id="instr"
-                className="input"
-                value={instrument}
-                onChange={(e) => setInstrument(e.target.value as InstrumentType)}
-              >
-                {INSTRUMENTS.map((i) => (
-                  <option key={i}>{i}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="label" htmlFor="cur">
-                {t("currency")} ({t("optionalDefault")})
-              </label>
-              <select
-                id="cur"
-                className="input"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value as Currency | "")}
-              >
-                <option value="">{selectedClass?.currency ?? "—"}</option>
-                {CURRENCIES.map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="label" htmlFor="date">
-                {t("dateIssued")} ({t("optionalDefault")})
-              </label>
-              <input
-                id="date"
-                type="date"
-                className="input"
-                dir="ltr"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-          </div>
-          {error && (
-            <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-              {error}
-            </div>
-          )}
-          <button className="btn" disabled={busy} type="submit">
-            {busy ? t("issuing") : t("issue")}
-          </button>
-        </form>
-      )}
+            <button className="btn col-span-full justify-self-start" disabled={busy} type="submit">
+              {busy ? t("issuing") : t("issue")}
+            </button>
+          </form>
+        )}
+        <HelpPanel
+          title={t("issueHelpTitle")}
+          items={[t("issueHelp1"), t("issueHelp2"), t("issueHelp3"), t("issueHelp4")]}
+        />
+      </div>
     </div>
   );
 }

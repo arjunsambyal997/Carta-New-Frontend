@@ -18,7 +18,7 @@ export function SignaturesPanel({
   docRef: string;
   allowSign?: boolean;
 }) {
-  const { t } = useI18n();
+  const { t, date } = useI18n();
   const { confirm, toast } = useFeedback();
   const [list, setList] = useState<SignatureView[] | null>(null);
   const [open, setOpen] = useState(false);
@@ -97,7 +97,7 @@ ${t("confirmSignDetail")}`,
               </div>
               <p className="mt-1 text-slate-600">“{s.statement}”</p>
               <p className="mt-1 text-xs text-slate-400">
-                {new Date(s.signedAt).toLocaleString()} ·{" "}
+                {date(s.signedAt, true)} ·{" "}
                 <span dir="ltr" className="font-mono">
                   {s.signatureHash.slice(0, 16)}…
                 </span>

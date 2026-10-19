@@ -11,18 +11,34 @@ import { api } from "@/api";
 import { useI18n } from "@/context/I18nContext";
 
 export default function PortalPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const state = useRegister(() => api.portalSummary());
   const [signing, setSigning] = useState<string | null>(null);
   const pct = (n: number) => `${num(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
   const d = state.data;
 
   return (
-    <div className="max-w-4xl space-y-5">
+    <div className="space-y-5">
       <PageHeader
         eyebrow={d ? name(d.organizationNameEn, d.organizationNameAr) : undefined}
         title={d ? name(d.holderNameEn, d.holderNameAr) : t("navPortal")}
         subtitle={t("portalIntro")}
+        action={
+          d && (
+            <>
+              <DownloadButton
+                label={t("statementDownload")}
+                run={() => api.statementPdf(d.organizationId, d.shareholderId)}
+              />
+              {d.certificates.some((c) => c.instrumentType === "OPTION") && (
+                <DownloadButton
+                  label={t("optionStatementDownload")}
+                  run={() => api.optionStatementPdf(d.organizationId, d.shareholderId)}
+                />
+              )}
+            </>
+          )
+        }
       />
       <Status state={state} />
       {d && (
@@ -47,7 +63,7 @@ export default function PortalPage() {
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{name(v.title, v.titleAr)}</span>
                       <span className="block text-xs text-slate-500">
-                        {t("deadline")}: {new Date(v.votingDeadline).toLocaleString()}
+                        {t("deadline")}: {date(v.votingDeadline, true)}
                       </span>
                     </span>
                     <span

@@ -9,6 +9,22 @@ export interface Organization {
   jurisdiction: "MAINLAND_UAE" | "ADGM" | "DIFC" | "KSA";
   commercialLicenseNo: string;
   baseCurrency: Currency;
+  requireApproval?: boolean;
+}
+
+/** A register change waiting for (or past) a second person's decision. Also the 202 answer to a gated action. */
+export interface PendingChange {
+  id: string;
+  pending: boolean;
+  kind: "ISSUE_CERTIFICATE" | "TRANSFER" | "BUY_BACK" | "EXERCISE_OPTIONS";
+  status: "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
+  summary: string;
+  requestedBy: string;
+  requestedAt: string;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  decisionNote: string | null;
+  result: string | null;
 }
 
 export interface ShareClass {
@@ -30,6 +46,43 @@ export interface Shareholder {
   fullNameEn: string;
   fullNameAr: string | null;
   nationality: string | null;
+}
+
+export interface LedgerEvent {
+  date: string;
+  type: "ACQUIRED" | "DISPOSED";
+  certificateNo: string;
+  instrumentType: InstrumentType;
+  className: string;
+  quantity: number;
+  counterpartyEn: string | null;
+  counterpartyAr: string | null;
+  counterpartyCertificateNo: string | null;
+  reason: string;
+  sharesAfter: number;
+}
+
+export interface Ledger {
+  shareholderId: string;
+  nameEn: string;
+  nameAr: string | null;
+  currentShares: number;
+  events: LedgerEvent[];
+}
+
+export interface LineageNode {
+  certificateNo: string;
+  status: string;
+  instrumentType: InstrumentType;
+  holderEn: string;
+  holderAr: string | null;
+  className: string;
+  quantity: number;
+  dateIssued: string;
+  predecessorNo: string | null;
+  reason: string;
+  depth: number;
+  current: boolean;
 }
 
 export interface HolderPosition {
@@ -244,6 +297,15 @@ export interface InviteResult {
   email: string;
   role: Role;
   temporaryPassword: string | null;
+}
+
+export interface NewCompany {
+  legalNameEn: string;
+  legalNameAr?: string;
+  jurisdiction: Jurisdiction;
+  commercialLicenseNo: string;
+  baseCurrency: string;
+  certificatePrefix: string;
 }
 
 export interface SignupRequest {
@@ -472,6 +534,27 @@ export interface RoundResult {
   investorPct: number;
   poolPct: number;
   rows: RoundRow[];
+  convertedShares?: number;
+  conversions?: RoundConversion[];
+}
+
+export interface RoundConversion {
+  name: string;
+  kind: "SAFE" | "NOTE";
+  amountConverted: number;
+  conversionPrice: number;
+  shares: number;
+  basis: "CAP" | "DISCOUNT" | "ROUND";
+}
+
+export interface ConvertibleInput {
+  kind: "SAFE" | "NOTE";
+  name?: string;
+  amount: number;
+  capValuation?: number;
+  discountPct?: number;
+  interestPct?: number;
+  months?: number;
 }
 
 export interface RoundInput {
@@ -479,6 +562,7 @@ export interface RoundInput {
   investment: number;
   poolPct?: number;
   investorName?: string;
+  convertibles?: ConvertibleInput[];
 }
 
 export interface VestingStatus {

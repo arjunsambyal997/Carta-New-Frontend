@@ -59,6 +59,8 @@ It asks for your email, password and a current authenticator code. It adds five 
 | **Legal auditor** | Reads the register, the audit trail and UBO reports. Changes nothing |
 | **Shareholder** | Only **My holdings**: their own shares, certificates (PDF), signatures and open votes |
 
+**More than one company.** One login can run several companies. Click the **company name** in the top bar to switch to another one without signing in again, or choose **Add a company** to start a new one (you become its founder). Each company has its own register, members, approvals and audit trail.
+
 Invite people on **Members**. A temporary password is shown **once**, so copy it and send it securely. Each person sets up their own two-factor code when they first sign in.
 
 ---
@@ -95,6 +97,9 @@ Every certificate has a QR code. Scanning it opens a public verification page th
 ### See ownership
 - **Dashboard:** key numbers, economic vs. voting power, class mix, recent votes and certificates.
 - **Cap table:** every holder by class, issued and fully diluted %, votes. Export as CSV or PDF.
+- **Back in time:** on **Cap table**, pick an **As of date** to see the register exactly as it stood at the end of that day (useful for audits, due diligence and "who owned what when we signed?"). **Back to today** returns to the live view.
+- **A holder's ledger:** click a name on the cap table to see everything that holder acquired and disposed of, in date order, who was on the other side, and a running share count.
+- **A certificate's history:** on **Certificates**, **History** shows the family tree: what the certificate replaced and what replaced it (transfer, option exercise, succession, reissue).
 - **Ownership tree:** a visual tree. Under a company you see its recorded owners.
 - **Search** (top bar, or Ctrl+K): find any holder, certificate, resolution or document.
 
@@ -113,10 +118,28 @@ Every certificate has a QR code. Scanning it opens a public verification page th
 ### Model a funding round: Funding round
 Enter the pre-money valuation, investment, optional option pool % and investor name, then click **Simulate**. You see the price per share, post-money, new shares and everyone's ownership before and after. **Nothing is saved**, so try as many scenarios as you like.
 
+**SAFEs and convertible notes.** Under *SAFEs and convertible notes*, add each instrument: its type, amount, valuation cap, discount, and for a note its yearly interest and months outstanding. Each converts at the **lowest** of three prices: the round price, the round price less the discount, and the cap price (cap divided by the shares before the round). The *How they convert* table shows which price each got. Converted shares sit in the pre-money, so existing holders carry them and the new investor still gets investment ÷ post-money.
+
+**Option pool planner.** Open *Option pool planner*, add the roles you plan to grant options to (people, and each grant as a % of the company after the round). The total is the pool you need; **Use as the option pool** fills it into the simulation.
+
+**Compare scenarios.** After a simulation, **Save as scenario** keeps it (up to four). *Scenarios side by side* shows price, shares, pool and everyone's ownership after each, so you can compare term sheets. Scenarios live on the page only.
+
 ### Model an exit: Exit waterfall
 Enter an exit value and click **Calculate**. Preferences are paid by seniority, then the remainder is split by shares. Each preferred class either keeps its preference or converts, whichever pays more. Results show by class and by shareholder.
 
 ---
+
+### Two-person approval: Approvals
+
+For more control, a founder can turn on **Require a second person to approve** on the **Approvals** page.
+
+1. From then on, when a secretary (or founder) issues a certificate, records a transfer or buy-back, or exercises options, the change is **not applied**. It is saved as a request and appears under *Waiting for approval*. The person who made it sees "Sent for approval".
+2. A **different** founder or board member opens **Approvals**, reads the request, optionally adds a note, and clicks **Approve** or **Reject**. Approving applies it to the register straight away, under all the normal rules (if something is no longer valid, such as not enough shares, they see the error and the request stays waiting).
+3. Nobody can approve their own request. The requester can **Withdraw** it.
+4. The audit trail records both names, for example `sec@acme.com (approved by founder@acme.com)`.
+5. If nobody else could approve (for example, a company with a single founder and no board members), changes go through directly, so you're never locked out.
+
+The number in the sidebar next to **Approvals** shows how many requests are waiting.
 
 ## 6. Board resolutions and voting
 
@@ -128,6 +151,19 @@ Enter an exit value and click **Calculate**. Preferences are paid by seniority, 
 6. Under **Signatures**, members can sign the resolution with a fresh authenticator code.
 
 ---
+
+### Paperwork as PDFs
+
+Three bilingual (English and Arabic) PDFs are generated from the register. Every download is recorded in the audit trail.
+
+| Document | Where | What it contains |
+|---|---|---|
+| **Minutes** | A closed resolution, **Download minutes** | The result, majority and quorum, the tally, every vote with its weight, and the signatures recorded on the resolution |
+| **Share transfer instrument** | A holder's certificate history (**Certificates → History**), on the certificate issued to the buyer, **Transfer instrument** | Seller and buyer, class, number of shares, price and total, the surrendered and new certificate numbers, and signature lines |
+| **Option statement** | A holder's ledger or **My holdings**, **Download option statement** (shown when they hold options) | Each grant: granted, vested, exercised, can exercise now, unvested, and the vesting schedule |
+| **Shareholder statement** | A holder's ledger (click a name on the cap table) or **My holdings**, **Download statement** | Their certificates, ownership %, fully diluted % and votes on a chosen date (today if blank) |
+
+A statement is not a certificate of title; the numbered share certificates remain the proof of ownership.
 
 ## 7. Compliance
 
@@ -161,7 +197,7 @@ Shareholders sign in and land on **My holdings**:
 
 ## 9. Good to know
 
-- **EN / العربية** in the top bar switches language and flips the layout right-to-left. The moon/sun button switches to dark mode.
+- **EN / العربية** in the top bar switches language and flips the layout right-to-left. **Hijri** (هجري) next to it shows dates as the Hijri (Umm al-Qura) date followed by the Gregorian date in brackets, for example `30 Jumada II 1446 AH (2025-01-01)`; the Gregorian date is always kept because that is the legal date. The moon/sun button switches to dark mode.
 - Anything permanent (issuing, transfers, exercising, importing, voting, signing, executing rules) asks you to confirm first and shows the details.
 - An authenticator code works once. If signing says the code is invalid, wait for the next one.
 - Five wrong passwords lock an account for 15 minutes.

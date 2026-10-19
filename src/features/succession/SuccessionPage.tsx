@@ -221,7 +221,7 @@ function RuleForm({
           {error}
         </p>
       )}
-      <button className="btn sm:col-span-2 lg:col-span-3">{t("create")}</button>
+      <button className="btn sm:col-span-2 lg:col-span-3">{t("succCreate")}</button>
     </form>
   );
 }

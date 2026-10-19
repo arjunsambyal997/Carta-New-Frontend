@@ -87,7 +87,7 @@ export default function ChangePasswordPage() {
           </p>
         )}
         {ok && <p className="text-sm text-emerald-700">{t("changeDone")}</p>}
-        <button className="btn w-full">{t("save")}</button>
+        <button className="btn w-full">{t("changeTitle")}</button>
       </form>
     </div>
   );

@@ -1,3 +1,5 @@
+import type { PendingChange } from "./types";
+
 const TOKEN_KEY = "equigcc.token";
 const ORG_KEY = "equigcc.orgId";
 const REFRESH_KEY = "equigcc.refresh";
@@ -126,9 +128,18 @@ export async function request<T>(path: string, init: RequestInit = {}, auth = tr
       detail = detail && detail !== "Forbidden" ? detail : "Forbidden: check role, organization and MFA";
     throw new ApiError(res.status, detail);
   }
-  if (res.status === 202 || res.status === 204) return undefined as T;
+  if (res.status === 204) return undefined as T;
+  if (res.status === 202) {
+    // 202 is "accepted": usually no body, but a gated register change answers with the pending change.
+    const text = await res.text();
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
   return res.json() as Promise<T>;
 }
+
+/** True when a gated action (issue, transfer, buy-back, exercise) was held for approval instead of carried out. */
+export const isPendingChange = (x: unknown): x is PendingChange =>
+  typeof x === "object" && x !== null && "pending" in x && "kind" in x && "summary" in x;
 
 /** Fetches an authenticated binary response and hands it to the browser as a file download. */
 export async function downloadFile(path: string, fallbackName: string): Promise<void> {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { DownloadButton } from "@/components/common/DownloadButton";
 import { useFeedback } from "@/components/common/Feedback";
 import { PageHeader } from "@/components/common/PageHeader";
 import { StatusBadge, TallyBar } from "@/features/resolutions/ResolutionBits";
@@ -21,7 +22,7 @@ const CHOICES: { v: VoteChoice; key: Key; cls: string }[] = [
 ];
 
 export default function ResolutionPage() {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const { id } = useParams<{ id: string }>();
   const [version, setVersion] = useState(0);
   const state = useRegister(async (orgId) => {
@@ -64,10 +65,20 @@ export default function ResolutionPage() {
       <Status state={state} />
       {r && orgId && (
         <>
-          <PageHeader title={name(r.title, r.titleAr)} action={<StatusBadge status={r.status} />} />
+          <PageHeader
+            title={name(r.title, r.titleAr)}
+            action={
+              <>
+                {(r.status === "PASSED" || r.status === "REJECTED") && me && me.role !== "SHAREHOLDER" && (
+                  <DownloadButton label={t("minutesDownload")} run={() => api.minutesPdf(orgId, r.id)} />
+                )}
+                <StatusBadge status={r.status} />
+              </>
+            }
+          />
           {r.description && <p className="whitespace-pre-wrap text-slate-700">{r.description}</p>}
           <p className="text-sm text-slate-500">
-            {t("deadline")}: {new Date(r.votingDeadline).toLocaleString()} ·{" "}
+            {t("deadline")}: {date(r.votingDeadline, true)} ·{" "}
             {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
           </p>
 
@@ -124,7 +135,7 @@ export default function ResolutionPage() {
           {r.status === "ACTIVE" && (
             <div className="card space-y-3">
               <h2 className="text-sm font-semibold text-slate-700">{t("castVote")}</h2>
-              {officer && state.data!.holders.length > 0 && (
+              {me?.role === "CORPORATE_SECRETARY" && state.data!.holders.length > 0 && (
                 <div>
                   <label className="label" htmlFor="behalf">
                     {t("recordFor")}
@@ -209,7 +220,7 @@ ${t("voteFinal")}`,
                   </button>
                   {r.lastReminderAt && (
                     <span className="text-xs text-slate-500">
-                      {t("lastReminder")}: {new Date(r.lastReminderAt).toLocaleString()}
+                      {t("lastReminder")}: {date(r.lastReminderAt, true)}
                     </span>
                   )}
                 </div>
@@ -242,7 +253,7 @@ ${t("voteFinal")}`,
                           {t(`vote${v.vote === "FOR" ? "For" : v.vote === "AGAINST" ? "Against" : "Abstain"}` as Key)}
                         </td>
                         <td className="px-3 py-2 text-end">{money(v.weight)}</td>
-                        <td className="px-3 py-2 text-end">{new Date(v.castAt).toLocaleString()}</td>
+                        <td className="px-3 py-2 text-end">{date(v.castAt, true)}</td>
                       </tr>
                     ))}
                   </tbody>

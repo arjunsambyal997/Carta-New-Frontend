@@ -7,7 +7,7 @@ import { api } from "@/api";
 import { useI18n } from "@/context/I18nContext";
 
 export default function AuditPage() {
-  const { t } = useI18n();
+  const { t, date } = useI18n();
   const state = useRegister((orgId) => api.audit(orgId));
   const trail = state.data;
 
@@ -37,7 +37,7 @@ export default function AuditPage() {
                 {trail.entries.map((e) => (
                   <tr key={e.id} className="align-top">
                     <td className="px-3 py-2 tabular-nums">{e.id}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{new Date(e.occurredAt).toLocaleString()}</td>
+                    <td className="whitespace-nowrap px-3 py-2">{date(e.occurredAt, true)}</td>
                     <td className="px-3 py-2">{e.entityName}</td>
                     <td className="px-3 py-2">{e.action}</td>
                     <td className="px-3 py-2">{e.detail}</td>

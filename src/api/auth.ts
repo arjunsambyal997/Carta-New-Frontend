@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { AuthResult, Enrollment, Me, SignupRequest } from "./types";
+import type { AuthResult, Enrollment, Me, NewCompany, Role, SignupRequest } from "./types";
 
 export const authApi = {
   signup: (body: SignupRequest) =>
@@ -10,6 +10,14 @@ export const authApi = {
       { method: "POST", body: JSON.stringify({ email, password, organizationId }) },
       false,
     ),
+  organizations: () => request<{ id: string; name: string; role: Role }[]>("/api/v1/auth/organizations"),
+  switchOrganization: (organizationId: string) =>
+    request<AuthResult>("/api/v1/auth/switch-organization", {
+      method: "POST",
+      body: JSON.stringify({ organizationId }),
+    }),
+  addOrganization: (body: NewCompany) =>
+    request<AuthResult>("/api/v1/auth/organizations", { method: "POST", body: JSON.stringify(body) }),
   verifyMfa: (mfaToken: string, code: string) =>
     request<AuthResult>("/api/v1/auth/mfa/verify", { method: "POST", body: JSON.stringify({ mfaToken, code }) }, false),
   forgotPassword: async (email: string) => {

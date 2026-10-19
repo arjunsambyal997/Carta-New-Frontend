@@ -160,12 +160,12 @@ function ClassMix({ table }: { table: CapTable }) {
 }
 
 function Resolutions({ list }: { list: Resolution[] | null }) {
-  const { t, num, name } = useI18n();
+  const { t, num, name, date } = useI18n();
   const shown = [...(list ?? [])]
     .sort((a, b) => (b.openedAt ?? b.votingDeadline).localeCompare(a.openedAt ?? a.votingDeadline))
     .slice(0, 4);
   return (
-    <Panel title={t("recentResolutions")} action={<ViewAll href="/resolutions" />}>
+    <Panel title={t("recentResolutions")} action={<ViewAll href="/resolutions" />} className="2xl:order-3">
       {shown.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-400">{t("noResolutions")}</p>
       ) : (
@@ -179,7 +179,7 @@ function Resolutions({ list }: { list: Resolution[] | null }) {
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium">{name(r.title, r.titleAr)}</span>
                   <span className="text-xs tabular-nums text-slate-500">
-                    {t("quorumShort")} {num(r.quorumPct)}% · {new Date(r.votingDeadline).toLocaleDateString()}
+                    {t("quorumShort")} {num(r.quorumPct)}% · {date(r.votingDeadline)}
                   </span>
                 </span>
                 <StatusBadge status={r.status} />
@@ -198,7 +198,11 @@ function Certificates({ list }: { list: Certificate[] | null }) {
     .sort((a, b) => b.dateIssued.localeCompare(a.dateIssued) || b.certificateNo.localeCompare(a.certificateNo))
     .slice(0, 5);
   return (
-    <Panel title={t("recentCertificates")} action={<ViewAll href="/certificates" />} className="lg:col-span-2">
+    <Panel
+      title={t("recentCertificates")}
+      action={<ViewAll href="/certificates" />}
+      className="lg:col-span-2 2xl:order-4 2xl:col-span-4"
+    >
       {shown.length === 0 ? (
         <p className="py-6 text-center text-sm text-slate-400">{t("noCertificates")}</p>
       ) : (
@@ -293,7 +297,7 @@ export function Dashboard({
   return (
     <div className="space-y-5">
       <Onboarding setup={setup} resolutions={resolutions} certificates={certificates} />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 2xl:gap-5">
         <Kpi
           delay={0}
           label={t("issuedShares")}
@@ -319,7 +323,7 @@ export function Dashboard({
           sub={`${num((resolutions ?? []).length)} ${t("navResolutions").toLowerCase()}`}
         />
       </div>
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-3 2xl:grid-cols-4">
         <EconVsVoting table={table} />
         <ClassMix table={table} />
         <Certificates list={certificates} />

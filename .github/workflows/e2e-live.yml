@@ -36,7 +36,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The tests need the API. Which backend branch: the one you asked for (manual run or the BACKEND_REF variable),
       # else a backend branch with the same name as this branch, else main. If the backend repository is private,
@@ -60,7 +60,7 @@ jobs:
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
 
       - name: Check out the backend
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: arjunsambyal997/Carta-New-Backend
           ref: ${{ steps.backend.outputs.ref }}

@@ -678,5 +678,13 @@
   "guideCompaniesT": "Manage more than one company",
   "guideCompaniesB": "Click the company name in the top bar to switch to another company on the same login, without signing in again, or to add a new one. Each company keeps its own register, members and audit trail.",
   "guideApprT": "Require a second approval",
-  "guideApprB": "A founder can switch on two-person approval. Issuing, transfers, buy-backs and option exercises then wait until a different founder or board member approves them."
+  "guideApprB": "A founder can switch on two-person approval. Issuing, transfers, buy-backs and option exercises then wait until a different founder or board member approves them.",
+  "maintenanceNow": "Maintenance in progress.",
+  "maintenanceSoon": "Scheduled maintenance.",
+  "maintenanceReadOnly": "The register is read-only during this time.",
+  "navChangelog": "What's new",
+  "changelogTitle": "What's new",
+  "changelogIntro": "Every release in plain language, newest first.",
+  "changelogVersion": "Version",
+  "changelogEmpty": "No releases yet."
 }

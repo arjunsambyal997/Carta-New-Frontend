@@ -14,6 +14,7 @@ import { equityApi } from "./equity";
 import { portalApi } from "./portal";
 import { integrationsApi } from "./integrations";
 import { approvalsApi } from "./approvals";
+import { systemApi } from "./system";
 
 /** One object for callers that want `api.something()`; each resource also exports its own `<name>Api`. */
 export const api = {
@@ -31,6 +32,7 @@ export const api = {
   ...portalApi,
   ...integrationsApi,
   ...approvalsApi,
+  ...systemApi,
 };
 export { authApi } from "./auth";
 export { organizationApi } from "./organization";

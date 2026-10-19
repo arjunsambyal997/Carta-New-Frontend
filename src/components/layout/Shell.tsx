@@ -8,6 +8,7 @@ import { useI18n, type Key } from "@/context/I18nContext";
 import { Avatar } from "@/components/common/Avatar";
 import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
+import { MaintenanceBanner } from "@/components/layout/MaintenanceBanner";
 import { SearchPalette } from "@/components/layout/SearchPalette";
 import { useSession } from "@/hooks/useSession";
 
@@ -26,6 +27,7 @@ const HOLDER_GROUPS: { label: Key; items: { href: string; key: Key; icon: IconNa
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
       { href: "/guide", key: "navGuide", icon: "guide" },
+      { href: "/changelog", key: "navChangelog", icon: "guide" },
     ],
   },
 ];
@@ -78,6 +80,7 @@ const GROUPS: { label: Key; items: NavItem[] }[] = [
       { href: "/security", key: "navSecurity", icon: "security" },
       { href: "/password", key: "navPassword", icon: "password" },
       { href: "/guide", key: "navGuide", icon: "guide" },
+      { href: "/changelog", key: "navChangelog", icon: "guide" },
     ],
   },
 ];
@@ -207,6 +210,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <a href="#main" className="skip-link">
           {t("skipToContent")}
         </a>
+        <MaintenanceBanner />
         <header className="flex items-center justify-between px-4 py-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
@@ -323,6 +327,7 @@ export function Shell({ children }: { children: ReactNode }) {
       )}
 
       <div className="flex min-h-screen flex-col">
+        <MaintenanceBanner />
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-surface/85 px-4 backdrop-blur sm:px-8">
           <button
             type="button"

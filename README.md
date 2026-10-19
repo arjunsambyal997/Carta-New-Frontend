@@ -78,7 +78,7 @@ npm run typecheck && npm run build
 | `npm run test:e2e` | Browser tests (Playwright); set `PW_CHROMIUM_PATH` to use an installed Chromium |
 | `npm run lint` / `npm run format:check` | Oxlint / Prettier |
 
-A pre-commit hook (husky + lint-staged) formats and lints staged files. CI runs the same checks, the production build and a Docker build.
+A pre-commit hook (husky + lint-staged) formats and lints staged files. CI runs the same checks, the production build and a Docker build. Releasing to production: see [docs/RELEASING.md](docs/RELEASING.md).
 
 Sign up at `/signup`, scan the QR with an authenticator app, and confirm a code. For scripted work, `npm run dev-token` still mints a token you can paste at `/settings`.
 

@@ -12,6 +12,7 @@ import { auditApi } from "./audit";
 import { registerToolsApi } from "./registerTools";
 import { equityApi } from "./equity";
 import { portalApi } from "./portal";
+import { integrationsApi } from "./integrations";
 
 /** One object for callers that want `api.something()`; each resource also exports its own `<name>Api`. */
 export const api = {
@@ -27,6 +28,7 @@ export const api = {
   ...registerToolsApi,
   ...equityApi,
   ...portalApi,
+  ...integrationsApi,
 };
 export { authApi } from "./auth";
 export { organizationApi } from "./organization";
@@ -40,3 +42,4 @@ export { auditApi } from "./audit";
 export { registerToolsApi } from "./registerTools";
 export { equityApi } from "./equity";
 export { portalApi } from "./portal";
+export { integrationsApi } from "./integrations";

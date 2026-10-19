@@ -344,6 +344,8 @@ export interface ShareholderInput {
   fullNameAr?: string;
   nationality?: string;
   passportNo?: string;
+  dateOfBirth?: string;
+  address?: string;
   registrationNo?: string;
   email?: string;
 }

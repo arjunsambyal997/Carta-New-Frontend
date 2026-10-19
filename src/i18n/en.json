@@ -716,5 +716,7 @@
   "compReference": "Reference (optional)",
   "compSave": "Save",
   "compBasis": "Basis",
-  "toastFiled": "Filing recorded."
+  "toastFiled": "Filing recorded.",
+  "dateOfBirth": "Date of birth",
+  "holderAddress": "Address"
 }

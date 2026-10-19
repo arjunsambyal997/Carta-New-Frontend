@@ -716,5 +716,7 @@
   "compReference": "المرجع (اختياري)",
   "compSave": "حفظ",
   "compBasis": "الأساس",
-  "toastFiled": "تم تسجيل الإيداع."
+  "toastFiled": "تم تسجيل الإيداع.",
+  "dateOfBirth": "تاريخ الميلاد",
+  "holderAddress": "العنوان"
 }

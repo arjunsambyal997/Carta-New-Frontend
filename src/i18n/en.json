@@ -791,5 +791,15 @@
   "capHolders": "holders",
   "capNoMatch": "No holder matches your filter.",
   "capTotal": "Total",
-  "capSort": "Sort by"
+  "capSort": "Sort by",
+  "treeZoomIn": "Zoom in",
+  "treeZoomOut": "Zoom out",
+  "treeFit": "Fit to screen",
+  "treeExpandAll": "Expand all",
+  "treeCollapseAll": "Collapse all",
+  "treeExpand": "Expand branch",
+  "treeCollapse": "Collapse branch",
+  "treeDragHint": "Drag to move, scroll or pinch to zoom. Hover a node to trace its path to the company.",
+  "treeOwns": "owns",
+  "treeCompany": "Company"
 }

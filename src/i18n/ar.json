@@ -791,5 +791,15 @@
   "capHolders": "مساهمين",
   "capNoMatch": "لا يوجد مساهم يطابق التصفية.",
   "capTotal": "الإجمالي",
-  "capSort": "ترتيب حسب"
+  "capSort": "ترتيب حسب",
+  "treeZoomIn": "تكبير",
+  "treeZoomOut": "تصغير",
+  "treeFit": "ملاءمة الشاشة",
+  "treeExpandAll": "توسيع الكل",
+  "treeCollapseAll": "طيّ الكل",
+  "treeExpand": "توسيع الفرع",
+  "treeCollapse": "طيّ الفرع",
+  "treeDragHint": "اسحب للتحريك، وكبّر بالعجلة أو بإصبعين. مرّر المؤشر على عقدة لتتبع مسارها إلى الشركة.",
+  "treeOwns": "يملك",
+  "treeCompany": "الشركة"
 }

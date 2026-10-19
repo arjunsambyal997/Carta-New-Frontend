@@ -32,7 +32,7 @@ export function VestingBar({ s }: { s: VestingStatus }) {
               className="absolute top-0 z-10 flex -translate-x-1/2 flex-col items-center rtl:translate-x-1/2"
               style={{ insetInlineStart: `${cliffPct}%` }}
             >
-              <span className="rounded bg-slate-800 px-1.5 text-[10px] font-medium leading-4 text-white">
+              <span className="rounded bg-slate-800 px-1.5 text-[10px] font-medium leading-4 text-slate-50">
                 {t("optCliff")}
               </span>
               <span className="h-[18px] w-px bg-slate-800" />

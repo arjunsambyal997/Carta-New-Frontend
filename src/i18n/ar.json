@@ -783,5 +783,13 @@
   "resFor": "مع",
   "resAgainst": "ضد",
   "resClosesOn": "يغلق",
-  "resClosedOn": "أُغلق"
+  "resClosedOn": "أُغلق",
+  "capSearch": "تصفية المساهمين",
+  "capPresetToday": "اليوم",
+  "capPreset30": "قبل 30 يومًا",
+  "capPresetYear": "بداية السنة",
+  "capHolders": "مساهمين",
+  "capNoMatch": "لا يوجد مساهم يطابق التصفية.",
+  "capTotal": "الإجمالي",
+  "capSort": "ترتيب حسب"
 }

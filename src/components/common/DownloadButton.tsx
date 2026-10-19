@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useI18n } from "@/context/I18nContext";
 
 /** Button that runs an async download and shows a failure inline. */
@@ -9,7 +9,7 @@ export function DownloadButton({
   run,
   className = "btn-ghost",
 }: {
-  label: string;
+  label: ReactNode;
   run: () => Promise<void>;
   className?: string;
 }) {

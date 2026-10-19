@@ -6,7 +6,7 @@ import { useState } from "react";
 import { DownloadButton } from "@/components/common/DownloadButton";
 import { useFeedback } from "@/components/common/Feedback";
 import { PageHeader } from "@/components/common/PageHeader";
-import { StatusBadge, TallyBar } from "@/features/resolutions/ResolutionBits";
+import { StatusBadge, TallyBar, THRESHOLD_LABEL } from "@/features/resolutions/ResolutionBits";
 import { SignaturesPanel } from "@/features/signatures/SignaturesPanel";
 import { useMe } from "@/hooks/useMe";
 import { Status } from "@/components/common/Status";
@@ -78,8 +78,7 @@ export default function ResolutionPage() {
           />
           {r.description && <p className="whitespace-pre-wrap text-slate-700">{r.description}</p>}
           <p className="text-sm text-slate-500">
-            {t("deadline")}: {date(r.votingDeadline, true)} ·{" "}
-            {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
+            {t("deadline")}: {date(r.votingDeadline, true)} · {t(THRESHOLD_LABEL[r.threshold])}
           </p>
 
           {r.status !== "DRAFT" && (

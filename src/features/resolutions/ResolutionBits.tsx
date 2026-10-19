@@ -10,6 +10,13 @@ const BADGE: Record<ResolutionStatus, string> = {
   REJECTED: "bg-red-50 text-red-800",
 };
 
+/** Translation key for each majority a resolution can require. */
+export const THRESHOLD_LABEL = {
+  ORDINARY: "thresholdOrdinary",
+  TWO_THIRDS: "thresholdTwoThirds",
+  SPECIAL: "thresholdSpecial",
+} as const;
+
 export function StatusBadge({ status }: { status: ResolutionStatus }) {
   const { t } = useI18n();
   return (

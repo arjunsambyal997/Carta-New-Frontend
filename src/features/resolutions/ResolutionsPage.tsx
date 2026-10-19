@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { StatusBadge, TallyBar } from "@/features/resolutions/ResolutionBits";
+import { StatusBadge, TallyBar, THRESHOLD_LABEL } from "@/features/resolutions/ResolutionBits";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -117,6 +117,7 @@ export default function ResolutionsPage() {
                 onChange={(e) => setThreshold(e.target.value as ResolutionThreshold)}
               >
                 <option value="ORDINARY">{t("thresholdOrdinary")}</option>
+                <option value="TWO_THIRDS">{t("thresholdTwoThirds")}</option>
                 <option value="SPECIAL">{t("thresholdSpecial")}</option>
               </select>
             </div>
@@ -173,8 +174,7 @@ export default function ResolutionsPage() {
               <StatusBadge status={r.status} />
             </div>
             <p className="text-xs text-slate-500">
-              {t("deadline")}: {date(r.votingDeadline, true)} ·{" "}
-              {r.threshold === "SPECIAL" ? t("thresholdSpecial") : t("thresholdOrdinary")}
+              {t("deadline")}: {date(r.votingDeadline, true)} · {t(THRESHOLD_LABEL[r.threshold])}
             </p>
             {r.status !== "DRAFT" && <TallyBar r={r} />}
           </li>

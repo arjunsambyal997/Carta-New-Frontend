@@ -186,7 +186,7 @@ export interface Waterfall {
 }
 
 export type ResolutionStatus = "DRAFT" | "ACTIVE" | "PASSED" | "REJECTED";
-export type ResolutionThreshold = "ORDINARY" | "SPECIAL";
+export type ResolutionThreshold = "ORDINARY" | "TWO_THIRDS" | "SPECIAL";
 export type VoteChoice = "FOR" | "AGAINST" | "ABSTAIN";
 
 export interface Tally {

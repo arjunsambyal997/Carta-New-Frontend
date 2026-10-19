@@ -29,10 +29,12 @@ function StaffDashboard() {
   const canMembers = role === "FOUNDER";
   const canAudit = role === "FOUNDER" || role === "CORPORATE_SECRETARY" || role === "LEGAL_AUDITOR";
   const state = useRegister(async (orgId) => {
-    const [org, table, resolutions, certificates, classes, holders, members, approvals, compliance, audit] =
+    const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
+    const [org, table, prior, resolutions, certificates, classes, holders, members, approvals, compliance, audit] =
       await Promise.all([
         api.organization(orgId),
         api.capTable(orgId),
+        api.capTable(orgId, monthAgo).catch(() => null),
         api.resolutions(orgId).catch(() => null),
         api.certificates(orgId).catch(() => null),
         api.shareClasses(orgId).catch(() => null),
@@ -45,6 +47,7 @@ function StaffDashboard() {
     return {
       org,
       table,
+      prior,
       resolutions,
       certificates,
       setup: { classes: classes?.length ?? 0, holders: holders?.length ?? 0, members: members?.length ?? 0 },
@@ -68,6 +71,7 @@ function StaffDashboard() {
           filings={state.data.filings}
           audit={state.data.audit}
           table={state.data.table}
+          prior={state.data.prior}
           resolutions={state.data.resolutions}
           certificates={state.data.certificates}
           setup={state.data.setup}

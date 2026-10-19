@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useI18n, type Key } from "@/context/I18nContext";
 import type { Resolution, ResolutionStatus } from "@/api/types";
 
@@ -17,10 +18,13 @@ export const THRESHOLD_LABEL = {
   SPECIAL: "thresholdSpecial",
 } as const;
 
-export function StatusBadge({ status }: { status: ResolutionStatus }) {
+export function StatusBadge({ status, icon }: { status: ResolutionStatus; icon?: ReactNode }) {
   const { t } = useI18n();
   return (
-    <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${BADGE[status]}`}>
+    <span
+      className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${BADGE[status]}`}
+    >
+      {icon}
       {t(`status${status}` as Key)}
     </span>
   );

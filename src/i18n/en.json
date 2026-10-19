@@ -783,5 +783,13 @@
   "resFor": "For",
   "resAgainst": "Against",
   "resClosesOn": "Closes",
-  "resClosedOn": "Closed"
+  "resClosedOn": "Closed",
+  "capSearch": "Filter holders",
+  "capPresetToday": "Today",
+  "capPreset30": "30 days ago",
+  "capPresetYear": "Start of year",
+  "capHolders": "holders",
+  "capNoMatch": "No holder matches your filter.",
+  "capTotal": "Total",
+  "capSort": "Sort by"
 }

@@ -38,6 +38,13 @@ const cases: [string, () => Promise<unknown>, string, string][] = [
   ["previewSuccession", () => api.previewSuccession("o1", "s1"), "GET", `${O}/succession-rules/s1/preview`],
   ["executeSuccession", () => api.executeSuccession("o1", "s1"), "POST", `${O}/succession-rules/s1/execute`],
   ["cancelSuccession", () => api.cancelSuccession("o1", "s1"), "POST", `${O}/succession-rules/s1/cancel`],
+  ["compliance", () => api.compliance("o1"), "GET", `${O}/compliance`],
+  [
+    "recordFiling",
+    () => api.recordFiling("o1", "KSA_REGISTER_FILING", {}),
+    "POST",
+    `${O}/compliance/KSA_REGISTER_FILING/filings`,
+  ],
   ["apiKeys", () => api.apiKeys("o1"), "GET", `${O}/api-keys`],
   ["createApiKey", () => api.createApiKey("o1", "BI"), "POST", `${O}/api-keys`],
   ["revokeApiKey", () => api.revokeApiKey("o1", "k1"), "DELETE", `${O}/api-keys/k1`],

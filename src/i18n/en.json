@@ -701,5 +701,20 @@
   "logoBadType": "Use a PNG, JPEG or WEBP image.",
   "logoTooBig": "The logo must be 512 KB or smaller.",
   "menuCollapse": "Collapse",
-  "menuExpand": "Expand"
+  "menuExpand": "Expand",
+  "navCompliance": "Filing deadlines",
+  "subCompliance": "What you have to tell the authorities, and by when.",
+  "compUpToDate": "Up to date",
+  "compPending": "Pending",
+  "compDueSoon": "Due soon",
+  "compOverdue": "Overdue",
+  "compDue": "Due",
+  "compLastFiled": "Last filed",
+  "compNone": "Nothing to file for this jurisdiction.",
+  "compMarkFiled": "Mark as filed",
+  "compFiledOn": "Filed on",
+  "compReference": "Reference (optional)",
+  "compSave": "Save",
+  "compBasis": "Basis",
+  "toastFiled": "Filing recorded."
 }

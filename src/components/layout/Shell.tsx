@@ -67,6 +67,7 @@ const GROUPS: { label: Key; items: NavItem[] }[] = [
   {
     label: "groupCompliance",
     items: [
+      { href: "/compliance", key: "navCompliance", icon: "alert", roles: COMPLIANCE },
       { href: "/ubo", key: "navUbo", icon: "ubo", roles: COMPLIANCE },
       { href: "/certificates", key: "navCertificates", icon: "certificates", roles: READERS },
       { href: "/vault", key: "navVault", icon: "vault", roles: READERS },

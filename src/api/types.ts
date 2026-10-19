@@ -10,6 +10,9 @@ export interface Organization {
   commercialLicenseNo: string;
   baseCurrency: Currency;
   requireApproval?: boolean;
+  /** Company logo uploaded by the founder or secretary; fetch it from /logo (needs the bearer token). */
+  hasLogo?: boolean;
+  logoUpdatedAt?: string | null;
 }
 
 /** A register change waiting for (or past) a second person's decision. Also the 202 answer to a gated action. */

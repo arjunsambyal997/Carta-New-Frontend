@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { api, saveSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
 import type { Role } from "@/api/types";
+import { CompanyLogo } from "@/components/common/CompanyLogo";
 import { Icon } from "@/components/common/Icon";
 
 interface Company {
@@ -17,10 +18,12 @@ interface Company {
 export function CompanySwitcher({
   current,
   orgId,
+  logoVersion = null,
   canAdd,
 }: {
   current: string | null;
   orgId: string;
+  logoVersion?: string | null;
   canAdd: boolean;
 }) {
   const { t } = useI18n();
@@ -66,12 +69,13 @@ export function CompanySwitcher({
     <div ref={box} className="relative min-w-0">
       <button
         type="button"
-        className="flex max-w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        className="flex max-w-full items-center gap-2 rounded-xl px-2 py-1 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={t("switchCompany")}
         onClick={() => setOpen((o) => !o)}
       >
+        <CompanyLogo orgId={orgId} version={logoVersion} name={current ?? "?"} size={28} />
         <span className="truncate">{current ?? t("switchCompany")}</span>
         <Icon name="chevron" size={14} className="shrink-0 text-slate-400" />
       </button>
@@ -99,7 +103,8 @@ export function CompanySwitcher({
               onClick={() => pick(c.id)}
               className="flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-start text-sm hover:bg-slate-100 disabled:opacity-60"
             >
-              <span className="min-w-0">
+              <CompanyLogo orgId={c.id} version={c.id === orgId ? logoVersion : null} name={c.name} size={32} />
+              <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{c.name}</span>
                 <span className="block text-xs text-slate-500">{t(`role${c.role}` as Key)}</span>
               </span>

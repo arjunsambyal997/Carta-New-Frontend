@@ -5,6 +5,7 @@ import { Avatar } from "@/components/common/Avatar";
 import { useFeedback } from "@/components/common/Feedback";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
+import { LogoCard } from "@/features/setup/LogoCard";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
 import { useI18n } from "@/context/I18nContext";
@@ -25,6 +26,7 @@ export default function SetupPage() {
     <div className="space-y-6">
       <PageHeader title={t("setupTitle")} subtitle={t("subSetup")} />
       <Status state={state} />
+      {state.orgId && <LogoCard orgId={state.orgId} />}
       {state.data && state.orgId && (
         <div className="grid gap-6 lg:grid-cols-2">
           <section className="space-y-3">

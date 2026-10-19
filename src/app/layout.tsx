@@ -7,8 +7,9 @@ import { Shell } from "@/components/layout/Shell";
 import "@/designSystem/globals.css";
 
 export const metadata: Metadata = {
-  title: "EquiGCC",
-  description: "Digital share register and cap table for the GCC",
+  title: { default: "Sijill", template: "%s · Sijill" },
+  description: "Sijill is the digital share register and cap table for GCC companies.",
+  applicationName: "Sijill",
 };
 
 export const viewport: Viewport = {

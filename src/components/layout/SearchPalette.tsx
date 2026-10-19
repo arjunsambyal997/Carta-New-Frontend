@@ -83,13 +83,19 @@ export function SearchPalette() {
     <>
       <button
         type="button"
-        className="btn-ghost h-9"
+        className="btn-ghost h-9 md:min-w-44 md:justify-start md:text-slate-500"
         onClick={() => setOpen(true)}
         aria-label={t("searchOpen")}
         title="Ctrl K"
       >
         <Icon name="search" size={16} />
         <span className="hidden md:inline">{t("searchOpen")}</span>
+        <kbd
+          dir="ltr"
+          className="ms-auto hidden rounded border border-slate-200 bg-slate-50 px-1.5 text-[10px] font-medium text-slate-500 md:inline"
+        >
+          ⌘K
+        </kbd>
       </button>
       {open && (
         <div

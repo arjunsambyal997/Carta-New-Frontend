@@ -168,15 +168,35 @@ html {
   tbody tr {
     @apply transition-colors;
   }
+  /* Soft brand glow behind the page so large screens do not read as flat grey. */
+  body {
+    background-image:
+      radial-gradient(60rem 30rem at 85% -10%, rgb(var(--brand-600) / 0.07), transparent 60%),
+      radial-gradient(50rem 28rem at -10% 0%, rgb(var(--series-1) / 0.05), transparent 60%);
+    background-attachment: fixed;
+  }
+  /* Tables inside scroll boxes keep their header visible. */
+  .overflow-x-auto thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: rgb(var(--surface));
+  }
+  tbody tr:hover {
+    background: rgb(var(--slate-100) / 0.6);
+  }
 }
 
 @layer components {
   .card {
-    @apply rounded-xl border border-slate-200 bg-surface p-4 shadow-card;
+    @apply rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-card transition-shadow;
+  }
+  .card:hover {
+    box-shadow: 0 8px 24px -12px rgb(var(--shadow) / 0.18);
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-[.98] disabled:opacity-50;
-    background: rgb(var(--btn));
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-[.98] disabled:opacity-50;
+    background: linear-gradient(180deg, rgb(var(--btn-hover) / 0), rgb(0 0 0 / 0.06)), rgb(var(--btn));
   }
   .btn:hover:not(:disabled) {
     background: rgb(var(--btn-hover));
@@ -185,7 +205,7 @@ html {
     @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-surface px-3 py-1.5 text-sm text-slate-700 transition hover:bg-slate-100 active:scale-[.98] disabled:opacity-50;
   }
   .input {
-    @apply w-full rounded-lg border border-slate-300 bg-surface px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20;
+    @apply w-full rounded-xl border border-slate-300 bg-surface px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20;
   }
   select.input {
     @apply pe-9;

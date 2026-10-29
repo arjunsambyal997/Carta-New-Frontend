@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getSession } from "@/api";
+import { FRESH_MS, getSession } from "@/api";
 
 export interface Loaded<T> {
   data: T | null;
@@ -27,6 +27,7 @@ export function useRegister<T>(load: (orgId: string) => Promise<T>, refreshKey =
     refreshing: false,
   });
   const [attempt, setAttempt] = useState(0);
+  const loadedAt = useRef(0);
   // Callers pass an inline arrow; keep the newest one without re-running the load on every render.
   // Declared before the load effect so it has already run when that effect reads it.
   const loadRef = useRef(load);
@@ -48,11 +49,11 @@ export function useRegister<T>(load: (orgId: string) => Promise<T>, refreshKey =
     });
     loadRef
       .current(s.orgId)
-      .then(
-        (data) =>
-          !cancelled &&
-          setState({ data, error: null, loading: false, connected: true, orgId: s.orgId, refreshing: false }),
-      )
+      .then((data) => {
+        if (cancelled) return;
+        loadedAt.current = Date.now();
+        setState({ data, error: null, loading: false, connected: true, orgId: s.orgId, refreshing: false });
+      })
       .catch(
         (e: Error) =>
           !cancelled &&
@@ -71,5 +72,21 @@ export function useRegister<T>(load: (orgId: string) => Promise<T>, refreshKey =
   }, [refreshKey, attempt]);
 
   const reload = useCallback(() => setAttempt((n) => n + 1), []);
+
+  // Coming back to the tab after a while shows what changed meanwhile (another person's vote, a new holder).
+  useEffect(() => {
+    const onReturn = () => {
+      if (document.visibilityState !== "visible" || loadedAt.current === 0) return;
+      if (Date.now() - loadedAt.current < FRESH_MS) return;
+      loadedAt.current = Date.now(); // focus and visibilitychange often fire together; reload once
+      reload();
+    };
+    document.addEventListener("visibilitychange", onReturn);
+    window.addEventListener("focus", onReturn);
+    return () => {
+      document.removeEventListener("visibilitychange", onReturn);
+      window.removeEventListener("focus", onReturn);
+    };
+  }, [reload]);
   return useMemo(() => ({ ...state, reload }), [state, reload]);
 }

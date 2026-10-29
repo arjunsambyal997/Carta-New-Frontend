@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, m } from "motion/react";
 import { useI18n } from "@/context/I18nContext";
+import { springSnappy } from "@/designSystem/motion";
 import { Icon } from "@/components/common/Icon";
 
 type Kind = "ok" | "error";
@@ -19,6 +21,7 @@ interface Feedback {
 
 const Ctx = createContext<Feedback | null>(null);
 const MAX_TOASTS = 4;
+const SWIPE_PX = 80;
 
 /** Toasts (bottom corner) and a native <dialog> confirm, shared by every page. */
 export function FeedbackProvider({ children }: { children: ReactNode }) {
@@ -82,28 +85,42 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
         aria-live="polite"
         className="pointer-events-none fixed bottom-4 end-4 z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-2"
       >
-        {toasts.map((x) => (
-          <div
-            key={x.key}
-            role={x.kind === "error" ? "alert" : "status"}
-            className="pointer-events-auto flex animate-rise items-start gap-2.5 rounded-xl border border-slate-200 bg-surface px-4 py-3 text-sm text-slate-800 shadow-pop"
-          >
-            <span
-              className={`mt-px grid size-5 shrink-0 place-items-center rounded-full ${x.kind === "error" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"}`}
+        <AnimatePresence initial={false}>
+          {toasts.map((x) => (
+            <m.div
+              key={x.key}
+              layout
+              role={x.kind === "error" ? "alert" : "status"}
+              initial={{ opacity: 0, y: 16, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.15 } }}
+              transition={springSnappy}
+              // Swipe sideways to dismiss; a short drag springs back.
+              drag="x"
+              dragSnapToOrigin
+              dragElastic={0.6}
+              onDragEnd={(_, info) => {
+                if (Math.abs(info.offset.x) > SWIPE_PX || Math.abs(info.velocity.x) > 600) dismiss(x.key);
+              }}
+              className="pointer-events-auto flex cursor-grab touch-pan-y items-start gap-2.5 rounded-xl border border-slate-200 bg-surface px-4 py-3 text-sm text-slate-800 shadow-pop active:cursor-grabbing"
             >
-              <Icon name={x.kind === "error" ? "alert" : "check"} size={13} strokeWidth={2.4} />
-            </span>
-            <span className="min-w-0 flex-1 break-words">{x.text}</span>
-            <button
-              type="button"
-              onClick={() => dismiss(x.key)}
-              aria-label={t("dismiss")}
-              className="-m-1 grid size-6 shrink-0 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-            >
-              <Icon name="close" size={14} />
-            </button>
-          </div>
-        ))}
+              <span
+                className={`mt-px grid size-5 shrink-0 place-items-center rounded-full ${x.kind === "error" ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-700"}`}
+              >
+                <Icon name={x.kind === "error" ? "alert" : "check"} size={13} strokeWidth={2.4} />
+              </span>
+              <span className="min-w-0 flex-1 break-words">{x.text}</span>
+              <button
+                type="button"
+                onClick={() => dismiss(x.key)}
+                aria-label={t("dismiss")}
+                className="-m-1 grid size-6 shrink-0 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >
+                <Icon name="close" size={14} />
+              </button>
+            </m.div>
+          ))}
+        </AnimatePresence>
       </div>
       <dialog
         ref={dialog}

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { I18nProvider } from "@/context/I18nContext";
 import { FeedbackProvider } from "@/components/common/Feedback";
 import { Shell } from "@/components/layout/Shell";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import "@/designSystem/globals.css";
 
 export const metadata: Metadata = {
@@ -35,9 +36,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <I18nProvider>
-          <FeedbackProvider>
-            <Shell>{children}</Shell>
-          </FeedbackProvider>
+          <MotionProvider>
+            <FeedbackProvider>
+              <Shell>{children}</Shell>
+            </FeedbackProvider>
+          </MotionProvider>
         </I18nProvider>
       </body>
     </html>

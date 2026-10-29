@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithI18n } from "@/test/render";
 import type { Loaded } from "@/hooks/useRegister";
 import { Status } from "./Status";
@@ -20,6 +20,18 @@ describe("Status", () => {
   it("shows the error message", () => {
     renderWithI18n(<Status state={{ ...base, error: "Boom" }} />);
     expect(screen.getByText(/Boom/)).toBeTruthy();
+  });
+
+  it("offers a retry that runs the loader again", () => {
+    const reload = vi.fn();
+    renderWithI18n(<Status state={{ ...base, error: "Boom", reload }} />);
+    fireEvent.click(screen.getByRole("button", { name: /try again/i }));
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("has no retry button when the state cannot reload", () => {
+    renderWithI18n(<Status state={{ ...base, error: "Boom" }} />);
+    expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("renders nothing once data is ready", () => {

@@ -7,6 +7,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { api, getSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
 import { SijillMark, SijillWordmark } from "@/components/brand/SijillLogo";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { MaintenanceBanner } from "@/components/layout/MaintenanceBanner";
@@ -131,7 +132,9 @@ export function Shell({ children }: { children: ReactNode }) {
         <a href="#main" className="skip-link">
           {t("skipToContent")}
         </a>
-        <MaintenanceBanner />
+        <ErrorBoundary fallback={null}>
+          <MaintenanceBanner />
+        </ErrorBoundary>
         <header className="flex items-center justify-between px-4 py-4 sm:px-8">
           <Brand />
           <div className="flex items-center gap-2">
@@ -298,7 +301,9 @@ export function Shell({ children }: { children: ReactNode }) {
       )}
 
       <div className="flex min-h-dvh min-w-0 flex-col">
-        <MaintenanceBanner />
+        <ErrorBoundary fallback={null}>
+          <MaintenanceBanner />
+        </ErrorBoundary>
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-slate-200/80 bg-surface/80 px-3 backdrop-blur-xl sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
           <button
             type="button"
@@ -310,13 +315,22 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
           <div className="min-w-0 flex-1">
             {session ? (
-              <CompanySwitcher current={org} orgId={session.orgId} logoVersion={logoVersion} canAdd={!isHolder} />
+              <ErrorBoundary
+                resetKeys={[session.orgId]}
+                fallback={<p className="truncate text-sm font-medium text-slate-600">{org}</p>}
+              >
+                <CompanySwitcher current={org} orgId={session.orgId} logoVersion={logoVersion} canAdd={!isHolder} />
+              </ErrorBoundary>
             ) : (
               <p className="truncate text-sm font-medium text-slate-600">{org}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
-            {session && !isHolder && <SearchPalette role={who?.role} />}
+            {session && !isHolder && (
+              <ErrorBoundary fallback={null}>
+                <SearchPalette role={who?.role} />
+              </ErrorBoundary>
+            )}
             <ToggleGroup />
             {session ? (
               <ProfileMenu email={who?.email ?? null} role={who?.role ?? null} />

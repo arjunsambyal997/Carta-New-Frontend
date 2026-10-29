@@ -48,8 +48,18 @@ export function Status({ state }: { state: Loaded<unknown> }) {
     );
   if (state.error)
     return (
-      <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
-        {t("error")}: {state.error}
+      <div
+        role="alert"
+        className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+      >
+        <span className="min-w-0 break-words">
+          {t("error")}: {state.error}
+        </span>
+        {state.reload && (
+          <button type="button" className="btn-ghost h-8 shrink-0" onClick={state.reload}>
+            {t("errorRetry")}
+          </button>
+        )}
       </div>
     );
   return null;

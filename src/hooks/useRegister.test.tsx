@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { saveSession } from "@/api";
+import { FRESH_MS, saveSession } from "@/api";
 import { useRegister } from "./useRegister";
 
 describe("useRegister", () => {
@@ -65,5 +65,22 @@ describe("useRegister", () => {
     act(() => result.current.reload?.());
     await waitFor(() => expect(result.current.data).toBe("b"));
     expect(first).toHaveBeenCalledOnce();
+  });
+
+  it("reloads stale data when the tab comes back into focus", async () => {
+    saveSession("tok", "org-1");
+    const load = vi.fn().mockResolvedValueOnce("first").mockResolvedValueOnce("second");
+    const { result } = renderHook(() => useRegister(load));
+    await waitFor(() => expect(result.current.data).toBe("first"));
+    act(() => window.dispatchEvent(new Event("focus")));
+    expect(load).toHaveBeenCalledOnce(); // still fresh
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + FRESH_MS + 1);
+    act(() => {
+      window.dispatchEvent(new Event("focus"));
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await waitFor(() => expect(result.current.data).toBe("second"));
+    expect(load).toHaveBeenCalledTimes(2);
+    vi.restoreAllMocks();
   });
 });

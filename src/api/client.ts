@@ -1,3 +1,4 @@
+import { cachedGet, clearRequestCache } from "./cache";
 import type { PendingChange } from "./types";
 
 const TOKEN_KEY = "equigcc.token";
@@ -111,7 +112,21 @@ export async function authedFetch(path: string, init: RequestInit = {}): Promise
   return res;
 }
 
-export async function request<T>(path: string, init: RequestInit = {}, auth = true): Promise<T> {
+/**
+ * Calls the API and parses the answer. Authenticated GETs go through the shared cache (see ./cache) unless the caller
+ * passes `cache: "no-store"`; every other method empties the cache once it finishes.
+ */
+export function request<T>(path: string, init: RequestInit = {}, auth = true): Promise<T> {
+  const method = (init.method ?? "GET").toUpperCase();
+  if (method === "GET" || method === "HEAD") {
+    return auth && method === "GET" && init.cache !== "no-store"
+      ? cachedGet(path, () => send<T>(path, init, auth))
+      : send<T>(path, init, auth);
+  }
+  return send<T>(path, init, auth).finally(clearRequestCache);
+}
+
+async function send<T>(path: string, init: RequestInit, auth: boolean): Promise<T> {
   const headers = new Headers(init.headers);
   headers.set("Accept", "application/json");
   if (typeof init.body === "string") headers.set("Content-Type", "application/json");

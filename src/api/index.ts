@@ -1,4 +1,5 @@
 export * from "./client";
+export { clearRequestCache, FRESH_MS } from "./cache";
 
 import { authApi } from "./auth";
 import { organizationApi } from "./organization";

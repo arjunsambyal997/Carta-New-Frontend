@@ -53,17 +53,21 @@ test("a transfer asks first, moves the shares, and the history can be read back 
   expect(download.suggestedFilename()).toBe(`transfer-${bought.certificateNo}.pdf`);
 });
 
-test("selling more shares than the seller holds is refused with the reason, and nothing changes", async ({ page }) => {
+test("selling more shares than the seller holds is stopped at the field, and nothing changes", async ({ page }) => {
   const { org, cls, fatima, omar } = await seedRegister();
   await signIn(page, org);
   await page.goto("/transfers");
   await page.getByLabel("From (seller)").selectOption(fatima.id);
   await page.getByLabel("To (buyer)").selectOption(omar.id);
   await page.getByLabel("Share class").selectOption(cls.id);
+  await expect(page.getByText("Holds 1,000 shares in this class")).toBeVisible();
   await page.getByLabel("Quantity").fill("5000");
+  await expect(page.getByText("That is more than the seller holds in this class.")).toBeVisible();
   await page.getByRole("button", { name: "Record transfer" }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Record transfer" }).click();
-  await expect(page.locator("main [role=alert]")).toContainText(/hold|enough|exceed/i);
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.getByRole("button", { name: "Use all" }).click();
+  await expect(page.getByLabel("Quantity")).toHaveValue("1000");
+  await expect(page.getByText(/Moves 1,000 .+ from Fatima Al Mansoori to Omar Haddad\./)).toBeVisible();
   const table = await get(org, "/cap-table");
   expect(table.holders.find((h: any) => h.shareholderId === fatima.id).issuedShares).toBe(1000);
 });

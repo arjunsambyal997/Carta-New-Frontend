@@ -845,5 +845,22 @@
   "attnMore": "بنود أخرى بانتظارك",
   "donutStakeholders": "مساهمين",
   "donutFdShares": "سهم بعد التخفيف الكامل",
-  "donutHoverHint": "أشر إلى مساهم لعرض حصته."
+  "donutHoverHint": "أشر إلى مساهم لعرض حصته.",
+  "errOverAuthorized": "هذا أكثر مما تبقى للإصدار في هذه الفئة.",
+  "errBelowPar": "لا يجوز إصدار الأسهم بأقل من قيمتها الاسمية.",
+  "errOverHeld": "هذا أكثر مما يملكه البائع في هذه الفئة.",
+  "fixFields": "راجع الحقول المحددة ثم حاول مرة أخرى.",
+  "issueLeftHint": "تبقى {left} من {total} سهماً مصرحاً به",
+  "issueParMin": "على الأقل {par} {cur}، وهي القيمة الاسمية",
+  "issuePaidIn": "يُدفع بعملة {cur}، عملة الفئة",
+  "issueDateHint": "اتركه فارغاً لاستخدام تاريخ اليوم",
+  "issueSummary": "إصدار {qty} من {cls} إلى {holder} مقابل {cur} {total}.",
+  "issueNeedSetup": "قبل الإصدار، أضف مساهماً واحداً وفئة أسهم واحدة على الأقل.",
+  "summaryHeading": "ما الذي سيحدث",
+  "moveHeldHint": "يملك {n} سهماً في هذه الفئة",
+  "moveUseAll": "استخدام الكل",
+  "moveSummaryTransfer": "نقل {qty} من {cls} من {from} إلى {to}.",
+  "moveSummaryBuyBack": "إعادة شراء {qty} من {cls} من {from} بسعر {price} للسهم، إلى أسهم الخزينة.",
+  "moveNeedTwo": "يتطلب النقل مساهمَين على الأقل. أضف المشتري في الإعداد أولاً.",
+  "moveHeldShort": "مملوكة"
 }

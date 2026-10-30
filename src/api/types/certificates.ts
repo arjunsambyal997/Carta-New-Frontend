@@ -13,8 +13,10 @@ export interface IssueCertificateRequest {
 export interface Certificate {
   id: string;
   certificateNo: string;
+  shareholderId?: string;
   shareholderNameEn: string;
   shareholderNameAr: string | null;
+  shareClassId?: string;
   shareClassName: string;
   instrumentType: InstrumentType;
   quantity: number;

@@ -5,16 +5,17 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { PanelLeftClose } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
-import { api, getSession } from "@/api";
+import { api, DATA_CHANGED, getSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
 import { SijillMark, SijillWordmark } from "@/components/brand/SijillLogo";
+import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { MaintenanceBanner } from "@/components/layout/MaintenanceBanner";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SearchPalette } from "@/components/layout/SearchPalette";
-import { GROUPS, HOLDER_GROUPS, type Role } from "@/components/layout/nav";
+import { canOpen, GROUPS, HOLDER_GROUPS, type Role } from "@/components/layout/nav";
 import { ProfileMenu, ToggleGroup } from "@/components/layout/Toolbar";
 import { LOGO_CHANGED } from "@/hooks/useCompanyLogo";
 import { useSession } from "@/hooks/useSession";
@@ -46,6 +47,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [who, setWho] = useState<{ email: string; role: string } | null>(null);
   const [pendingVotes, setPendingVotes] = useState(0);
   const [pendingApprovals, setPendingApprovals] = useState(0);
+  const [dataTick, setDataTick] = useState(0);
 
   useTableLabels();
   useEffect(() => setOpen(false), [path]);
@@ -105,6 +107,13 @@ export function Shell({ children }: { children: ReactNode }) {
       return next;
     });
 
+  // A vote, approval or any other change made on this page refreshes the badges too, not only the next page change.
+  useEffect(() => {
+    const bump = () => setDataTick((n) => n + 1);
+    window.addEventListener(DATA_CHANGED, bump);
+    return () => window.removeEventListener(DATA_CHANGED, bump);
+  }, []);
+
   // Shareholders see how many open votes still wait for them; re-checked on every page change so it drops after voting.
   useEffect(() => {
     if (who?.role !== "SHAREHOLDER") return;
@@ -112,7 +121,7 @@ export function Shell({ children }: { children: ReactNode }) {
       .portalSummary()
       .then((s) => setPendingVotes(s.openVotes.filter((v) => !v.voted).length))
       .catch(() => undefined);
-  }, [who, path]);
+  }, [who, path, dataTick]);
 
   // Staff see how many register changes wait for a second person.
   useEffect(() => {
@@ -122,7 +131,7 @@ export function Shell({ children }: { children: ReactNode }) {
       .approvals(s.orgId)
       .then((l) => setPendingApprovals(l.filter((c) => c.pending).length))
       .catch(() => undefined);
-  }, [who, path]);
+  }, [who, path, dataTick]);
 
   if (BARE.some((p) => path === p || path.startsWith(p + "/"))) {
     return (
@@ -385,7 +394,19 @@ export function Shell({ children }: { children: ReactNode }) {
           tabIndex={-1}
           className="mx-auto w-full max-w-[96rem] flex-1 px-4 py-6 pb-24 outline-none sm:px-6 sm:py-8 lg:px-8 lg:pb-8 2xl:px-12"
         >
-          <PageTransition>{children}</PageTransition>
+          <PageTransition>
+            {who && !canOpen(path, who.role as Role) ? (
+              // Typed or bookmarked address this role cannot use: say so plainly instead of a "Forbidden" error.
+              <EmptyState
+                icon="security"
+                title={t("noAccessTitle")}
+                hint={t("noAccessHint")}
+                action={{ label: t(isHolder ? "navPortal" : "navDashboard"), href: isHolder ? "/portal" : "/" }}
+              />
+            ) : (
+              children
+            )}
+          </PageTransition>
         </main>
         {session && (
           <nav

@@ -39,6 +39,8 @@ export default function ApprovalsPage() {
       toast(t(done));
     } catch (e) {
       setError((e as Error).message);
+      // Someone else may have decided it meanwhile: reload so the list shows where it actually stands.
+      setVersion((v) => v + 1);
     } finally {
       setBusy(false);
     }
@@ -213,7 +215,7 @@ export default function ApprovalsPage() {
                           <span className="block">{c.summary}</span>
                           {c.decisionNote && <span className="block text-xs text-slate-500">“{c.decisionNote}”</span>}
                         </td>
-                        <td className="px-3 py-2">{t(`apprStatus${c.status}` as Key)}</td>
+                        <td className="whitespace-nowrap px-3 py-2">{t(`apprStatus${c.status}` as Key)}</td>
                         <td className="px-3 py-2" dir="ltr">
                           {c.requestedBy}
                         </td>
@@ -221,7 +223,7 @@ export default function ApprovalsPage() {
                           <span dir="ltr">{c.decidedBy}</span>
                           <span className="block text-xs text-slate-500">{when(c.decidedAt)}</span>
                         </td>
-                        <td className="px-3 py-2 font-mono text-xs" dir="ltr">
+                        <td className="whitespace-nowrap px-3 py-2 font-mono text-xs" dir="ltr">
                           {c.result}
                         </td>
                       </tr>

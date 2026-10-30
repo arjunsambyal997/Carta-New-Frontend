@@ -9,7 +9,7 @@ import { SignaturesPanel } from "@/features/signatures/SignaturesPanel";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
-import { useI18n } from "@/context/I18nContext";
+import { useI18n, type Key } from "@/context/I18nContext";
 
 export default function PortalPage() {
   const { t, num, name, date } = useI18n();
@@ -106,7 +106,7 @@ export default function PortalPage() {
                       </td>
                       <td className="text-end tabular-nums">{num(c.quantity)}</td>
                       <td className="ps-4">{c.dateIssued}</td>
-                      <td>{c.status}</td>
+                      <td>{t(`certStatus${c.status}` as Key)}</td>
                       <td className="space-x-1 text-end rtl:space-x-reverse">
                         <DownloadButton
                           label={t("downloadPdf")}

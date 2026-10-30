@@ -367,6 +367,18 @@ html {
     color: rgb(var(--slate-500));
     text-align: start;
   }
+  /* Action cells (no column label): buttons wrap as whole buttons instead of squeezing to "Histo / ry". */
+  table[class*="min-w-"] td:not([data-label]),
+  table[class*="min-w-"] td[data-label=""] {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem;
+  }
+  table[class*="min-w-"] td:not([data-label]) > *,
+  table[class*="min-w-"] td[data-label=""] > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
   table[class*="min-w-"] td[colspan] {
     display: block;
     text-align: start !important;

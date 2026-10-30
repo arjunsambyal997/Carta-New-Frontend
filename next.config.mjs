@@ -32,6 +32,8 @@ const nextConfig = {
   // Self-contained server in .next/standalone: a small production image with no dev dependencies.
   output: "standalone",
   poweredByHeader: false,
+  // Next 16 builds with Turbopack; the same alias for it (the webpack hook below still applies to `--webpack` builds).
+  turbopack: { resolveAlias: { "motion/react": "framer-motion" } },
   webpack(config) {
     // motion/react re-exports framer-motion through a namespace import, which webpack cannot tree-shake (it added
     // ~40 KB gzipped to every page). Pointing it straight at framer-motion, the package it wraps, keeps only the

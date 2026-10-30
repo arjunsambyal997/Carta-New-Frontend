@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useFeedback } from "@/components/common/Feedback";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useMe } from "@/hooks/useMe";
@@ -52,7 +53,7 @@ export default function ApprovalsPage() {
   return (
     <div className="space-y-5">
       <PageHeader title={t("navApprovals")} subtitle={t("subApprovals")} />
-      <Status state={state} />
+      <Status state={state} shape="cards" />
       {state.data && (
         <>
           <section className="card flex flex-wrap items-center justify-between gap-4">
@@ -97,7 +98,11 @@ export default function ApprovalsPage() {
 
           <section className="space-y-3">
             <h2 className="text-sm font-semibold text-slate-700">{t("apprPending")}</h2>
-            {pending.length === 0 && <p className="card text-sm text-slate-500">{t("apprNonePending")}</p>}
+            {pending.length === 0 && (
+              <div className="card">
+                <EmptyState icon="check" title={t("apprNonePending")} hint={t("apprNoneHint")} compact />
+              </div>
+            )}
             {pending.map((c) => (
               <article key={c.id} className="card space-y-3">
                 <div className="min-w-0">

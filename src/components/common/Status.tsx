@@ -8,18 +8,78 @@ export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`skeleton ${className}`} aria-hidden />;
 }
 
+/** The rough shape of a page, so the placeholder looks like what is about to appear. */
+export type SkeletonShape = "dashboard" | "table" | "cards" | "form" | "detail";
+
+function PageSkeleton({ shape }: { shape: SkeletonShape }) {
+  switch (shape) {
+    case "table":
+      return (
+        <div className="card space-y-3 p-4">
+          <Skeleton className="h-9 w-full max-w-xs" />
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-10" />
+          ))}
+        </div>
+      );
+    case "cards":
+      return (
+        <div className="grid gap-3 md:grid-cols-2">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="card space-y-3">
+              <Skeleton className="h-5 w-2/3" />
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-2 w-full" />
+            </div>
+          ))}
+        </div>
+      );
+    case "form":
+      return (
+        <div className="card max-w-2xl space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-1.5">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-10" />
+            </div>
+          ))}
+          <Skeleton className="h-10 w-32" />
+        </div>
+      );
+    case "detail":
+      return (
+        <div className="space-y-3">
+          <div className="card space-y-3">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Skeleton className="h-40" />
+            <Skeleton className="h-40" />
+          </div>
+        </div>
+      );
+    default:
+      return (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[0, 1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-20" />
+            ))}
+          </div>
+          <Skeleton className="h-64" />
+        </div>
+      );
+  }
+}
+
 /** Renders loading / not-connected / error states; returns null when data is ready. */
-export function Status({ state }: { state: Loaded<unknown> }) {
+export function Status({ state, shape = "dashboard" }: { state: Loaded<unknown>; shape?: SkeletonShape }) {
   const { t } = useI18n();
   if (state.loading)
     return (
-      <div role="status" aria-label={t("loading")} className="space-y-3">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20" />
-          ))}
-        </div>
-        <Skeleton className="h-64" />
+      <div role="status" aria-label={t("loading")} data-shape={shape}>
+        <PageSkeleton shape={shape} />
       </div>
     );
   if (!state.connected)

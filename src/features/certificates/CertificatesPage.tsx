@@ -29,7 +29,7 @@ export default function CertificatesPage() {
           </Link>
         }
       />
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && state.orgId && (
         <div className="card overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">

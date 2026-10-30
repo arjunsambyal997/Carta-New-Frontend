@@ -118,7 +118,7 @@ ${t("confirmIssueDetail")}`,
   return (
     <div className="space-y-4">
       <PageHeader title={t("navIssue")} subtitle={t("subIssue")} />
-      <Status state={state} />
+      <Status state={state} shape="form" />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         {state.data && (
           <form onSubmit={submit} className="card grid max-w-5xl gap-4 sm:grid-cols-2 2xl:grid-cols-3">

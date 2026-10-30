@@ -24,7 +24,7 @@ export default function HolderLedgerPage() {
       <Link href="/cap-table" className="text-sm text-slate-500 hover:underline">
         ← {t("back")}
       </Link>
-      <Status state={state} />
+      <Status state={state} shape="detail" />
       {l && (
         <>
           <PageHeader

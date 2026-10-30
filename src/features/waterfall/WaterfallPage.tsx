@@ -46,7 +46,7 @@ export default function WaterfallPage() {
   return (
     <div className="space-y-4">
       <PageHeader title={t("navWaterfall")} />
-      <Status state={state} />
+      <Status state={state} shape="form" />
       {state.data && (
         <>
           <form onSubmit={run} className="card flex flex-wrap items-end gap-3">

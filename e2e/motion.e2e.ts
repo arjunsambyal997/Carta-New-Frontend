@@ -72,6 +72,11 @@ test("the sidebar highlight follows navigation, with and without reduced motion"
   });
   const nav = page.getByRole("navigation", { name: "Main" });
 
+  // An empty register explains itself and points the founder at the next step.
+  await page.goto("/cap-table");
+  await expect(page.getByText("No shares issued yet")).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "Issue certificate" }).first()).toBeVisible();
+
   for (const reducedMotion of ["no-preference", "reduce"] as const) {
     await page.emulateMedia({ reducedMotion });
     await page.goto("/cap-table");

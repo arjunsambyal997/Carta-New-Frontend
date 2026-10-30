@@ -36,7 +36,7 @@ export default function AuditPage() {
   return (
     <div className="space-y-4">
       <PageHeader title={t("navAudit")} subtitle={t("subAudit")} />
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {trail && (
         <>
           <div

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { DownloadButton } from "@/components/common/DownloadButton";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -52,7 +53,7 @@ export default function VaultPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={t("vaultTitle")} />
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && state.orgId && (
         <>
           <form className="card grid gap-3 sm:grid-cols-[2fr_2fr_2fr_auto] sm:items-end" onSubmit={upload}>
@@ -146,7 +147,9 @@ export default function VaultPage() {
                 ))}
               </tbody>
             </table>
-            {state.data.length === 0 && <p className="py-4 text-slate-500">{t("vaultEmpty")}</p>}
+            {state.data.length === 0 && (
+              <EmptyState icon="vault" title={t("vaultEmpty")} hint={t("vaultEmptyHint")} compact />
+            )}
           </div>
         </>
       )}

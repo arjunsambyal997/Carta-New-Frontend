@@ -4,6 +4,7 @@ import { useState } from "react";
 import { api } from "@/api";
 import type { WebhookDeliveryView, WebhookView } from "@/api/types";
 import { Icon } from "@/components/common/Icon";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useI18n } from "@/context/I18nContext";
@@ -101,7 +102,7 @@ function ApiKeys({ orgId }: { orgId: string }) {
           {error}
         </p>
       )}
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && (
         <ul className="divide-y divide-slate-100">
           {state.data.map((k) => (
@@ -124,7 +125,11 @@ function ApiKeys({ orgId }: { orgId: string }) {
               )}
             </li>
           ))}
-          {state.data.length === 0 && <li className="py-3 text-slate-500">{t("intgKeyNone")}</li>}
+          {state.data.length === 0 && (
+            <li>
+              <EmptyState icon="security" title={t("intgKeyNone")} hint={t("intgKeyNoneHint")} compact />
+            </li>
+          )}
         </ul>
       )}
     </section>
@@ -149,7 +154,7 @@ function Deliveries({ orgId, hook }: { orgId: string; hook: WebhookView }) {
 
   return (
     <div className="mt-3 overflow-x-auto rounded-lg bg-slate-50 p-3">
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {error && (
         <p role="alert" className="text-sm text-red-700">
           {error}
@@ -288,7 +293,7 @@ function Webhooks({ orgId }: { orgId: string }) {
         </p>
       )}
       {note && <p className="text-sm text-emerald-700">{note}</p>}
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && (
         <ul className="divide-y divide-slate-100">
           {state.data.map((h) => (
@@ -341,7 +346,11 @@ function Webhooks({ orgId }: { orgId: string }) {
               {open === h.id && <Deliveries orgId={orgId} hook={h} />}
             </li>
           ))}
-          {state.data.length === 0 && <li className="py-3 text-slate-500">{t("intgHookNone")}</li>}
+          {state.data.length === 0 && (
+            <li>
+              <EmptyState icon="plug" title={t("intgHookNone")} hint={t("intgHookNoneHint")} compact />
+            </li>
+          )}
         </ul>
       )}
     </section>
@@ -355,7 +364,7 @@ export default function IntegrationsPage() {
     <div className="space-y-6">
       <PageHeader title={t("intgTitle")} />
       <p className="text-sm text-slate-500">{t("intgHint")}</p>
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && (
         <>
           <ApiKeys orgId={state.data} />

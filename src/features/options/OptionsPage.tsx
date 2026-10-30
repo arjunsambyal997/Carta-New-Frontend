@@ -5,15 +5,20 @@ import { Avatar } from "@/components/common/Avatar";
 import { useFeedback } from "@/components/common/Feedback";
 import { ExerciseDialog } from "@/features/options/ExerciseDialog";
 import { VestingBar } from "@/features/options/VestingBar";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
+import { useMe } from "@/hooks/useMe";
 import { useI18n } from "@/context/I18nContext";
 import type { VestingStatus } from "@/api/types";
 
 export default function OptionsPage() {
   const { t, num, name } = useI18n();
+  const me = useMe();
+  // Only the people who may issue are pointed at the issue page.
+  const canIssue = me?.role === "FOUNDER" || me?.role === "CORPORATE_SECRETARY";
   const [refresh, setRefresh] = useState(0);
   const state = useRegister(async (orgId) => {
     const [schedules, certs, classes] = await Promise.all([
@@ -32,11 +37,18 @@ export default function OptionsPage() {
   return (
     <div className="space-y-5">
       <PageHeader title={t("navOptions")} subtitle={t("optionsIntro")} />
-      <Status state={state} />
+      <Status state={state} shape="cards" />
       {state.data && state.orgId && (
         <>
           {state.data.schedules.length === 0 && state.data.open.length === 0 && (
-            <p className="card text-slate-500">{t("optionsNone")}</p>
+            <div className="card">
+              <EmptyState
+                icon="options"
+                title={t("optionsNoneTitle")}
+                hint={t("optionsNone")}
+                action={canIssue ? { label: t("navIssue"), href: "/certificates/new" } : undefined}
+              />
+            </div>
           )}
           <div className="grid gap-4 lg:grid-cols-2">
             {state.data.schedules.map((s) => (

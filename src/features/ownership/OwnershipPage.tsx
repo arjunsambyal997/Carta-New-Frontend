@@ -21,7 +21,7 @@ export default function OwnershipPage() {
   return (
     <div className="space-y-4">
       <PageHeader title={t("navOwnership")} />
-      <Status state={state} />
+      <Status state={state} shape="detail" />
       {state.data && <OwnershipTree org={state.data.org} table={state.data.table} links={state.data.links} />}
     </div>
   );

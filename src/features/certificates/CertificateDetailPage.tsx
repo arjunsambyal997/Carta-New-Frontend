@@ -31,7 +31,7 @@ export default function CertificateLineagePage() {
         }
         subtitle={t("lineageIntro")}
       />
-      <Status state={state} />
+      <Status state={state} shape="detail" />
       {nodes && (
         <ol className="space-y-2">
           {nodes.map((n) => (

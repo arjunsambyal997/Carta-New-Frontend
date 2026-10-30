@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { api, getSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
@@ -174,7 +174,7 @@ export function Shell({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => toggleGroup(g.label)}
               aria-expanded={!collapsed}
-              className={`mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition-colors hover:text-slate-600 ${rail ? "lg:hidden" : ""}`}
+              className={`mb-1 flex w-full items-center justify-between rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 transition-colors hover:text-slate-600 ${rail ? "lg:hidden" : ""}`}
             >
               {t(g.label)}
               <Icon
@@ -183,61 +183,81 @@ export function Shell({ children }: { children: ReactNode }) {
                 className={`transition-transform ${collapsed ? "-rotate-90 rtl:rotate-90" : ""}`}
               />
             </button>
-            {rail && gi > 0 && <div className="mx-3 mb-2 hidden border-t border-slate-200 lg:block" />}
-            {(!collapsed || rail) && (
-              <ul className="space-y-0.5">
-                {g.items.map((n) => {
-                  const active = isActive(n.href);
-                  const badge =
-                    n.href === "/approvals"
-                      ? pendingApprovals
-                      : isHolder && n.href === "/resolutions"
-                        ? pendingVotes
-                        : 0;
-                  return (
-                    <li key={n.href}>
-                      <Link
-                        href={n.href}
-                        aria-current={active ? "page" : undefined}
-                        title={rail ? t(n.key) : undefined}
-                        className={`group relative isolate flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors duration-150 ${
-                          rail ? "lg:justify-center lg:px-0" : ""
-                        } ${
-                          active
-                            ? "font-medium text-emerald-800"
-                            : "text-slate-600 hover:bg-slate-900/[0.04] hover:text-slate-900"
-                        }`}
-                      >
-                        {active && (
-                          // One highlight that slides to the new item instead of jumping.
-                          <m.span
-                            layoutId="nav-active"
-                            transition={springSnappy}
-                            aria-hidden
-                            className="absolute inset-0 -z-10 rounded-xl bg-emerald-600/10 ring-1 ring-inset ring-emerald-600/15"
+            {rail && gi > 0 && <div className="mx-3 mb-2 hidden border-t border-hairline lg:block" />}
+            <AnimatePresence initial={false}>
+              {(!collapsed || rail) && (
+                <m.ul
+                  key="items"
+                  className="space-y-0.5"
+                  // Clip only while opening or closing, so the active pill can still slide between groups.
+                  initial={{ height: 0, opacity: 0, overflow: "hidden" }}
+                  animate={{ height: "auto", opacity: 1, transitionEnd: { overflow: "visible" } }}
+                  exit={{ height: 0, opacity: 0, overflow: "hidden" }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {g.items.map((n) => {
+                    const active = isActive(n.href);
+                    const badge =
+                      n.href === "/approvals"
+                        ? pendingApprovals
+                        : isHolder && n.href === "/resolutions"
+                          ? pendingVotes
+                          : 0;
+                    return (
+                      <li key={n.href}>
+                        <Link
+                          href={n.href}
+                          aria-current={active ? "page" : undefined}
+                          title={rail ? t(n.key) : undefined}
+                          className={`group relative isolate flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] transition-colors duration-150 ${
+                            rail ? "lg:justify-center lg:px-0" : ""
+                          } ${
+                            active
+                              ? "font-medium text-emerald-800"
+                              : "text-slate-600 hover:bg-slate-100/70 hover:text-slate-900"
+                          }`}
+                        >
+                          {active ? (
+                            // One glowing highlight that slides to the new item instead of jumping.
+                            <m.span
+                              layoutId="nav-active"
+                              transition={springSnappy}
+                              aria-hidden
+                              className="absolute inset-0 -z-10 rounded-xl bg-emerald-600/10 shadow-[0_0_20px_-6px_rgb(var(--brand-600)/0.45)] ring-1 ring-inset ring-emerald-600/20"
+                            >
+                              <span className="absolute inset-y-2 start-0 w-[3px] rounded-full bg-emerald-600" />
+                            </m.span>
+                          ) : (
+                            // Hover indicator: a short bar that grows in on the start edge.
+                            <span
+                              aria-hidden
+                              className="absolute start-0 top-1/2 h-4 w-[3px] -translate-y-1/2 scale-y-0 rounded-full bg-slate-300 transition-transform duration-200 group-hover:scale-y-100"
+                            />
+                          )}
+                          <Icon
+                            name={n.icon}
+                            className={`shrink-0 transition-[color,transform] duration-200 ${active ? "text-emerald-700" : "text-slate-400 group-hover:translate-x-0.5 group-hover:text-slate-600 rtl:group-hover:-translate-x-0.5"}`}
                           />
-                        )}
-                        <Icon
-                          name={n.icon}
-                          className={`shrink-0 transition-colors ${active ? "text-emerald-700" : "text-slate-400 group-hover:text-slate-600"}`}
-                        />
-                        <span className={rail ? "lg:sr-only" : ""}>{t(n.key)}</span>
-                        {badge > 0 && (
-                          <span
-                            className={`rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800 ${
-                              rail ? "ms-auto lg:absolute lg:end-1 lg:top-0.5 lg:ms-0 lg:px-1 lg:text-[9px]" : "ms-auto"
-                            }`}
-                            aria-label={`${badge} ${t(isHolder ? "portalVotes" : "navApprovals")}`}
-                          >
-                            {badge}
-                          </span>
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                          <span className={rail ? "lg:sr-only" : ""}>{t(n.key)}</span>
+                          {badge > 0 && (
+                            <span
+                              className={`rounded-full bg-amber-100 px-1.5 text-[11px] font-semibold tabular-nums text-amber-800 ${
+                                rail
+                                  ? "ms-auto lg:absolute lg:end-1 lg:top-0.5 lg:ms-0 lg:px-1 lg:text-[9px]"
+                                  : "ms-auto"
+                              }`}
+                              aria-label={`${badge} ${t(isHolder ? "portalVotes" : "navApprovals")}`}
+                            >
+                              {badge}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </m.ul>
+              )}
+            </AnimatePresence>
           </div>
         );
       })}
@@ -261,7 +281,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </a>
       {/* sidebar: fixed on desktop, drawer on small screens */}
       <aside
-        className={`fixed inset-y-0 start-0 z-40 flex h-dvh w-[min(16rem,85vw)] flex-col border-e border-slate-200/80 bg-surface transition-[transform,width] duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${rail ? "lg:w-[4.5rem]" : "lg:w-64"} ${
+        className={`fixed inset-y-0 start-0 z-40 flex h-dvh w-[min(16rem,85vw)] flex-col border-e border-hairline bg-surface transition-[transform,width] duration-200 lg:translate-x-0 rtl:lg:translate-x-0 ${rail ? "lg:w-[4.5rem]" : "lg:w-64"} ${
           open ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
         }`}
       >
@@ -284,22 +304,21 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
         </div>
         {nav}
-        <div className="hidden border-t border-slate-200 p-3 lg:block">
+        <div className="hidden border-t border-hairline p-3 lg:block">
           <button
             type="button"
             onClick={toggleRail}
             aria-label={rail ? t("sidebarExpand") : t("sidebarCollapse")}
             title={rail ? t("sidebarExpand") : t("sidebarCollapse")}
-            className={`flex h-9 w-full items-center gap-3 rounded-xl px-3 text-sm text-slate-500 transition-colors hover:bg-slate-900/[0.04] hover:text-slate-900 ${rail ? "justify-center px-0" : ""}`}
+            className={`flex h-9 w-full items-center gap-3 rounded-xl px-3 text-sm text-slate-500 transition-colors hover:bg-slate-100/70 hover:text-slate-900 ${rail ? "justify-center px-0" : ""}`}
           >
-            {rail ? (
-              <PanelLeftOpen size={18} className="rtl:-scale-x-100" aria-hidden />
-            ) : (
-              <>
-                <PanelLeftClose size={18} className="rtl:-scale-x-100" aria-hidden />
-                {t("sidebarCollapse")}
-              </>
-            )}
+            {/* One icon that turns around, so collapsing and expanding read as the same control. */}
+            <PanelLeftClose
+              size={18}
+              className={`shrink-0 transition-transform duration-300 rtl:-scale-x-100 ${rail ? "rotate-180" : ""}`}
+              aria-hidden
+            />
+            {!rail && t("sidebarCollapse")}
           </button>
         </div>
       </aside>
@@ -322,7 +341,7 @@ export function Shell({ children }: { children: ReactNode }) {
         <ErrorBoundary fallback={null}>
           <MaintenanceBanner />
         </ErrorBoundary>
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-slate-200/80 bg-surface/80 px-3 backdrop-blur-xl sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-hairline bg-surface/75 px-3 backdrop-blur-xl backdrop-saturate-150 sm:h-16 sm:gap-3 sm:px-6 lg:px-8">
           <button
             type="button"
             className="btn-ghost size-9 !p-0 lg:hidden"
@@ -371,7 +390,7 @@ export function Shell({ children }: { children: ReactNode }) {
         {session && (
           <nav
             aria-label="Quick"
-            className="fixed inset-x-0 bottom-0 z-30 grid grid-flow-col auto-cols-fr border-t border-slate-200 bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
+            className="fixed inset-x-0 bottom-0 z-30 grid grid-flow-col auto-cols-fr border-t border-hairline bg-surface/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
           >
             {quick.map((q) => (
               <Link

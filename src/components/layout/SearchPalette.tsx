@@ -130,7 +130,7 @@ export function SearchPalette({ role }: { role?: string }) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <button
         type="button"
-        className="inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-surface px-2.5 text-sm text-slate-500 shadow-sm transition-colors hover:border-slate-300 hover:text-slate-700 md:w-64 md:justify-start"
+        className="inline-flex h-9 items-center gap-2 rounded-full border border-hairline bg-slate-100/80 px-3 text-sm text-slate-500 shadow-tile transition-colors hover:border-hairline-strong hover:bg-surface hover:text-slate-700 md:w-64 md:justify-start"
         onClick={() => setOpen(true)}
         aria-label={t("searchOpen")}
         title="Ctrl K"
@@ -139,7 +139,7 @@ export function SearchPalette({ role }: { role?: string }) {
         <span className="hidden md:inline">{t("searchOpen")}</span>
         <kbd
           dir="ltr"
-          className="ms-auto hidden rounded-md border border-slate-200 bg-slate-50 px-1.5 text-[10px] font-medium text-slate-500 md:inline"
+          className="ms-auto hidden rounded-full border border-hairline bg-surface px-1.5 text-[10px] font-medium text-slate-500 md:inline"
         >
           ⌘K
         </kbd>

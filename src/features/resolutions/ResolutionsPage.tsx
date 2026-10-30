@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { StatusBadge, TallyBar, THRESHOLD_LABEL } from "@/features/resolutions/ResolutionBits";
 import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
@@ -16,6 +16,10 @@ export default function ResolutionsPage() {
   const [version, setVersion] = useState(0);
   const state = useRegister((orgId) => api.resolutions(orgId), version);
   const [showForm, setShowForm] = useState(false);
+  // "New resolution" on the dashboard links here with ?new so the form is already open.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("new")) setShowForm(true);
+  }, []);
   const [title, setTitle] = useState("");
   const [titleAr, setTitleAr] = useState("");
   const [description, setDescription] = useState("");

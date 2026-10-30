@@ -131,6 +131,9 @@ export const seedClass = (a: Account, o: Record<string, unknown> = {}) =>
     parValue: 1,
     currency: "AED",
     votingMultiplier: 1,
+    // Since the Spring Boot 4 upgrade the server refuses a missing primitive, so send its defaults.
+    participating: false,
+    seniorityRank: 1,
     authorizedShares: 10_000_000,
     ...o,
   });

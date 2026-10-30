@@ -845,5 +845,22 @@
   "attnMore": "more waiting",
   "donutStakeholders": "stakeholders",
   "donutFdShares": "fully diluted shares",
-  "donutHoverHint": "Point at a holder to see their stake."
+  "donutHoverHint": "Point at a holder to see their stake.",
+  "errOverAuthorized": "That is more than this class has left to issue.",
+  "errBelowPar": "Shares cannot be issued below their par value.",
+  "errOverHeld": "That is more than the seller holds in this class.",
+  "fixFields": "Check the highlighted fields, then try again.",
+  "issueLeftHint": "{left} of {total} authorized shares left",
+  "issueParMin": "At least {par} {cur}, the par value",
+  "issuePaidIn": "Paid in {cur}, the class currency",
+  "issueDateHint": "Leave blank to use today",
+  "issueSummary": "Issues {qty} {cls} to {holder} for {cur} {total}.",
+  "issueNeedSetup": "Before you can issue, add at least one shareholder and one share class.",
+  "summaryHeading": "What will happen",
+  "moveHeldHint": "Holds {n} shares in this class",
+  "moveUseAll": "Use all",
+  "moveSummaryTransfer": "Moves {qty} {cls} from {from} to {to}.",
+  "moveSummaryBuyBack": "Buys back {qty} {cls} from {from} at {price} each, into treasury.",
+  "moveNeedTwo": "A transfer needs at least two shareholders. Add the buyer in setup first.",
+  "moveHeldShort": "held"
 }

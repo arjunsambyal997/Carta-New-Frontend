@@ -6,13 +6,13 @@ test("setup: a founder adds a share class and a shareholder", async ({ page }) =
   await signIn(page, org);
   await page.goto("/setup");
 
-  await page.getByLabel("Class", { exact: true }).fill("Ordinary shares");
+  await page.getByRole("textbox", { name: "Class", exact: true }).fill("Ordinary shares");
   await page.getByLabel("Par value").fill("1");
   await page.getByLabel("Authorized").fill("1000000");
   await page.getByRole("button", { name: "Add share class" }).click();
   await expect(page.getByText("Ordinary shares")).toBeVisible();
 
-  await page.getByLabel("Full name", { exact: true }).fill("Noura Al Suwaidi");
+  await page.getByRole("textbox", { name: "Full name", exact: true }).fill("Noura Al Suwaidi");
   await page.getByLabel("Full name (Arabic)").fill("نورة السويدي");
   await page.getByRole("button", { name: "Add shareholder" }).click();
   await expect(page.getByText("Noura Al Suwaidi")).toBeVisible();
@@ -58,7 +58,7 @@ test("issuing a certificate asks first, then shows the certificate with its QR c
   await stranger.close();
 });
 
-test("issuing too many shares for the class is refused with the reason", async ({ page }) => {
+test("issuing too many shares for the class is stopped at the field, before anything is sent", async ({ page }) => {
   const org = await createOrg();
   const cls = await seedClass(org, { authorizedShares: 1000 });
   const holder = await seedHolder(org, "Omar Haddad");
@@ -66,11 +66,17 @@ test("issuing too many shares for the class is refused with the reason", async (
   await page.goto("/certificates/new");
   await page.getByLabel("Shareholder", { exact: true }).selectOption(holder.id);
   await page.getByLabel("Share class").selectOption(cls.id);
+  await expect(page.getByText("1,000 of 1,000 authorized shares left")).toBeVisible();
   await page.getByLabel("Quantity").fill("5000");
   await page.getByLabel("Price per share").fill("1");
+  await expect(page.getByLabel("Quantity")).toHaveAttribute("aria-invalid", "true");
+  await expect(page.getByText("That is more than this class has left to issue.")).toBeVisible();
   await page.getByRole("button", { name: "Issue certificate" }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "Issue certificate" }).click();
-  await expect(page.locator("main [role=alert]")).toContainText(/authorized/i);
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(page.getByLabel("Quantity")).toBeFocused();
+  // Within the limit the summary says what will happen, and the server agrees.
+  await page.getByLabel("Quantity").fill("1000");
+  await expect(page.getByText(/Issues 1,000 .+ to Omar Haddad for AED 1,000\./)).toBeVisible();
   expect((await get(org, "/certificates")).length).toBe(0);
 });
 

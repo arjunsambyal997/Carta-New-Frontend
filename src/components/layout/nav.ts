@@ -40,6 +40,7 @@ export const GROUPS: { label: Key; items: NavItem[] }[] = [
       { href: "/transfers", key: "navTransfers", icon: "transfer", roles: STAFF },
       { href: "/options", key: "navOptions", icon: "options", roles: READERS },
       { href: "/rounds", key: "navRounds", icon: "rounds", roles: READERS },
+      { href: "/analytics", key: "navAnalytics", icon: "analytics", roles: READERS },
     ],
   },
   {

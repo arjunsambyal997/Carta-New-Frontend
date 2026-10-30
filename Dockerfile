@@ -9,6 +9,9 @@ COPY . .
 # sends /api/* straight to the backend, so the value there does not matter.
 ARG BACKEND_URL=http://localhost:8080
 ENV BACKEND_URL=$BACKEND_URL
+# Optional analytics dashboard shown at /analytics; NEXT_PUBLIC_* values are fixed into the bundle at build time.
+ARG NEXT_PUBLIC_ANALYTICS_URL=
+ENV NEXT_PUBLIC_ANALYTICS_URL=$NEXT_PUBLIC_ANALYTICS_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 

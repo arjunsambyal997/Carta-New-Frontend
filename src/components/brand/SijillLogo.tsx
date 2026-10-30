@@ -1,22 +1,29 @@
 import { useId } from "react";
 
-/** The Sijill mark: a register page (three ledger lines) stamped with a seal. Uses currentColor-free fills so it reads on any theme. */
+/**
+ * The Sijill mark: the Arabic letter seen (س), the first letter of سجل, drawn so its three teeth rise like a
+ * cap table bar chart. Fixed white-on-emerald fills so it reads on any theme. Keep in step with src/app/icon.svg.
+ */
 export function SijillMark({ size = 32, className }: { size?: number; className?: string }) {
   const id = useId();
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden className={className}>
+    <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden className={className}>
       <defs>
-        <linearGradient id={`${id}-g`} x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#16b58a" />
-          <stop offset="1" stopColor="#0a6b52" />
+        <linearGradient id={`${id}-g`} x1="4" y1="2" x2="60" y2="62" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#19c08f" />
+          <stop offset=".55" stopColor="#0b8a68" />
+          <stop offset="1" stopColor="#06513f" />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx="9" fill={`url(#${id}-g)`} />
-      <rect x="7.5" y="8.5" width="12" height="2.6" rx="1.3" fill="#fff" />
-      <rect x="7.5" y="14.7" width="17" height="2.6" rx="1.3" fill="#fff" fillOpacity=".85" />
-      <rect x="7.5" y="20.9" width="8" height="2.6" rx="1.3" fill="#fff" fillOpacity=".7" />
-      <circle cx="23" cy="22.2" r="4.6" fill="#0b4f3d" stroke="#fff" strokeWidth="1.6" />
-      <path d="M20.9 22.3l1.5 1.5 2.9-3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <rect width="64" height="64" rx="18" fill={`url(#${id}-g)`} />
+      <rect x=".75" y=".75" width="62.5" height="62.5" rx="17.25" stroke="#fff" strokeOpacity=".18" strokeWidth="1.5" />
+      <g stroke="#fff" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M50 14v22" />
+        <path d="M40.5 22v14" />
+        <path d="M31 29v7" />
+        <path d="M50 36q0 4-4 4H31q-4 0-4-4" />
+        <path d="M27 36c0 15.5-17 17.5-17 0" />
+      </g>
     </svg>
   );
 }

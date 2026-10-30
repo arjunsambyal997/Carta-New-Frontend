@@ -822,5 +822,6 @@
   "optApprox": "about",
   "optGrantInfo": "Grant",
   "optStarted": "Starts",
-  "optFullyVested": "Fully vested on"
+  "optFullyVested": "Fully vested on",
+  "dismiss": "Dismiss"
 }

@@ -18,18 +18,48 @@ interface Feedback {
 }
 
 const Ctx = createContext<Feedback | null>(null);
+const MAX_TOASTS = 4;
 
 /** Toasts (bottom corner) and a native <dialog> confirm, shared by every page. */
 export function FeedbackProvider({ children }: { children: ReactNode }) {
   const { t } = useI18n();
-  const [toasts, setToasts] = useState<{ id: number; text: string; kind: Kind }[]>([]);
+  const [toasts, setToasts] = useState<{ key: string; text: string; kind: Kind }[]>([]);
   const [ask, setAsk] = useState<(Ask & { resolve: (ok: boolean) => void }) | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
 
-  const toast = useCallback((text: string, kind: Kind = "ok") => {
-    const id = Date.now() + Math.random();
-    setToasts((l) => [...l, { id, text, kind }]);
-    setTimeout(() => setToasts((l) => l.filter((x) => x.id !== id)), kind === "error" ? 6000 : 3500);
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+
+  const dismiss = useCallback((key: string) => {
+    clearTimeout(timers.current.get(key));
+    timers.current.delete(key);
+    setToasts((l) => l.filter((x) => x.key !== key));
+  }, []);
+
+  /** The same message twice (a double click, a retry loop) shows once and restarts its timer. */
+  const toast = useCallback(
+    (text: string, kind: Kind = "ok") => {
+      const key = `${kind}:${text}`;
+      clearTimeout(timers.current.get(key));
+      timers.current.set(
+        key,
+        setTimeout(() => dismiss(key), kind === "error" ? 6000 : 3500),
+      );
+      setToasts((l) => {
+        if (l.some((x) => x.key === key)) return l;
+        const next = [...l, { key, text, kind }];
+        for (const old of next.slice(0, Math.max(0, next.length - MAX_TOASTS))) {
+          clearTimeout(timers.current.get(old.key));
+          timers.current.delete(old.key);
+        }
+        return next.slice(-MAX_TOASTS);
+      });
+    },
+    [dismiss],
+  );
+
+  useEffect(() => {
+    const pending = timers.current;
+    return () => pending.forEach(clearTimeout);
   }, []);
   const confirm = useCallback((a: Ask) => new Promise<boolean>((resolve) => setAsk({ ...a, resolve })), []);
 
@@ -54,7 +84,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       >
         {toasts.map((x) => (
           <div
-            key={x.id}
+            key={x.key}
             role={x.kind === "error" ? "alert" : "status"}
             className="pointer-events-auto flex animate-rise items-start gap-2.5 rounded-xl border border-slate-200 bg-surface px-4 py-3 text-sm text-slate-800 shadow-pop"
           >
@@ -64,6 +94,14 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
               <Icon name={x.kind === "error" ? "alert" : "check"} size={13} strokeWidth={2.4} />
             </span>
             <span className="min-w-0 flex-1 break-words">{x.text}</span>
+            <button
+              type="button"
+              onClick={() => dismiss(x.key)}
+              aria-label={t("dismiss")}
+              className="-m-1 grid size-6 shrink-0 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            >
+              <Icon name="close" size={14} />
+            </button>
           </div>
         ))}
       </div>

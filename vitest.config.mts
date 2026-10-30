@@ -11,7 +11,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/api/**", "src/i18n/**", "src/context/**", "src/hooks/**"],
-      exclude: ["src/**/*.test.*", "src/api/types.ts"],
+      exclude: ["src/**/*.test.*", "src/api/types/**"],
       thresholds: { lines: 70, functions: 60 },
     },
   },

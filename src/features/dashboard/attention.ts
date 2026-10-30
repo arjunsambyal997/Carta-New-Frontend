@@ -2,6 +2,8 @@ import type { ComplianceItem, PendingChange, Resolution } from "@/api/types";
 
 export type AttentionKind = "approval" | "vote" | "filing";
 export type Severity = "high" | "medium" | "low";
+/** The one thing a person does next with an item, shown as a chip on its row. */
+export type AttentionAction = "approve" | "review" | "file";
 
 export interface AttentionItem {
   id: string;
@@ -12,6 +14,7 @@ export interface AttentionItem {
   /** ISO date or timestamp the item is due, when it has one. */
   due?: string | null;
   href: string;
+  action: AttentionAction;
 }
 
 const RANK: Record<Severity, number> = { high: 0, medium: 1, low: 2 };
@@ -36,6 +39,7 @@ export function buildAttention({ approvals, resolutions, filings, now }: Attenti
       title: a.summary,
       due: a.requestedAt,
       href: "/approvals",
+      action: "approve",
     });
   }
   for (const r of resolutions ?? []) {
@@ -49,6 +53,7 @@ export function buildAttention({ approvals, resolutions, filings, now }: Attenti
       titleAr: r.titleAr,
       due: r.votingDeadline,
       href: `/resolutions/${r.id}`,
+      action: "review",
     });
   }
   for (const f of filings ?? []) {
@@ -61,6 +66,7 @@ export function buildAttention({ approvals, resolutions, filings, now }: Attenti
       titleAr: f.titleAr,
       due: f.dueDate,
       href: "/compliance",
+      action: "file",
     });
   }
   return items.sort(
@@ -69,4 +75,18 @@ export function buildAttention({ approvals, resolutions, filings, now }: Attenti
       (x.due ?? "9999").localeCompare(y.due ?? "9999") ||
       x.id.localeCompare(y.id),
   );
+}
+
+/** How many of each severity, for the queue's summary line. */
+export function severityCounts(items: AttentionItem[]): Record<Severity, number> {
+  const counts: Record<Severity, number> = { high: 0, medium: 0, low: 0 };
+  for (const i of items) counts[i.severity]++;
+  return counts;
+}
+
+/** Whole days from `now` to `iso` (negative when it is in the past), rounded toward the nearer day. */
+export function daysFrom(iso: string, now: number): number {
+  const isDay = /^\d{4}-\d{2}-\d{2}$/.test(iso);
+  const t = new Date(isDay ? `${iso}T12:00:00Z` : iso).getTime();
+  return Math.round((t - now) / DAY);
 }

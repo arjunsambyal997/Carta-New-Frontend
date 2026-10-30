@@ -7,7 +7,7 @@
   "navAudit": "Audit trail",
   "navAnalytics": "Analytics",
   "analyticsNotSetTitle": "No analytics dashboard is connected",
-  "analyticsNotSetHint": "Set NEXT_PUBLIC_ANALYTICS_URL to the dashboard's address on another site when building the app.",
+  "analyticsNotSetHint": "Analytics isn't switched on yet. The person who runs your Sijill server can set it up.",
   "newResolution": "New resolution",
   "titleLabel": "Title",
   "titleArLabel": "Title (Arabic)",
@@ -836,5 +836,14 @@
   "intgHookNoneHint": "Add a webhook to tell another system the moment the register changes.",
   "succEmptyHint": "Use the form above to say what happens to a holder's shares on death, incapacity or a set date.",
   "capEmpty": "No shares issued yet",
-  "capEmptyHint": "Issue the first certificate and the cap table fills in on its own."
+  "capEmptyHint": "Issue the first certificate and the cap table fills in on its own.",
+  "attnActApprove": "Approve",
+  "attnActReview": "Review",
+  "attnActFile": "File",
+  "attnDue": "Due",
+  "attnRequested": "Requested",
+  "attnMore": "more waiting",
+  "donutStakeholders": "stakeholders",
+  "donutFdShares": "fully diluted shares",
+  "donutHoverHint": "Point at a holder to see their stake."
 }

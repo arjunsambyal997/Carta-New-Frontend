@@ -7,7 +7,7 @@
   "navAudit": "سجل التدقيق",
   "navAnalytics": "التحليلات",
   "analyticsNotSetTitle": "لا توجد لوحة تحليلات متصلة",
-  "analyticsNotSetHint": "عيّن NEXT_PUBLIC_ANALYTICS_URL على عنوان لوحة التحليلات في موقع آخر عند بناء التطبيق.",
+  "analyticsNotSetHint": "لم تُفعَّل التحليلات بعد. يمكن للمسؤول عن خادم المنصة إعدادها.",
   "newResolution": "قرار جديد",
   "titleLabel": "العنوان",
   "titleArLabel": "العنوان (بالعربية)",
@@ -836,5 +836,14 @@
   "intgHookNoneHint": "أضف خطاف ويب لإبلاغ نظام آخر فور تغيّر السجل.",
   "succEmptyHint": "استخدم النموذج أعلاه لتحديد ما يحدث لأسهم المساهم عند الوفاة أو فقدان الأهلية أو في تاريخ محدد.",
   "capEmpty": "لم تُصدر أي أسهم بعد",
-  "capEmptyHint": "أصدر الشهادة الأولى وسيمتلئ جدول الملكية تلقائياً."
+  "capEmptyHint": "أصدر الشهادة الأولى وسيمتلئ جدول الملكية تلقائياً.",
+  "attnActApprove": "اعتماد",
+  "attnActReview": "مراجعة",
+  "attnActFile": "إيداع",
+  "attnDue": "الاستحقاق",
+  "attnRequested": "طُلب",
+  "attnMore": "بنود أخرى بانتظارك",
+  "donutStakeholders": "مساهمين",
+  "donutFdShares": "سهم بعد التخفيف الكامل",
+  "donutHoverHint": "أشر إلى مساهم لعرض حصته."
 }

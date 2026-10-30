@@ -15,6 +15,9 @@ const config: Config = {
         amber: scale("amber", [50, 100, 200, 500, 700, 800]),
         sky: scale("sky", [50, 600, 700]),
         rose: scale("rose", [500]),
+        indigo: scale("indigo", [50, 100, 500, 600, 700]),
+        hairline: "rgb(var(--line) / var(--hairline))",
+        "hairline-strong": "rgb(var(--line) / var(--hairline-strong))",
         surface: "rgb(var(--surface) / <alpha-value>)",
       },
       fontFamily: {
@@ -23,6 +26,8 @@ const config: Config = {
       boxShadow: {
         card: "0 1px 2px rgb(var(--shadow) / 0.06), 0 1px 3px rgb(var(--shadow) / 0.04)",
         pop: "0 10px 30px rgb(var(--shadow) / 0.18)",
+        tile: "var(--tile-shadow)",
+        lift: "var(--lift-shadow)",
       },
       keyframes: {
         rise: { from: { opacity: "0", transform: "translateY(6px)" }, to: { opacity: "1", transform: "none" } },

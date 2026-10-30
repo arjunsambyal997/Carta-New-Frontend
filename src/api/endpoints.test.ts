@@ -19,6 +19,7 @@ const cases: [string, () => Promise<unknown>, string, string][] = [
     `${O}/members`,
   ],
   ["capTable", () => api.capTable("o1"), "GET", `${O}/cap-table`],
+  ["analyticsEmbed", () => api.analyticsEmbed("o1"), "GET", `${O}/analytics/embed`],
   ["waterfall", () => api.waterfall("o1", 5000), "GET", `${O}/waterfall?exitValue=5000`],
   ["search", () => api.search("o1", "a b"), "GET", `${O}/search?q=a%20b`],
   ["certificates", () => api.certificates("o1"), "GET", `${O}/certificates`],

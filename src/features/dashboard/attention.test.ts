@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAttention } from "./attention";
+import { buildAttention, daysFrom, severityCounts } from "./attention";
 import { checklistProgress, checklistSteps } from "./checklist";
 import type { ComplianceItem, PendingChange, Resolution } from "@/api/types";
 
@@ -12,6 +12,27 @@ const filing = (key: string, status: ComplianceItem["status"], dueDate: string |
   ({ key, titleEn: key, titleAr: key, status, dueDate }) as ComplianceItem;
 
 describe("buildAttention", () => {
+  it("gives each kind of item the action a person takes next", () => {
+    const items = buildAttention({
+      approvals: [approval("1")],
+      resolutions: [vote("1", "2026-12-01T00:00:00Z")],
+      filings: [filing("ubo", "OVERDUE", "2026-10-01")],
+      now: NOW,
+    });
+    expect(Object.fromEntries(items.map((i) => [i.kind, i.action]))).toEqual({
+      approval: "approve",
+      vote: "review",
+      filing: "file",
+    });
+    expect(severityCounts(items)).toEqual({ high: 1, medium: 0, low: 2 });
+  });
+
+  it("counts whole days to a due date, negative once it has passed", () => {
+    expect(daysFrom("2026-10-21", NOW)).toBe(2);
+    expect(daysFrom("2026-10-17", NOW)).toBe(-2);
+    expect(daysFrom("2026-10-19T18:00:00Z", NOW)).toBe(0);
+  });
+
   it("lists nothing when nothing needs a person", () => {
     expect(buildAttention({ approvals: [], resolutions: [], filings: [], now: NOW })).toEqual([]);
     expect(buildAttention({ approvals: null, resolutions: null, filings: null, now: NOW })).toEqual([]);

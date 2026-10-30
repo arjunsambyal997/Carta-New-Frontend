@@ -29,6 +29,8 @@ export const securityHeaders = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Self-contained server in .next/standalone: a small production image with no dev dependencies.
+  output: "standalone",
   poweredByHeader: false,
   // Proxy API calls so the browser stays same-origin (no CORS setup on the backend).
   async rewrites() {

@@ -40,6 +40,18 @@
   --sky-600: 2 132 199;
   --sky-700: 3 105 161;
   --rose-500: 244 63 94;
+  /* Indigo marks things you can act on (queue actions, links, focus on data); emerald stays the brand and "good". */
+  --indigo-50: 238 242 255;
+  --indigo-100: 224 231 255;
+  --indigo-500: 99 102 241;
+  --indigo-600: 79 70 229;
+  --indigo-700: 67 56 202;
+  /* Hairlines: one ink at a low alpha, so borders sit on any surface without a grey of their own. */
+  --line: 15 23 36;
+  --hairline: 0.08;
+  --hairline-strong: 0.16;
+  --tile-shadow: 0 1px 2px rgb(15 23 36 / 0.04);
+  --lift-shadow: 0 12px 32px -16px rgb(15 23 36 / 0.22), 0 2px 6px -2px rgb(15 23 36 / 0.06);
   --btn: 15 118 110;
   --btn-hover: 17 94 89;
   /* categorical series, fixed order (validated palette, light steps) */
@@ -52,11 +64,12 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --surface: 21 27 36;
+  /* Obsidian, not black: the page is the deepest tone, tiles one step up, wells and hovers one more. */
+  --surface: 17 20 27;
   --shadow: 0 0 0;
-  --slate-50: 12 16 22;
-  --slate-100: 29 36 46;
-  --slate-200: 42 50 63;
+  --slate-50: 9 11 15;
+  --slate-100: 26 30 39;
+  --slate-200: 38 44 56;
   --slate-300: 59 69 85;
   --slate-400: 125 136 153;
   --slate-500: 149 160 176;
@@ -87,6 +100,17 @@
   --sky-600: 56 170 225;
   --sky-700: 125 200 240;
   --rose-500: 250 100 125;
+  --indigo-50: 30 31 62;
+  --indigo-100: 42 43 88;
+  --indigo-500: 129 140 248;
+  --indigo-600: 151 160 250;
+  --indigo-700: 184 191 253;
+  --line: 255 255 255;
+  --hairline: 0.07;
+  --hairline-strong: 0.14;
+  /* A faint top highlight gives dark tiles their edge instead of a drop shadow nobody can see. */
+  --tile-shadow: inset 0 1px 0 rgb(255 255 255 / 0.035), 0 1px 2px rgb(0 0 0 / 0.4);
+  --lift-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 16px 40px -18px rgb(0 0 0 / 0.8);
   --btn: 18 140 108;
   --btn-hover: 24 160 124;
   --series-1: 57 135 229;
@@ -189,10 +213,32 @@ html {
 
 @layer components {
   .card {
-    @apply rounded-2xl border border-slate-200/80 bg-surface p-5 shadow-card transition-shadow;
+    @apply rounded-2xl border border-hairline bg-surface p-5 shadow-tile transition-shadow;
   }
-  .card:hover {
-    box-shadow: 0 8px 24px -12px rgb(var(--shadow) / 0.18);
+  /* A bento tile: flat surface, hairline edge, no hover by default (data-dense, not clickable as a whole). */
+  .tile {
+    @apply relative min-w-0 rounded-2xl border border-hairline bg-surface p-5 shadow-tile;
+  }
+  /* Anything that navigates lifts a little under the pointer. Reduced motion keeps the border and shadow, drops the move. */
+  .lift {
+    @apply transition-[transform,box-shadow,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-lift focus-visible:border-hairline-strong motion-reduce:hover:translate-y-0;
+  }
+  /* Share counts, percentages, money: same-width digits so columns line up, tracked a little tighter. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .num-display {
+    @apply text-[1.75rem] font-semibold leading-none text-slate-900 sm:text-[2rem];
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+  .eyebrow {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-slate-500;
+  }
+  /* Small rounded action inside a row: Approve, Review, File. */
+  .action-chip {
+    @apply inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-indigo-50 px-3 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-600/15 transition-colors group-hover:bg-indigo-600 group-hover:text-white group-hover:ring-indigo-600 group-focus-visible:bg-indigo-600 group-focus-visible:text-white;
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white shadow-sm transition active:scale-[.98] disabled:opacity-50;

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Dashboard } from "@/features/dashboard/Dashboard";
@@ -19,15 +20,16 @@ export default function DashboardPage() {
   }, [holder, router]);
   // Shareholder accounts have their own home; do not load the register views they cannot read.
   if (me === undefined || holder) return null;
-  return <StaffDashboard />;
+  return <StaffDashboard role={me?.role} />;
 }
 
-function StaffDashboard() {
+/** `role` comes from the page: a second `useMe()` here would still be loading on first render, and the loader below reads it once. */
+function StaffDashboard({ role }: { role: string | undefined }) {
   const { t, name } = useI18n();
-  const role = useMe()?.role;
   // Only request panels this role may read, so restricted roles do not trigger 403s.
   const canMembers = role === "FOUNDER";
   const canAudit = role === "FOUNDER" || role === "CORPORATE_SECRETARY" || role === "LEGAL_AUDITOR";
+  const canIssue = role === "FOUNDER" || role === "CORPORATE_SECRETARY";
   const state = useRegister(async (orgId) => {
     const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
     const [org, table, prior, resolutions, certificates, classes, holders, members, approvals, compliance, audit] =
@@ -62,6 +64,18 @@ function StaffDashboard() {
       <PageHeader
         eyebrow={t("dashWelcome")}
         title={state.data ? name(state.data.org.legalNameEn, state.data.org.legalNameAr) : t("navDashboard")}
+        action={
+          canIssue && (
+            <>
+              <Link href="/resolutions?new" className="btn-ghost h-9 rounded-full px-4">
+                {t("newResolution")}
+              </Link>
+              <Link href="/certificates/new" className="btn h-9 rounded-full">
+                {t("navIssue")}
+              </Link>
+            </>
+          )
+        }
       />
       <Status state={state} />
       {state.data && (

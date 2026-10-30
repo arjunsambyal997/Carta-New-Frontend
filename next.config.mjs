@@ -1,6 +1,18 @@
 const backend = process.env.BACKEND_URL ?? "http://localhost:8080";
 const dev = process.env.NODE_ENV !== "production";
 
+/** The origin of the embedded analytics dashboard (/analytics), if one is configured; the CSP lets only it be framed. */
+export function analyticsOrigin(raw = process.env.NEXT_PUBLIC_ANALYTICS_URL) {
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    return url.protocol === "https:" || url.protocol === "http:" ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+const framed = analyticsOrigin();
+
 // Next.js hydrates with inline scripts, so scripts need 'unsafe-inline'; everything else is limited to this origin,
 // which keeps an injected script from sending the stored session anywhere and stops other sites from framing the app.
 const csp = [
@@ -10,6 +22,7 @@ const csp = [
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
   `connect-src 'self'${dev ? " ws: wss:" : ""}`,
+  ...(framed ? [`frame-src ${framed}`] : []),
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

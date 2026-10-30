@@ -54,6 +54,7 @@ export default function UboPage() {
               <>
                 <DownloadButton label="CSV" run={() => api.uboExport(state.orgId!, "csv", th)} />
                 <DownloadButton label="PDF" run={() => api.uboExport(state.orgId!, "pdf", th)} />
+                <DownloadButton label={t("uboFilingPack")} run={() => api.uboFilingPack(state.orgId!, "pdf", th)} />
               </>
             )}
           </div>

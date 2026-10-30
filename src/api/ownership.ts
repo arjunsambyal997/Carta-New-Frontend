@@ -19,4 +19,9 @@ export const ownershipApi = {
       `${org(orgId)}/ubo/export?format=${format}&threshold=${encodeURIComponent(threshold)}`,
       `ubo-register.${format}`,
     ),
+  uboFilingPack: (orgId: string, format: "csv" | "pdf", threshold: number) =>
+    downloadFile(
+      `${org(orgId)}/ubo/filing-pack?format=${format}&threshold=${encodeURIComponent(threshold)}`,
+      `ubo-filing-pack.${format}`,
+    ),
 };

@@ -196,6 +196,7 @@
   "navUbo": "Beneficial owners",
   "uboTitle": "Beneficial ownership",
   "uboThreshold": "Threshold %",
+  "uboFilingPack": "Filing pack",
   "uboOwners": "Beneficial owners",
   "uboBelow": "Natural persons below the threshold",
   "uboGaps": "Ownership not traced to a natural person",

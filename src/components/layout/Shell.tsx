@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import { api, getSession } from "@/api";
 import { useI18n, type Key } from "@/context/I18nContext";
 import { SijillMark, SijillWordmark } from "@/components/brand/SijillLogo";
@@ -11,12 +12,14 @@ import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { Icon, type IconName } from "@/components/common/Icon";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { MaintenanceBanner } from "@/components/layout/MaintenanceBanner";
+import { PageTransition } from "@/components/motion/PageTransition";
 import { SearchPalette } from "@/components/layout/SearchPalette";
 import { GROUPS, HOLDER_GROUPS, type Role } from "@/components/layout/nav";
 import { ProfileMenu, ToggleGroup } from "@/components/layout/Toolbar";
 import { LOGO_CHANGED } from "@/hooks/useCompanyLogo";
 import { useSession } from "@/hooks/useSession";
 import { useTableLabels } from "@/hooks/useTableLabels";
+import { springSnappy } from "@/designSystem/motion";
 
 /** Pages that are reachable signed out get a bare, centred layout without the sidebar. */
 const BARE = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify"];
@@ -197,14 +200,23 @@ export function Shell({ children }: { children: ReactNode }) {
                         href={n.href}
                         aria-current={active ? "page" : undefined}
                         title={rail ? t(n.key) : undefined}
-                        className={`group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-150 ${
+                        className={`group relative isolate flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors duration-150 ${
                           rail ? "lg:justify-center lg:px-0" : ""
                         } ${
                           active
-                            ? "bg-emerald-600/10 font-medium text-emerald-800 ring-1 ring-inset ring-emerald-600/15"
+                            ? "font-medium text-emerald-800"
                             : "text-slate-600 hover:bg-slate-900/[0.04] hover:text-slate-900"
                         }`}
                       >
+                        {active && (
+                          // One highlight that slides to the new item instead of jumping.
+                          <m.span
+                            layoutId="nav-active"
+                            transition={springSnappy}
+                            aria-hidden
+                            className="absolute inset-0 -z-10 rounded-xl bg-emerald-600/10 ring-1 ring-inset ring-emerald-600/15"
+                          />
+                        )}
                         <Icon
                           name={n.icon}
                           className={`shrink-0 transition-colors ${active ? "text-emerald-700" : "text-slate-400 group-hover:text-slate-600"}`}
@@ -291,14 +303,20 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </aside>
-      {open && (
-        <button
-          type="button"
-          aria-label={t("menuClose")}
-          className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-[1px] lg:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {open && (
+          <m.button
+            type="button"
+            aria-label={t("menuClose")}
+            className="fixed inset-0 z-30 bg-slate-900/40 backdrop-blur-[1px] lg:hidden"
+            onClick={() => setOpen(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="flex min-h-dvh min-w-0 flex-col">
         <ErrorBoundary fallback={null}>
@@ -346,9 +364,9 @@ export function Shell({ children }: { children: ReactNode }) {
         <main
           id="main"
           tabIndex={-1}
-          className="page mx-auto w-full max-w-[96rem] flex-1 px-4 py-6 pb-24 outline-none sm:px-6 sm:py-8 lg:px-8 lg:pb-8 2xl:px-12"
+          className="mx-auto w-full max-w-[96rem] flex-1 px-4 py-6 pb-24 outline-none sm:px-6 sm:py-8 lg:px-8 lg:pb-8 2xl:px-12"
         >
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         {session && (
           <nav

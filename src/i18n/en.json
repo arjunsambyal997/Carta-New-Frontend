@@ -7,7 +7,7 @@
   "navAudit": "Audit trail",
   "navAnalytics": "Analytics",
   "analyticsNotSetTitle": "No analytics dashboard is connected",
-  "analyticsNotSetHint": "Set NEXT_PUBLIC_ANALYTICS_URL to the dashboard's address on another site when building the app.",
+  "analyticsNotSetHint": "Analytics isn't switched on yet. The person who runs your Sijill server can set it up.",
   "newResolution": "New resolution",
   "titleLabel": "Title",
   "titleArLabel": "Title (Arabic)",

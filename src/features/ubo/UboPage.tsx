@@ -60,7 +60,7 @@ export default function UboPage() {
           </div>
         }
       />
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && state.orgId && (
         <>
           <section className="space-y-2">

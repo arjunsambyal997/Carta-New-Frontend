@@ -12,6 +12,12 @@ describe("Status", () => {
     expect(screen.getByRole("status")).toBeTruthy();
   });
 
+  it("draws a placeholder shaped like the page it stands in for", () => {
+    const { container } = renderWithI18n(<Status state={{ ...base, loading: true }} shape="table" />);
+    expect(container.querySelector('[data-shape="table"]')).toBeTruthy();
+    expect(container.querySelectorAll(".skeleton").length).toBeGreaterThan(5);
+  });
+
   it("asks the visitor to sign in when there is no session", () => {
     renderWithI18n(<Status state={{ ...base, connected: false }} />);
     expect(screen.getByRole("link", { name: /sign in|connect/i })).toBeTruthy();

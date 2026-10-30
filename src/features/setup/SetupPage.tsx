@@ -28,7 +28,7 @@ export default function SetupPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={t("setupTitle")} subtitle={t("subSetup")} />
-      <Status state={state} />
+      <Status state={state} shape="form" />
       {state.orgId && <LogoCard orgId={state.orgId} />}
       {state.data && state.orgId && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

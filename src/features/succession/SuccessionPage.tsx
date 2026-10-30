@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useFeedback } from "@/components/common/Feedback";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
@@ -35,7 +36,7 @@ export default function SuccessionPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={t("succTitle")} subtitle={t("succIntro")} />
-      <Status state={state} />
+      <Status state={state} shape="cards" />
       {state.data && state.orgId && (
         <>
           <RuleForm
@@ -45,7 +46,11 @@ export default function SuccessionPage() {
             onDone={() => setRefresh((n) => n + 1)}
           />
           <div className="space-y-3">
-            {state.data.rules.length === 0 && <p className="text-slate-500">{t("succEmpty")}</p>}
+            {state.data.rules.length === 0 && (
+              <div className="card">
+                <EmptyState icon="succession" title={t("succEmpty")} hint={t("succEmptyHint")} compact />
+              </div>
+            )}
             {state.data.rules.map((r) => (
               <RuleCard
                 key={r.id}

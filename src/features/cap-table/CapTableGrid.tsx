@@ -3,7 +3,9 @@
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { useI18n } from "@/context/I18nContext";
+import { useMe } from "@/hooks/useMe";
 import type { CapTable, HolderPosition } from "@/api/types";
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -35,6 +37,9 @@ type SortKey =
 
 export function CapTableGrid({ table, query = "" }: { table: CapTable; query?: string }) {
   const { t, num, name, date } = useI18n();
+  const me = useMe();
+  // Only the people who may issue are pointed at the issue page.
+  const canIssue = me?.role === "FOUNDER" || me?.role === "CORPORATE_SECRETARY";
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "fullyDilutedOwnershipPct", dir: -1 });
   const pct = (n: number) => `${num(n, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
 
@@ -126,7 +131,17 @@ export function CapTableGrid({ table, query = "" }: { table: CapTable; query?: s
             {rows.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
-                  {table.holders.length === 0 ? "—" : t("capNoMatch")}
+                  {table.holders.length === 0 ? (
+                    <EmptyState
+                      icon="captable"
+                      title={t("capEmpty")}
+                      hint={t("capEmptyHint")}
+                      action={canIssue ? { label: t("navIssue"), href: "/certificates/new" } : undefined}
+                      compact
+                    />
+                  ) : (
+                    t("capNoMatch")
+                  )}
                 </td>
               </tr>
             )}

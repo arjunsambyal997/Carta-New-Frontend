@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
+import { StaggerItem, StaggerList } from "@/components/motion/Stagger";
 import { useI18n } from "@/context/I18nContext";
 import type { ResolutionThreshold } from "@/api/types";
 
@@ -64,7 +65,7 @@ export default function ResolutionsPage() {
           )
         }
       />
-      <Status state={state} />
+      <Status state={state} shape="cards" />
 
       {showForm && (
         <form onSubmit={create} className="card max-w-2xl space-y-4">
@@ -169,9 +170,9 @@ export default function ResolutionsPage() {
           <EmptyState icon="resolutions" title={t("noResolutions")} hint={t("noResolutionsHint")} />
         </div>
       )}
-      <ul className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3 [&>li]:content-start">
+      <StaggerList className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3 [&>li]:content-start">
         {state.data?.map((r) => (
-          <li key={r.id} className="card space-y-2">
+          <StaggerItem key={r.id} className="card space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <Link href={`/resolutions/${r.id}`} className="font-medium text-emerald-800 hover:underline">
                 {name(r.title, r.titleAr)}
@@ -182,9 +183,9 @@ export default function ResolutionsPage() {
               {t("deadline")}: {date(r.votingDeadline, true)} · {t(THRESHOLD_LABEL[r.threshold])}
             </p>
             {r.status !== "DRAFT" && <TallyBar r={r} />}
-          </li>
+          </StaggerItem>
         ))}
-      </ul>
+      </StaggerList>
     </div>
   );
 }

@@ -62,7 +62,7 @@ export default function ResolutionPage() {
       <Link href="/resolutions" className="text-sm text-slate-500 hover:underline">
         ← {t("back")}
       </Link>
-      <Status state={state} />
+      <Status state={state} shape="detail" />
       {r && orgId && (
         <>
           <PageHeader

@@ -56,7 +56,7 @@ export default function ImportPage() {
   return (
     <div className="max-w-3xl space-y-5">
       <PageHeader title={t("navImport")} subtitle={t("importIntro")} />
-      <Status state={state} />
+      <Status state={state} shape="form" />
       {state.orgId && (
         <div className="card space-y-5">
           <div className="flex flex-wrap gap-2" role="tablist">

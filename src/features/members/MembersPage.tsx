@@ -63,7 +63,7 @@ export default function MembersPage() {
   return (
     <div className="space-y-6">
       <PageHeader title={t("membersTitle")} subtitle={t("subMembers")} />
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section className="card self-start !p-0">

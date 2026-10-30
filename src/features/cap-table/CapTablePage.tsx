@@ -129,7 +129,7 @@ export default function CapTablePage() {
           {t("capHistoricNote")} {asOf}
         </p>
       )}
-      <Status state={state} />
+      <Status state={state} shape="table" />
       {state.data && <CapTableGrid table={state.data} query={query} />}
     </div>
   );

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { EmptyState } from "@/components/common/EmptyState";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useFeedback } from "@/components/common/Feedback";
 import { useMe } from "@/hooks/useMe";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
+import { StaggerItem, StaggerList } from "@/components/motion/Stagger";
 import { useI18n, type Key } from "@/context/I18nContext";
 import type { ComplianceItem, ComplianceStatus } from "@/api/types";
 
@@ -63,7 +65,7 @@ export default function CompliancePage() {
   return (
     <div className="space-y-5">
       <PageHeader title={t("navCompliance")} subtitle={t("subCompliance")} />
-      <Status state={state} />
+      <Status state={state} shape="cards" />
       {state.data && (
         <>
           <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
@@ -74,69 +76,75 @@ export default function CompliancePage() {
               {error}
             </div>
           )}
-          {items.length === 0 && <p className="card text-sm text-slate-500">{t("compNone")}</p>}
-          {items.map((i) => (
-            <article key={i.key} className="card space-y-2">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h2 className="font-medium">{locale === "ar" ? i.titleAr : i.titleEn}</h2>
-                  <p className="text-xs text-slate-500">
-                    {t("compDue")}: {i.dueDate ? date(i.dueDate) : "—"}
-                    {i.lastFiledOn && (
-                      <>
-                        {" · "}
-                        {t("compLastFiled")}: {date(i.lastFiledOn)}
-                        {i.lastReference && <span dir="ltr"> ({i.lastReference})</span>}
-                      </>
-                    )}
-                  </p>
+          {items.length === 0 && (
+            <div className="card">
+              <EmptyState icon="check" title={t("compNone")} hint={t("compNoneHint")} />
+            </div>
+          )}
+          <StaggerList className="space-y-5">
+            {items.map((i) => (
+              <StaggerItem key={i.key} className="card space-y-2">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="font-medium">{locale === "ar" ? i.titleAr : i.titleEn}</h2>
+                    <p className="text-xs text-slate-500">
+                      {t("compDue")}: {i.dueDate ? date(i.dueDate) : "—"}
+                      {i.lastFiledOn && (
+                        <>
+                          {" · "}
+                          {t("compLastFiled")}: {date(i.lastFiledOn)}
+                          {i.lastReference && <span dir="ltr"> ({i.lastReference})</span>}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] ${STATUS_TONE[i.status]}`}>
+                    {t(STATUS_KEY[i.status])}
+                  </span>
                 </div>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] ${STATUS_TONE[i.status]}`}>
-                  {t(STATUS_KEY[i.status])}
-                </span>
-              </div>
-              <p className="text-sm text-slate-600">
-                <span className="font-medium">{t("compBasis")}:</span> {i.basis}
-              </p>
-              {i.note && <p className="text-sm text-slate-500">{i.note}</p>}
-              {canFile && open !== i.key && (
-                <button className="btn-ghost" onClick={() => setOpen(i.key)}>
-                  {t("compMarkFiled")}
-                </button>
-              )}
-              {canFile && open === i.key && (
-                <div className="flex flex-wrap items-end gap-2 border-t border-slate-200 pt-3">
-                  <div>
-                    <label className="label" htmlFor={`f-${i.key}`}>
-                      {t("compFiledOn")}
-                    </label>
-                    <input
-                      id={`f-${i.key}`}
-                      type="date"
-                      className="input"
-                      value={filedOn}
-                      onChange={(e) => setFiledOn(e.target.value)}
-                    />
-                  </div>
-                  <div className="min-w-48 flex-1">
-                    <label className="label" htmlFor={`r-${i.key}`}>
-                      {t("compReference")}
-                    </label>
-                    <input
-                      id={`r-${i.key}`}
-                      maxLength={200}
-                      className="input"
-                      value={reference}
-                      onChange={(e) => setReference(e.target.value)}
-                    />
-                  </div>
-                  <button className="btn" disabled={busy} onClick={() => save(i)}>
-                    {t("compSave")}
+                <p className="text-sm text-slate-600">
+                  <span className="font-medium">{t("compBasis")}:</span> {i.basis}
+                </p>
+                {i.note && <p className="text-sm text-slate-500">{i.note}</p>}
+                {canFile && open !== i.key && (
+                  <button className="btn-ghost" onClick={() => setOpen(i.key)}>
+                    {t("compMarkFiled")}
                   </button>
-                </div>
-              )}
-            </article>
-          ))}
+                )}
+                {canFile && open === i.key && (
+                  <div className="flex flex-wrap items-end gap-2 border-t border-slate-200 pt-3">
+                    <div>
+                      <label className="label" htmlFor={`f-${i.key}`}>
+                        {t("compFiledOn")}
+                      </label>
+                      <input
+                        id={`f-${i.key}`}
+                        type="date"
+                        className="input"
+                        value={filedOn}
+                        onChange={(e) => setFiledOn(e.target.value)}
+                      />
+                    </div>
+                    <div className="min-w-48 flex-1">
+                      <label className="label" htmlFor={`r-${i.key}`}>
+                        {t("compReference")}
+                      </label>
+                      <input
+                        id={`r-${i.key}`}
+                        maxLength={200}
+                        className="input"
+                        value={reference}
+                        onChange={(e) => setReference(e.target.value)}
+                      />
+                    </div>
+                    <button className="btn" disabled={busy} onClick={() => save(i)}>
+                      {t("compSave")}
+                    </button>
+                  </div>
+                )}
+              </StaggerItem>
+            ))}
+          </StaggerList>
         </>
       )}
     </div>

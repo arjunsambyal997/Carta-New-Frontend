@@ -109,7 +109,7 @@ export default function RoundsPage() {
   return (
     <div className="space-y-5">
       <PageHeader title={t("navRounds")} subtitle={t("roundsIntro")} />
-      <Status state={state} />
+      <Status state={state} shape="form" />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,36rem)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
         <div className="min-w-0 space-y-5">
           {state.data && (

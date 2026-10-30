@@ -17,6 +17,7 @@ import { integrationsApi } from "./integrations";
 import { approvalsApi } from "./approvals";
 import { systemApi } from "./system";
 import { complianceApi } from "./compliance";
+import { analyticsApi } from "./analytics";
 
 /** One object for callers that want `api.something()`; each resource also exports its own `<name>Api`. */
 export const api = {
@@ -28,6 +29,7 @@ export const api = {
   ...ownershipApi,
   ...successionApi,
   ...vaultApi,
+  ...analyticsApi,
   ...auditApi,
   ...registerToolsApi,
   ...equityApi,

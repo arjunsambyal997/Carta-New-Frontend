@@ -845,5 +845,11 @@
   "attnMore": "بنود أخرى بانتظارك",
   "donutStakeholders": "مساهمين",
   "donutFdShares": "سهم بعد التخفيف الكامل",
-  "donutHoverHint": "أشر إلى مساهم لعرض حصته."
+  "donutHoverHint": "أشر إلى مساهم لعرض حصته.",
+  "noAccessTitle": "لا تملك صلاحية الوصول إلى هذه الصفحة",
+  "noAccessHint": "دورك في هذه الشركة لا يسمح بفتحها. اطلب ذلك من أحد المؤسسين إن احتجت إليها.",
+  "certStatusISSUED": "صادرة",
+  "certStatusCANCELLED": "ملغاة",
+  "certStatusTRANSFERRED": "منقولة",
+  "certStatusCONVERTED": "محوّلة"
 }

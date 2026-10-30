@@ -42,11 +42,15 @@ export function cachedGet<T>(key: string, fetcher: () => Promise<T>): Promise<T>
   return pending.then(copy);
 }
 
+/** Sent on window after every clear, so counters outside the current page (nav badges) can re-check. */
+export const DATA_CHANGED = "equigcc-data-changed";
+
 /** Forgets everything; the next read of any path goes to the server. */
 export function clearRequestCache() {
   generation++;
   fresh.clear();
   inflight.clear();
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(DATA_CHANGED));
 }
 
 if (typeof window !== "undefined") window.addEventListener("equigcc-session", clearRequestCache);

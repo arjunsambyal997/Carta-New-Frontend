@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/common/PageHeader";
 import { Status } from "@/components/common/Status";
 import { useRegister } from "@/hooks/useRegister";
 import { api } from "@/api";
-import { useI18n } from "@/context/I18nContext";
+import { useI18n, type Key } from "@/context/I18nContext";
 
 export default function CertificatesPage() {
   const { t, num, name, date } = useI18n();
@@ -59,7 +59,7 @@ export default function CertificatesPage() {
                       <span
                         className={`chip ${c.status === "ISSUED" ? "bg-emerald-50 text-emerald-800" : c.status === "CANCELLED" ? "bg-red-50 text-red-800" : "bg-slate-100 text-slate-600"}`}
                       >
-                        {c.status}
+                        {t(`certStatus${c.status}` as Key)}
                       </span>
                     </td>
                     <td className="text-end">

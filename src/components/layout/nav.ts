@@ -75,3 +75,17 @@ export const GROUPS: { label: Key; items: NavItem[] }[] = [
     ],
   },
 ];
+
+/**
+ * Whether this role may open the page at this path. Pages outside the nav (settings, portal links, ...) are left to the server.
+ * Shareholder-portal logins only get their own pages; "/" shows them their holdings.
+ */
+export function canOpen(path: string, role: Role): boolean {
+  const match = (href: string) => (href === "/" ? path === "/" : path === href || path.startsWith(href + "/"));
+  if (role === "SHAREHOLDER") {
+    const own = path === "/" || HOLDER_GROUPS.some((g) => g.items.some((i) => match(i.href)));
+    return own || !GROUPS.some((g) => g.items.some((i) => match(i.href)));
+  }
+  const item = GROUPS.flatMap((g) => g.items).find((i) => match(i.href));
+  return !item?.roles || item.roles.includes(role);
+}
